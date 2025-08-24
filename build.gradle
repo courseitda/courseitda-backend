@@ -33,12 +33,6 @@ spotless {
         // import 순서 강제
         importOrder "java", "javax", "org", "com", ""
     }
-
-    // Java 코드 이외의 파일(Markdown, YAML, Gradle 설정 파일) 포매팅 설정
-    format("misc") {
-        target("*.md", "*.yml", "*.yaml", "*.gradle")
-        prettier().configFile(".editorconfig")
-    }
 }
 
 configurations {

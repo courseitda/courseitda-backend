@@ -2,6 +2,9 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.5.4'
     id 'io.spring.dependency-management' version '1.1.7'
+
+    id 'com.diffplug.spotless' version '7.2.1'
+    id 'checkstyle'
 }
 
 group = 'me.courseitda'
@@ -11,6 +14,30 @@ description = 'courseitda'
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+checkstyle {
+    toolVersion = "11.0.0"
+    configFile = file("config/checkstyle/checkstyle.xml")
+}
+
+spotless {
+    java {
+        // 코드 스타일 파일 적용
+        eclipse().configFile("config/courseitda-style.xml")
+
+        // 불필요한 import 제거
+        removeUnusedImports()
+
+        // import 순서 강제
+        importOrder "java", "javax", "org", "com", ""
+    }
+
+    // Java 코드 이외의 파일(Markdown, YAML, Gradle 설정 파일) 포매팅 설정
+    format("misc") {
+        target("*.md", "*.yml", "*.yaml", "*.gradle")
+        prettier().configFile(".editorconfig")
     }
 }
 

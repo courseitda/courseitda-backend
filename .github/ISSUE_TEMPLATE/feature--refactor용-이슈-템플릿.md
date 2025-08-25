@@ -3,7 +3,7 @@ name: Feature, Refactor용 이슈 템플릿
 about: Feature, Refactor용 이슈 템플릿
 title: "[feat] 구현할 기능에 대하여 작성해 주세요."
 labels: ''
-assignees: RaZel713
+assignees: 
 
 ---
 

@@ -56,7 +56,6 @@ jobs:
               `, 
               { projectId }
             );
-
             const fields = fieldData.node.fields.nodes;
             const endDateField = fields.find(f => f.name?.toLowerCase() === 'end date');
             if (!endDateField) {
@@ -66,7 +65,7 @@ jobs:
 
             // 3. End date을 Issue를 close한 날짜로 지정
             const closedAt = context.payload.issue.closed_at; // ISO 8601
-            const dateStr = (closedAt ? new Date(closedAt) : new Date())
+            const closedDateStr = (closedAt ? new Date(closedAt) : new Date())
               .toISOString().split('T')[0];
             await github.graphql(
               `
@@ -81,5 +80,5 @@ jobs:
                 }
               }
               `,
-              { projectId, itemId: issueItemId , fieldId: endDateField.id, date: dateStr }
+              { projectId, itemId: issueItemId , fieldId: endDateField.id, date: closedDateStr }
             );

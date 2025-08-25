@@ -38,15 +38,16 @@ jobs:
             const { issue, repository } = context.payload;
             
             const labels = [];
-            // author 기반 파트 라벨 추가
+            // author 기반 파트 레이블 추가
             const feTeam = [];
             const beTeam = ['threepebbles', 'RaZel713'];
             
             const author = issue.user.login;
-            const authorLabel = feTeam.includes(author) ? 'frontend' : beTeam.includes(author) ? 'backend' : null;
-            if (authorLabel) labels.push(authorLabel);
+            const partLabel = feTeam.includes(author) ? '🖥️ Frontend' 
+            : beTeam.includes(author) ? '⚙️ Backend' : null;
+            if (partLabel) labels.push(partLabel);
             
-            // auther에 따른 닉네임 라벨 매핑
+            // auther에 따른 닉네임 레이블 매핑
             const personalLabelMap = {
               threepebbles: '🍍 헤일러',
               RaZel713: '🍋 라젤',

@@ -1,0 +1,53 @@
+
+# General 설정
+# AI가 응답할 때 사용할 기본 언어를 설정합니다. (ex. ko-KR, en-US)
+language: ko-KR
+
+# Review 설정
+reviews:
+  # 'chill'은 비교적 덜 엄격하고 부드러운 톤을 의미합니다.
+  profile: chill
+  # PR의 전체적인 변경 사항에 대한 고수준의 요약(summary)을 생성할지 여부입니다.
+  high_level_summary: true
+  # 변경된 각 파일에 대한 요약을 생성할지 여부입니다.
+  changed_files_summary: true
+  # 코드의 실행 흐름을 보여주는 시퀀스 다이어그램을 생성할지 여부입니다.
+  sequence_diagrams: true
+  # PR에 연결된 이슈(Issue)를 분석하여 리뷰 컨텍스트에 활용할지 여부입니다.
+  assess_linked_issues: true
+  # 연관된 다른 이슈를 찾아서 링크할지 여부입니다.
+  related_issues: false
+  # 연관된 다른 PR을 찾아서 링크할지 여부입니다.
+  related_prs: false
+  # PR에 적절한 레이블을 제안할지 여부입니다.
+  suggested_labels: false
+  # 제안된 레이블을 자동으로 PR에 적용할지 여부입니다.
+  auto_apply_labels: false
+
+  # 자동 리뷰 트리거 설정
+  auto_review:
+    # PR이 생성됐을 때 자동으로 PR 리뷰를 시작하지 않습니다.
+    # `@coderabbitai review`를 코멘트에 입력하면 리뷰를 시작합니다.
+    enabled: false
+    # 이미 리뷰가 진행된 PR에 새로운 커밋이 추가될 때, 변경된 부분에 대해서만 자동으로 리뷰를 진행할지 여부입니다.
+    auto_incremental_review: false
+
+# 채팅(Chat) 설정
+chat:
+  # 사용자가 @coderabbitai 태그를 지정하지 않아도 자동으로 답글을 달 수 있도록 설정합니다.
+  auto_reply: true
+
+# 지식 기반(Knowledge Base) 설정
+knowledge_base:
+  # 웹 검색을 통해 최신 정보나 문서를 참조할 수 있도록 허용할지 여부입니다.
+  web_search:
+    enabled: true
+  # CodeRabbit이 대화나 리뷰를 통해 학습한 내용을 어디에 저장하고 참조할지 범위를 설정합니다. 'local'은 현재 레포지토리에 한정됨을 의미합니다.
+  learnings:
+    scope: local
+  # 이슈 정보를 참조할 범위를 설정합니다.
+  issues:
+    scope: local
+  # 풀 리퀘스트 정보를 참조할 범위를 설정합니다.
+  pull_requests:
+    scope: local

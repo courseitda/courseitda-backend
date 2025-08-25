@@ -1,33 +1,58 @@
-name: Setup Opened Issues
+name: Setup Opened PRs
 
 on:
-  issues:
-    # issue가 open, reopen될 때 실행
+  pull_request:
     types: [ opened, reopened ]
 
 jobs:
-  setup_issue:
+  setup_pr:
     runs-on: ubuntu-latest
     permissions:
-      issues: write
+      pull-requests: write
       contents: read
+      issues: write
 
     steps:
-      - name: Set Assignees
+      - name: Set assignees
         continue-on-error: true
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const { issue, repository } = context.payload;
-            const author = issue.user.login;
+            const { pull_request: pr, repository } = context.payload;
+            const author = pr.user.login;
 
             await github.rest.issues.addAssignees({
               owner: repository.owner.login,
               repo: repository.name,
-              issue_number: issue.number,
+              issue_number: pr.number,
               assignees: [author],
             });
+
+      - name: Set reviewers
+        continue-on-error: true
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { pull_request: pr, repository } = context.payload;
+            const author = pr.user.login;
+
+            const feTeam = [];
+            const beTeam = ['threepebbles', 'RaZel713'];
+
+            const isAuthorFE = feTeam.includes(author);
+            const isAuthorBE = beTeam.includes(author);
+            const reviewers = (isAuthorFE ? feTeam : isAuthorBE ? beTeam : []).filter(r => r !== author);
+
+            if (reviewers.length) {
+              await github.rest.pulls.requestReviewers({
+                owner: repository.owner.login,
+                repo: repository.name,
+                pull_number: pr.number,
+                reviewers,
+              });
+            }
 
       - name: Set Labels
         continue-on-error: true
@@ -35,34 +60,47 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const { issue, repository } = context.payload;
-            
+            const { pull_request: pr, repository } = context.payload;
+
             const labels = [];
-            // author 기반 파트 레이블 추가
+            // 1. PR 제목 prefix 기반 레이블 추가
+            const title = pr.title.toLowerCase();
+            const titleLabelMap = {
+                'feat': '📝 feat',
+                'refactor': '🖌️ refactor',
+                'test': '✅ test',
+                'fix': '⚒️ fix',
+                'chore': '🧹 chore',
+                'docs': '📝 docs'
+            };
+            const titlePrefix = Object.keys(titleLabelMap).find(prefix => title.startsWith(prefix + ':'));
+            if (titlePrefix) labels.push(titleLabelMap[titlePrefix]);
+            
+            // 2. author 기반 파트 레이블 추가
             const feTeam = [];
             const beTeam = ['threepebbles', 'RaZel713'];
             
-            const author = issue.user.login;
+            const author = pr.user.login;
             const partLabel = feTeam.includes(author) ? '🖥️ Frontend' 
             : beTeam.includes(author) ? '⚙️ Backend' : null;
             if (partLabel) labels.push(partLabel);
-            
-            // auther에 따른 닉네임 레이블 매핑
+
+            // 3. auther에 따른 닉네임 레이블 매핑
             const personalLabelMap = {
               threepebbles: '🍍 헤일러',
               RaZel713: '🍋 라젤',
             };
             const personalLabel = personalLabelMap[author];
             if (personalLabel) labels.push(personalLabel);
-            
+
             // 중복 제거
             const uniqueLabels = [...new Set(labels)];
-            
+
             if (uniqueLabels.length) {
               await github.rest.issues.addLabels({
                 owner: repository.owner.login,
                 repo: repository.name,
-                issue_number: issue.number,
+                issue_number: pr.number,
                 labels: uniqueLabels,
               });
             }
@@ -73,9 +111,9 @@ jobs:
         with:
           github-token: ${{ secrets.PROJECT_V2_TOKEN }}
           script: |
-            // GitHub Project id
+            // Project v2 ID
             const projectId = 'PVT_kwDODYNUWs4BBQxw';
-            const { issue } = context.payload;
+            const { pull_request: pr } = context.payload;
             
             const fieldData = await github.graphql(
               `
@@ -120,7 +158,7 @@ jobs:
             );
             const fields = fieldData.node.fields.nodes;
             
-            // 1. Issue를 Project에 추가 (이미 있으면 기존 item id를 반환)
+            // 1. PR을 Project에 추가 (이미 있으면 기존 item id를 반환)
             const addItemResponse = await github.graphql(
               `
               mutation($projectId: ID!, $contentId: ID!) {
@@ -129,19 +167,19 @@ jobs:
                 }
               }
               `, 
-              { projectId, contentId: issue.node_id }
+              { projectId, contentId: pr.node_id }
             );
-            const issueItemId = addItemResponse.addProjectV2ItemById.item.id;
+            const prItemId = addItemResponse.addProjectV2ItemById.item.id;
 
-            // 2. Status 필드를 Todo로 설정
+            // 2. Status 필드를 In Progress로 설정
             const statusField = fields.find(f =>
               f.__typename === 'ProjectV2SingleSelectField' &&
               f.name?.toLowerCase() === 'status'
             );
             const statusFieldId = statusField?.id;
-            const todoOptionId = statusField?.options?.find(o => o.name.toLowerCase() === 'todo')?.id;
+            const inProgressOptionId = statusField?.options?.find(o => o.name.toLowerCase() === 'in progress')?.id;
             
-            if (statusFieldId && todoOptionId) {
+            if (statusFieldId && inProgressOptionId) {
               await github.graphql(
                 `
                 mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
@@ -155,14 +193,14 @@ jobs:
                   }
                 }
                 `, 
-                { projectId: projectId, itemId: issueItemId, fieldId: statusFieldId, optionId: todoOptionId }
+                { projectId: projectId, itemId: prItemId, fieldId: statusFieldId, optionId: inProgressOptionId }
               );
             }
 
             // 3. Start Date을 today로 설정
             const openedAt = new Date(context.payload.action === 'reopened'
-              ? issue.updated_at 
-              : issue.created_at);
+              ? pr.updated_at 
+              : pr.created_at);
             const startDate = openedAt.toISOString().split('T')[0];
 
             const startDateField = fields.find(f =>
@@ -183,7 +221,7 @@ jobs:
                   }) { projectV2Item { id } }
                 }
                 `,
-                { projectId, itemId: issueItemId, fieldId: startDateFieldId, date: startDate }
+                { projectId, itemId: prItemId, fieldId: startDateFieldId, date: startDate }
               );
             }
             
@@ -217,6 +255,6 @@ jobs:
                   }) { projectV2Item { id } }
                 }
                 `,
-                 { projectId, itemId: issueItemId, fieldId: iterationFieldId, iterationId: matchingIteration.id }
+                 { projectId, itemId: prItemId, fieldId: iterationFieldId, iterationId: matchingIteration.id }
                 );
             }

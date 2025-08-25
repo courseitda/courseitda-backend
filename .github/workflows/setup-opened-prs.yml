@@ -1,0 +1,260 @@
+name: Setup Opened PRs
+
+on:
+  pull_request:
+    types: [ opened, reopened ]
+
+jobs:
+  setup_pr:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+      issues: write
+
+    steps:
+      - name: Set assignees
+        continue-on-error: true
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { pull_request: pr, repository } = context.payload;
+            const author = pr.user.login;
+
+            await github.rest.issues.addAssignees({
+              owner: repository.owner.login,
+              repo: repository.name,
+              issue_number: pr.number,
+              assignees: [author],
+            });
+
+      - name: Set reviewers
+        continue-on-error: true
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { pull_request: pr, repository } = context.payload;
+            const author = pr.user.login;
+
+            const feTeam = [];
+            const beTeam = ['threepebbles', 'RaZel713'];
+
+            const isAuthorFE = feTeam.includes(author);
+            const isAuthorBE = beTeam.includes(author);
+            const reviewers = (isAuthorFE ? feTeam : isAuthorBE ? beTeam : []).filter(r => r !== author);
+
+            if (reviewers.length) {
+              await github.rest.pulls.requestReviewers({
+                owner: repository.owner.login,
+                repo: repository.name,
+                pull_number: pr.number,
+                reviewers,
+              });
+            }
+
+      - name: Set Labels
+        continue-on-error: true
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { pull_request: pr, repository } = context.payload;
+
+            const labels = [];
+            // 1. PR 제목 prefix 기반 레이블 추가
+            const title = pr.title.toLowerCase();
+            const titleLabelMap = {
+                'feat': '📝 feat',
+                'refactor': '🖌️ refactor',
+                'test': '✅ test',
+                'fix': '⚒️ fix',
+                'chore': '🧹 chore',
+                'docs': '📝 docs'
+            };
+            const titlePrefix = Object.keys(titleLabelMap).find(prefix => title.startsWith(prefix + ':'));
+            if (titlePrefix) labels.push(titleLabelMap[titlePrefix]);
+            
+            // 2. author 기반 파트 레이블 추가
+            const feTeam = [];
+            const beTeam = ['threepebbles', 'RaZel713'];
+            
+            const author = pr.user.login;
+            const partLabel = feTeam.includes(author) ? '🖥️ Frontend' 
+            : beTeam.includes(author) ? '⚙️ Backend' : null;
+            if (partLabel) labels.push(partLabel);
+
+            // 3. auther에 따른 닉네임 레이블 매핑
+            const personalLabelMap = {
+              threepebbles: '🍍 헤일러',
+              RaZel713: '🍋 라젤',
+            };
+            const personalLabel = personalLabelMap[author];
+            if (personalLabel) labels.push(personalLabel);
+
+            // 중복 제거
+            const uniqueLabels = [...new Set(labels)];
+
+            if (uniqueLabels.length) {
+              await github.rest.issues.addLabels({
+                owner: repository.owner.login,
+                repo: repository.name,
+                issue_number: pr.number,
+                labels: uniqueLabels,
+              });
+            }
+
+      - name: Set Projects
+        continue-on-error: true
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.PROJECT_V2_TOKEN }}
+          script: |
+            // Project v2 ID
+            const projectId = 'PVT_kwDODYNUWs4BBQxw';
+            const { pull_request: pr } = context.payload;
+            
+            const fieldData = await github.graphql(
+              `
+              query($projectId: ID!) {
+                node(id: $projectId) {
+                  ... on ProjectV2 {
+                    fields(first: 100) {
+                      nodes {
+                        __typename
+            
+                        ... on ProjectV2FieldCommon {
+                          id
+                          name
+                        }
+            
+                        ... on ProjectV2SingleSelectField {
+                          options {
+                            id
+                            name
+                          }
+                        }
+            
+                        ... on ProjectV2IterationField {
+                          configuration {
+                            __typename
+                            ... on ProjectV2IterationFieldConfiguration {
+                              iterations {
+                                id
+                                startDate
+                                duration
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+              `,
+              { projectId }
+            );
+            const fields = fieldData.node.fields.nodes;
+            
+            // 1. PR을 Project에 추가 (이미 있으면 기존 item id를 반환)
+            const addItemResponse = await github.graphql(
+              `
+              mutation($projectId: ID!, $contentId: ID!) {
+                addProjectV2ItemById(input: { projectId: $projectId, contentId: $contentId }) {
+                  item { id }
+                }
+              }
+              `, 
+              { projectId, contentId: pr.node_id }
+            );
+            const prItemId = addItemResponse.addProjectV2ItemById.item.id;
+
+            // 2. Status 필드를 In Progress로 설정
+            const statusField = fields.find(f =>
+              f.__typename === 'ProjectV2SingleSelectField' &&
+              f.name?.toLowerCase() === 'status'
+            );
+            const statusFieldId = statusField?.id;
+            const inProgressOptionId = statusField?.options?.find(o => o.name.toLowerCase() === 'in progress')?.id;
+            
+            if (statusFieldId && inProgressOptionId) {
+              await github.graphql(
+                `
+                mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
+                  updateProjectV2ItemFieldValue(input: {
+                    projectId: $projectId,
+                    itemId: $itemId,
+                    fieldId: $fieldId,
+                    value: { singleSelectOptionId: $optionId }
+                  }) {
+                    projectV2Item { id }
+                  }
+                }
+                `, 
+                { projectId: projectId, itemId: prItemId, fieldId: statusFieldId, optionId: inProgressOptionId }
+              );
+            }
+
+            // 3. Start Date을 today로 설정
+            const openedAt = new Date(context.payload.action === 'reopened'
+              ? pr.updated_at 
+              : pr.created_at);
+            const startDate = openedAt.toISOString().split('T')[0];
+
+            const startDateField = fields.find(f =>
+              f.__typename === 'ProjectV2Field' &&
+              f.name?.toLowerCase() === 'start date'
+            );
+            const startDateFieldId = startDateField?.id;
+
+            if (startDateFieldId) {
+              await github.graphql(
+                `
+                mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $date: Date!) {
+                  updateProjectV2ItemFieldValue(input: {
+                    projectId: $projectId,
+                    itemId: $itemId,
+                    fieldId: $fieldId,
+                    value: { date: $date }
+                  }) { projectV2Item { id } }
+                }
+                `,
+                { projectId, itemId: prItemId, fieldId: startDateFieldId, date: startDate }
+              );
+            }
+            
+            // 4. Sprint(iteration) 설정
+            const iterationField = fields.find(f =>
+              f.__typename === 'ProjectV2IterationField' &&
+              f.configuration?.__typename === 'ProjectV2IterationFieldConfiguration'
+            );
+            const iterationFieldId = iterationField?.id;
+            const iterations = iterationField?.configuration?.iterations ?? [];
+
+            // 오늘이 포함된 iteration 찾기
+            function isDateInRange(startISOString, durationDays, today) {
+              const s = new Date(startISOString);
+              const e = new Date(s);
+              e.setDate(e.getDate() + durationDays);
+              return today >= s && today < e;
+            }
+
+            const matchingIteration = iterations.find(i => isDateInRange(i.startDate, i.duration, openedAt));
+
+            if (iterationFieldId && matchingIteration?.id) {
+              await github.graphql(
+                `
+                mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $iterationId: String!) {
+                  updateProjectV2ItemFieldValue(input: {
+                    projectId: $projectId,
+                    itemId: $itemId,
+                    fieldId: $fieldId,
+                    value: { iterationId: $iterationId }
+                  }) { projectV2Item { id } }
+                }
+                `,
+                 { projectId, itemId: prItemId, fieldId: iterationFieldId, iterationId: matchingIteration.id }
+                );
+            }

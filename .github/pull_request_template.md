@@ -1,6 +1,6 @@
 ## Issues
 
-closed #이슈번호
+- closed #이슈번호
 
 ## ✔️ Check-list
 

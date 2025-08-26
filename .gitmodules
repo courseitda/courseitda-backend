@@ -1,0 +1,3 @@
+[submodule "coursitda-backend-config"]
+	path = coursitda-backend-config
+	url = https://github.com/courseitda/coursitda-backend-config.git

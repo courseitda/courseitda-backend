@@ -1,12 +1,12 @@
-name: Backend CI on develop branch
+name: Backend CD on develop branch
 
 on:
-  pull_request:
+  push:
     branches: [ "develop" ]
-    types: [ opened, synchronize, reopened ]
 
 permissions:
-  contents: read
+  contents: write
+  packages: write
   checks: write
   pull-requests: write
 
@@ -70,3 +70,40 @@ jobs:
         with:
           report_paths: '**/build/test-results/test/TEST-*.xml'
           token: ${{ github.token }}
+
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      # Github Container Registry 로그인
+      - name: Login to Github Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.PAT_FOR_GHCR }}
+
+      # Docker buildx 셋업
+      - name: Set up Docker buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
+
+      # repository owner 이름 소문자로 치환 (대문자 있으면 에러 발생하므로 꼭 필요)
+      - name: set owner's name to lower case
+        run: |
+          echo "OWNER_LC=${OWNER,,}" >> ${GITHUB_ENV}
+        env:
+          OWNER: '${{ github.repository_owner }}'
+
+      # Docker 이미지 빌드 및 Github Container Registry에 push
+      - name: Build and Push
+        uses: docker/build-push-action@v5
+        id: docker_build
+        with:
+          context: .
+          file: ./courseitda-backend-config/dev/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ env.OWNER_LC }}/courseitda-spring-dev:latest
+            ghcr.io/${{ env.OWNER_LC }}/courseitda-spring-dev:dev-${{ github.run_number }}

@@ -54,7 +54,7 @@ jobs:
 
       # 빌드 진행(테스트 포함)
       - name: Build with Gradle
-        run: ./gradlew build
+        run: ./gradlew build --no-configuration-cache
 
       # 테스트에 대한 리포트 작성
       - name: Publish Test Results

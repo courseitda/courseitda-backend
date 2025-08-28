@@ -99,6 +99,7 @@ jobs:
           context: .
           file: ./courseitda-backend-config/dev/Dockerfile
           push: true
+          platforms: linux/amd64,linux/arm64
           tags: |
             ghcr.io/${{ env.OWNER_LC }}/courseitda-spring-dev:latest
             ghcr.io/${{ env.OWNER_LC }}/courseitda-spring-dev:dev-${{ github.run_number }}
@@ -133,3 +134,7 @@ jobs:
       # 새 docker 컨테이너 실행
       - name: Start Containers
         run: docker compose -f courseitda-backend-config/dev/docker-compose.yml up -d
+
+      # dangling 이미지(아무 태그도 붙어 있지 않은 이미지) 삭제
+      - name: Cleanup old docker images
+        run: docker image prune -f

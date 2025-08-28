@@ -11,7 +11,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  test-and-docker-image-push:
+  test-and-push-docker-image:
     runs-on: ubuntu-latest
 
     steps:
@@ -102,3 +102,34 @@ jobs:
           tags: |
             ghcr.io/${{ env.OWNER_LC }}/courseitda-spring-dev:latest
             ghcr.io/${{ env.OWNER_LC }}/courseitda-spring-dev:dev-${{ github.run_number }}
+
+  deploy-on-ec2:
+    name: Deploy on EC2 (dev environment)
+    runs-on: [ self-hosted, dev ]
+    needs: test-and-push-docker-image
+
+    steps:
+      # docker-compose.yml을 불러오기 위함
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 0
+          recursive: true
+          token: ${{ secrets.PAT_FOR_SUBMODULE }}
+
+      # GHCR 로그인
+      - name: Login to GitHub Container Registry
+        run: echo "${{ secrets.PAT_FOR_GHCR }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      # 최신 docker 이미지 pull
+      - name: Pull docker images
+        run: docker compose pull
+
+      # 기존 컨테이너 종료 및 제거
+      - name: Stop and Remove Old Containers
+        run: docker compose down
+
+      # 새 docker 컨테이너 실행
+      - name: Start Containers
+        run: docker compose up -d

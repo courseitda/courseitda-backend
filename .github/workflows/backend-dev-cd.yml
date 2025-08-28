@@ -124,12 +124,12 @@ jobs:
 
       # 최신 docker 이미지 pull
       - name: Pull docker images
-        run: docker compose pull
+        run: docker compose -f courseitda-backend-config/dev/docker-compose.yml pull
 
       # 기존 컨테이너 종료 및 제거
       - name: Stop and Remove Old Containers
-        run: docker compose down
+        run: docker compose -f courseitda-backend-config/dev/docker-compose.yml down
 
       # 새 docker 컨테이너 실행
       - name: Start Containers
-        run: docker compose up -d
+        run: docker compose -f courseitda-backend-config/dev/docker-compose.yml up -d

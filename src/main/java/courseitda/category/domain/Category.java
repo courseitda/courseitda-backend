@@ -1,5 +1,8 @@
 package courseitda.category.domain;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
 import courseitda.common.Timestamp;
 import courseitda.workspace.domain.Workspace;
 import jakarta.persistence.Column;
@@ -13,8 +16,6 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter

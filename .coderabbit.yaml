@@ -31,6 +31,8 @@ reviews:
     enabled: false
     # 이미 리뷰가 진행된 PR에 새로운 커밋이 추가될 때, 변경된 부분에 대해서만 자동으로 리뷰를 진행할지 여부입니다.
     auto_incremental_review: false
+  # Review Skipped 조차 코멘트로 남기지 않도록 설정합니다.
+  review_status: false
 
 # 채팅(Chat) 설정
 chat:

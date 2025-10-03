@@ -1,3 +1,6 @@
 [submodule "courseitda-backend-config"]
 	path = courseitda-backend-config
 	url = https://github.com/courseitda/courseitda-backend-config.git
+[submodule "terraform/modules/secret"]
+	path = terraform/modules/secret
+	url = https://github.com/courseitda/courseitda-terraform-config.git

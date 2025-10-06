@@ -13,5 +13,5 @@ variable "project_name" {
 variable "area" {
   type        = string
   description = "Defines the work area of the project (e.g., frontend, backend)"
-  default     = "frontend"
+  default     = "backend"
 }

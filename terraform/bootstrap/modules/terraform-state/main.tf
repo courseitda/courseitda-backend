@@ -1,29 +1,20 @@
-locals {
-  # environments = ["dev", "prod"]
-  environments = ["dev"]
-}
-
 # S3 Bucket
-resource "aws_s3_bucket" "bucket_tf_state" {
-  for_each = toset(local.environments)
+resource "aws_s3_bucket" "bucket" {
+  for_each = toset(var.environments)
 
-  bucket              = "${var.project_name}-${each.key}-terraform-state"
+  bucket              = "${var.project_name}-${var.area}-${each.key}-terraform-state"
   object_lock_enabled = true
 
   tags = {
     Project     = var.project_name
     Environment = each.key
   }
-  # lifecycle {
-  #   prevent_destroy = true # terraform destroy 방지
-  # }
 }
 
 # Versioning
-resource "aws_s3_bucket_versioning" "versioning_tf_state" {
-  for_each = aws_s3_bucket.bucket_tf_state
+resource "aws_s3_bucket_versioning" "versioning" {
+  for_each = aws_s3_bucket.bucket
 
-  # aws_s3_bucket.bucket_tf_state["dev"].id, aws_s3_bucket.bucket_tf_state["prod"].id
   bucket = each.value.id
   versioning_configuration {
     # 동일한 객체 키(terraform.tfstate)가 여러 번 업로드되면, 이전 버전이 삭제되지 않고 남아있음. 상태 파일 롤백/복구를 위한 기능.
@@ -32,7 +23,7 @@ resource "aws_s3_bucket_versioning" "versioning_tf_state" {
 }
 
 resource "aws_s3_bucket_public_access_block" "public_access" {
-  for_each = aws_s3_bucket.bucket_tf_state
+  for_each = aws_s3_bucket.bucket
 
   bucket = each.value.id
   # IAM 인증만 허용하기 위한 설정
@@ -43,8 +34,8 @@ resource "aws_s3_bucket_public_access_block" "public_access" {
 }
 
 # Object Lock Configuration
-resource "aws_s3_bucket_object_lock_configuration" "tf_state" {
-  for_each = aws_s3_bucket.bucket_tf_state
+resource "aws_s3_bucket_object_lock_configuration" "object_lock_config" {
+  for_each = aws_s3_bucket.bucket
 
   bucket = each.value.id
   rule {

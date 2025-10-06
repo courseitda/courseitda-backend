@@ -35,13 +35,13 @@ module "application" {
 module "database" {
   source = "../../modules/database"
 
-  region = var.region
+  region       = var.region
   project_name = var.project_name
   environment  = var.environment
 
-  db_name      = "courseitda_dev_db"
-  db_instance_class = "db.t3.micro"
-  db_allocated_storage = 20
+  db_name                    = "courseitda_dev_db"
+  db_instance_class          = "db.t3.micro"
+  db_allocated_storage       = 20
   db_backup_retention_period = 7
 
   vpc_id = module.network.vpc_id

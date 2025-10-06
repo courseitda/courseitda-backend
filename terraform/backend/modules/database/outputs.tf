@@ -5,7 +5,7 @@ output "rds_endpoint" {
 
 output "rds_id" {
   description = "ID for RDS"
-  value = aws_db_instance.db.id
+  value       = aws_db_instance.db.id
 }
 
 output "db_sg_id" {

@@ -11,8 +11,8 @@ resource "aws_security_group" "db_sg" {
 
   egress {
     from_port   = 0
-    to_port     = 0 # port range 0-0: 모든 포트를 의미
-    protocol    = "-1" # -1: 모든 프로토콜을 의미
+    to_port     = 0             # port range 0-0: 모든 포트를 의미
+    protocol    = "-1"          # -1: 모든 프로토콜을 의미
     cidr_blocks = ["0.0.0.0/0"] # 모든 ip 허용
   }
 
@@ -86,13 +86,13 @@ resource "aws_db_parameter_group" "db_param_group" {
 
 # RDS 인스턴스
 resource "aws_db_instance" "db" {
-  db_name           = var.db_name
-  identifier        = "${var.project_name}-${var.environment}-db-instance"
-  engine            = "mysql"
-  engine_version    = "8.4.5"
-  instance_class    = "${var.db_instance_class}"
+  db_name        = var.db_name
+  identifier     = "${var.project_name}-${var.environment}-db-instance"
+  engine         = "mysql"
+  engine_version = "8.4.5"
+  instance_class = var.db_instance_class
 
-  storage_type = "gp2"
+  storage_type      = "gp2"
   allocated_storage = var.db_allocated_storage
 
   username = var.db_username
@@ -103,8 +103,8 @@ resource "aws_db_instance" "db" {
   availability_zone      = "${var.region}a" # AZ-a 고정
   vpc_security_group_ids = [aws_security_group.db_sg.id]
 
-  multi_az                = false # Multi-AZ 불가 (비용 절감)
-  backup_retention_period = var.db_backup_retention_period     # 무료 자동 백업 7일
+  multi_az                = false                          # Multi-AZ 불가 (비용 절감)
+  backup_retention_period = var.db_backup_retention_period # 무료 자동 백업 7일
   deletion_protection     = false
   skip_final_snapshot     = true
   publicly_accessible     = false # 보안상 내부 전용

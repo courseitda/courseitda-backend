@@ -5,7 +5,9 @@ module "secret" {
 module "compute" {
   source = "../../modules/compute"
 
-  project_name = var.project_name
+  project_name   = var.project_name
+  environment    = var.environment
+  s3_bucket_name = "${var.project_name}-${var.environment}-key-storage"
 }
 
 module "network" {

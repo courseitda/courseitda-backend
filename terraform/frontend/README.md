@@ -6,14 +6,18 @@
 
 ```
 .
-└── environments/        # 환경별 설정
-    └── dev/             # 개발 환경
-        ├── backend.tf   # 백엔드(테라폼 상태 저장소) 설정 
-        ├── locals.tf    # 로컬 변수 정의
-        ├── main.tf      # 주요 리소스 정의
-        ├── outputs.tf   # 출력 값 정의
-        ├── provider.tf  # 프로바이더 설정
-        └── variables.tf # 입력 변수 정의
+├── environments/             # 환경별 설정
+│   └── dev/                  # 개발 환경
+│       ├── backend.tf        # 백엔드(테라폼 상태 저장소) 설정
+│       ├── main.tf           # 생성할 리소스 정의
+│       ├── outputs.tf
+│       ├── provider.tf       # 프로바이더 및 Terraform 버전 설정
+│       └── variables.tf
+└── modules/                  # 재사용 가능한 모듈 정의
+    └── static-website/       # 정적 웹사이트 배포 모듈
+        ├── main.tf           # S3, CloudFront, ACM 리소스 정의
+        ├── variables.tf      # 모듈에 필요한 입력 변수 정의
+        └── outputs.tf        # 생성된 리소스 정보 출력
 ```
 
 ## 사용 방법

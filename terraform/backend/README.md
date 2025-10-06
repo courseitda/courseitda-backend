@@ -102,6 +102,5 @@ terraform output
     - S3: `s3://courseitda-dev-key-storage/keys/courseitda-dev-private-key.pem`
     - GitHub Actions 환경에서는 workflow 종료 후 로컬 키가 삭제되므로, S3에서 다운로드하여 사용
 - S3 버킷은 암호화, 버전 관리, 공개 접근 차단이 적용되어 있습니다
-- DB 자격 증명은 `secret` 모듈에 하드코딩되어 있으므로, 실제 운영 환경에서는 AWS Secrets Manager 사용을 권장합니다
 - IMDSv2가 활성화되어 SSRF 공격으로부터 보호됩니다
 - 모든 스토리지(EBS, RDS, S3)는 암호화되어 있습니다

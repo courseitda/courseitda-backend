@@ -1,5 +1,5 @@
 module "terraform-state" {
-  source = "../modules/terraform-state"
+  source = "../../modules/terraform-state"
 
   region       = var.region
   project_name = var.project_name

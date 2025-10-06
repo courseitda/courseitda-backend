@@ -136,7 +136,7 @@ resource "aws_cloudfront_distribution" "cdn" {
   tags = local.tags
 }
 
-# S3 버킷 정책: CloudFront(OAC)만 읽기 허용
+# S3 버킷 정책: CloudFront OAC만 읽기 허용
 data "aws_iam_policy_document" "bucket_policy_document" {
   statement {
     sid       = "AllowCloudFrontRead"

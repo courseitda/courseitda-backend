@@ -24,7 +24,7 @@ module "application" {
   project_name = var.project_name
   environment  = var.environment
 
-  instance_type = "t4g.micro"
+  instance_type = "t4g.small"
   volume_type   = "gp2"
   volume_size   = 20
 

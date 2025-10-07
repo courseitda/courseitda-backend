@@ -53,7 +53,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "encryption_config
 
 # 2. ACM 인증서 발급
 resource "aws_acm_certificate" "acm_certificate" {
-  provider          = aws.use1
+  provider          = aws.use1_for_acm
   domain_name       = var.fqdn
   validation_method = "DNS"
 
@@ -72,7 +72,7 @@ resource "aws_cloudfront_origin_access_control" "oac" {
 
 # 외부 DNS에 CNAME 추가 후, 인증서가 'ISSUED' 상태가 되면 배포 진행
 data "aws_acm_certificate" "issued_certificate" {
-  provider   = aws.use1
+  provider   = aws.use1_for_acm
   domain     = var.fqdn
   statuses   = ["ISSUED"]
   depends_on = [aws_acm_certificate.acm_certificate]

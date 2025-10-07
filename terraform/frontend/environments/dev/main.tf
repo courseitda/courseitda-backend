@@ -11,6 +11,6 @@ module "static_website" {
   }
 
   providers = {
-    aws.use1 = aws.use1
+    aws.use1_for_acm = aws.use1
   }
 }

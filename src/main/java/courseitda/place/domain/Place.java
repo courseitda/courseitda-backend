@@ -35,4 +35,7 @@ public class Place extends Timestamp {
 
     @Column(nullable = false)
     private double longitude;
+
+    @Column(nullable = false)
+    private String placeIdentifier;
 }

@@ -34,7 +34,4 @@ public class Workspace extends Timestamp {
 
     @Column(nullable = false)
     private String title;
-
-    @Column(nullable = false)
-    private String name;
 }

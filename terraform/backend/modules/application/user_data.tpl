@@ -21,14 +21,9 @@ apt-get install -y nginx
 
 # Swapfile 생성 (메모리 부족 문제 해결용)
 fallocate -l 4GiB /swapfile
-
 chmod 600 /swapfile
 mkswap /swapfile
 swapon /swapfile
 
-# 확인
-free -h
-swapon -s
-
-# 재부팅 후에도 유지
-echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+# Swapfile 재부팅 후에도 유지
+echo '/swapfile none swap sw 0 0' | tee -a /etc/fstab

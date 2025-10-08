@@ -1,5 +1,7 @@
 package courseitda.category.domain;
 
+import java.util.List;
+
 import courseitda.common.Timestamp;
 import courseitda.place.domain.CategoryPlace;
 import courseitda.workspace.domain.Workspace;
@@ -12,7 +14,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

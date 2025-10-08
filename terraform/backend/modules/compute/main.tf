@@ -10,13 +10,6 @@ resource "aws_key_pair" "key_pair" {
   public_key = tls_private_key.private_key.public_key_openssh
 }
 
-# 생성된 개인 키를 로컬에 .pem 파일로 저장
-resource "local_file" "private_key" {
-  filename        = "${path.root}/keys/private_key.pem"
-  content         = tls_private_key.private_key.private_key_pem
-  file_permission = "0600"
-}
-
 # S3 버킷 생성 (개인 키 저장용)
 resource "aws_s3_bucket" "key_storage" {
   bucket = var.s3_bucket_name

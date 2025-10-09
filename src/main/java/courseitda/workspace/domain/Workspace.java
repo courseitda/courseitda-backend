@@ -1,8 +1,8 @@
 package courseitda.workspace.domain;
 
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
+import java.util.List;
 
+import courseitda.category.domain.Category;
 import courseitda.common.Timestamp;
 import courseitda.user.domain.User;
 import jakarta.persistence.Column;
@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -20,9 +21,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @Table(name = "workspaces")
-@SQLRestriction("deleted_at is Null")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE workspaces SET deleted_at = NOW() WHERE id = ?")
 public class Workspace extends Timestamp {
 
     @Id
@@ -34,8 +33,8 @@ public class Workspace extends Timestamp {
     private User user;
 
     @Column(nullable = false)
-    private String name;
+    private String title;
 
-    @Column(nullable = false)
-    private int sequence;
+    @OneToMany(mappedBy = "workspace")
+    private List<Category> categories;
 }

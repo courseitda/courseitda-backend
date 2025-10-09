@@ -1,8 +1,11 @@
 package courseitda.user.domain;
 
+import java.time.LocalDateTime;
+
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import courseitda.common.Timestamp;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,7 +22,7 @@ import lombok.NoArgsConstructor;
 @SQLRestriction("deleted_at is Null")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE users SET deleted_at = NOW() WHERE id = ?")
-public class User {
+public class User extends Timestamp {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,9 +35,13 @@ public class User {
     private String email;
 
     @Column(nullable = false)
+    private String password;
+
     private String profileImageUrl;
 
-    private LoginProvider loginProvider;
+    private LoginAuthenticationProvider loginAuthenticationProvider;
 
-    private String loginProviderId;
+    private String loginAuthenticationIdentifier;
+
+    private LocalDateTime deletedAt;
 }

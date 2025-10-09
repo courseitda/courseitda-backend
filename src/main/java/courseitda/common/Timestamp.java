@@ -22,6 +22,4 @@ public abstract class Timestamp {
 
     @LastModifiedDate
     private LocalDateTime modifiedAt;
-
-    private LocalDateTime deletedAt;
 }

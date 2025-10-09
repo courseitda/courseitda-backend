@@ -1,6 +1,6 @@
 package courseitda.user.domain;
 
-public enum LoginProvider {
+public enum LoginAuthenticationProvider {
     KAKAO,
     ;
 }

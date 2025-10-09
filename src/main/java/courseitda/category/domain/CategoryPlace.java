@@ -1,7 +1,7 @@
-package courseitda.place.domain;
+package courseitda.category.domain;
 
-import courseitda.category.domain.Category;
 import courseitda.common.Timestamp;
+import courseitda.place.domain.Place;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

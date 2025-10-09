@@ -3,7 +3,6 @@ package courseitda.category.domain;
 import java.util.List;
 
 import courseitda.common.Timestamp;
-import courseitda.place.domain.CategoryPlace;
 import courseitda.workspace.domain.Workspace;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

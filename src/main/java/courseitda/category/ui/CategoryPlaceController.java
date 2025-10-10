@@ -3,6 +3,7 @@ package courseitda.category.ui;
 import java.net.URI;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,5 +36,15 @@ public class CategoryPlaceController {
         CategoryPlaceCreateResponse response = categoryPlaceService.createCategoryPlace(categoryId, request);
         return ResponseEntity.created(URI.create("/api/categories/" + categoryId + "/category-places" + response.id()))
                 .body(response);
+    }
+
+    // 카테고리 장소 삭제
+    @DeleteMapping("/category-places/{categoryPlaceId}")
+    public ResponseEntity<Void> deleteCategoryPlace(
+            @PathVariable Long categoryPlaceId
+    ) {
+        // 204 No Content	카테고리 장소 삭제 성공
+        categoryPlaceService.deleteCategoryPlace(categoryPlaceId);
+        return ResponseEntity.noContent().build();
     }
 }

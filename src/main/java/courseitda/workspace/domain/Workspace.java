@@ -4,7 +4,7 @@ import java.util.List;
 
 import courseitda.category.domain.Category;
 import courseitda.common.Timestamp;
-import courseitda.user.domain.User;
+import courseitda.member.domain.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,7 +30,7 @@ public class Workspace extends Timestamp {
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private User user;
+    private Member member;
 
     @Column(nullable = false)
     private String title;

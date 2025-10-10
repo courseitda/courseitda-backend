@@ -1,5 +1,8 @@
 package courseitda.workspace.application;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import courseitda.exception.ConflictException;
 import courseitda.exception.ForbiddenException;
 import courseitda.exception.NotFoundException;
@@ -11,8 +14,6 @@ import courseitda.workspace.ui.dto.request.WorkspaceUpdateRequest;
 import courseitda.workspace.ui.dto.response.WorkspaceCreateResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceUpdateResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor

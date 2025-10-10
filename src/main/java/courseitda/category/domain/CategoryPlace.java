@@ -31,7 +31,11 @@ public class CategoryPlace extends Timestamp {
     @JoinColumn(nullable = false)
     private Place place;
 
-    private CategoryPlace(Long id, Category category, Place place) {
+    private CategoryPlace(
+            final Long id,
+            final Category category,
+            final Place place
+    ) {
         this.id = id;
         this.category = category;
         this.place = place;

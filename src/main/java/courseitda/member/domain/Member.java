@@ -1,6 +1,7 @@
-package courseitda.user.domain;
+package courseitda.member.domain;
 
 import java.time.LocalDateTime;
+import java.util.regex.Pattern;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
@@ -18,11 +19,14 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "users")
+@Table(name = "members")
 @SQLRestriction("deleted_at is Null")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE users SET deleted_at = NOW() WHERE id = ?")
-public class User extends Timestamp {
+public class Member extends Timestamp {
+
+    private static final Pattern EMAIL_PATTERN = Pattern.compile(
+            "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}$");
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

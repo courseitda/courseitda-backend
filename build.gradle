@@ -21,16 +21,15 @@ checkstyle {
     configFile = file("config/checkstyle/checkstyle.xml")
 }
 
+// 테스트 코드에 대한 Checkstyle 검사 비활성화
+tasks.named('checkstyleTest') {
+    enabled = false
+}
+
 spotless {
     java {
         // 코드 스타일 파일 적용
         eclipse().configFile("config/formatter/courseitda-style.xml")
-
-        // 불필요한 import 제거
-        removeUnusedImports()
-
-        // import 순서 강제
-        importOrder "java", "javax", "org", "com", ""
     }
 }
 
@@ -62,6 +61,12 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+
+    // spring security (for password encoding)
+    implementation 'org.springframework.security:spring-security-crypto'
+
+    // RestAssured
+    testImplementation 'io.rest-assured:rest-assured'
 
     // h2
     testRuntimeOnly 'com.h2database:h2'

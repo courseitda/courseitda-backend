@@ -1,10 +1,5 @@
 package courseitda.auth.ui.interceptor;
 
-import java.util.Arrays;
-
-import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.servlet.HandlerInterceptor;
-
 import courseitda.auth.domain.AuthRole;
 import courseitda.auth.domain.AuthTokenExtractor;
 import courseitda.auth.domain.AuthTokenProvider;
@@ -13,7 +8,10 @@ import courseitda.exception.auth.AuthenticationException;
 import courseitda.exception.auth.AuthorizationException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.HandlerInterceptor;
 
 @RequiredArgsConstructor
 public class AuthRoleCheckInterceptor implements HandlerInterceptor {

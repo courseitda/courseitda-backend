@@ -15,4 +15,13 @@ public enum AuthRole {
     AuthRole(final String roleName) {
         this.roleName = roleName;
     }
+
+    public static AuthRole from(final String roleName) {
+        for (final AuthRole authRole : values()) {
+            if (authRole.getRoleName().equals(roleName)) {
+                return authRole;
+            }
+        }
+        return GUEST;
+    }
 }

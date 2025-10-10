@@ -2,15 +2,6 @@ package courseitda.auth.infrastructure;
 
 import static courseitda.auth.domain.AuthRole.GUEST;
 
-import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.util.Date;
-
-import javax.crypto.SecretKey;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import courseitda.auth.domain.AuthRole;
 import courseitda.auth.domain.AuthTokenProvider;
 import io.jsonwebtoken.Claims;
@@ -21,6 +12,12 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.util.Date;
+import javax.crypto.SecretKey;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 @Component
 public class JwtTokenProvider implements AuthTokenProvider {
@@ -88,7 +85,7 @@ public class JwtTokenProvider implements AuthTokenProvider {
                 .getPayload()
                 .get("role", String.class);
 
-        return AuthRole.valueOf(role);
+        return AuthRole.from(role);
     }
 
     public boolean isValidToken(final String token) {

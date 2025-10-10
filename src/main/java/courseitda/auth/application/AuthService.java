@@ -1,5 +1,6 @@
 package courseitda.auth.application;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import courseitda.auth.domain.AuthTokenProvider;
@@ -16,12 +17,13 @@ public class AuthService {
 
     private final AuthTokenProvider authTokenProvider;
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public String login(final LoginRequest request) {
         final Member member = memberRepository.findByEmail(request.email())
                 .orElseThrow(() -> new ResourceNotFoundException("해당 이메일을 가진 회원이 존재하지 않습니다."));
 
-        if (member.isWrongPassword(request.password())) {
+        if (!passwordEncoder.matches(request.password(), member.getPassword())) {
             throw new AuthenticationException("비밀번호가 올바르지 않습니다.");
         }
 

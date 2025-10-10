@@ -1,11 +1,5 @@
 package courseitda.member.domain;
 
-import java.time.LocalDateTime;
-import java.util.regex.Pattern;
-
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
-
 import courseitda.auth.domain.AuthRole;
 import courseitda.common.Timestamp;
 import jakarta.persistence.Column;
@@ -16,15 +10,21 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
+import java.util.regex.Pattern;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
 @Table(name = "members")
 @SQLRestriction("deleted_at is Null")
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE users SET deleted_at = NOW() WHERE id = ?")
 public class Member extends Timestamp {
@@ -66,7 +66,6 @@ public class Member extends Timestamp {
     ) {
         validateNickname(nickname);
         validateEmail(email);
-        validatePassword(password);
 
         this.nickname = nickname;
         this.email = email;
@@ -90,18 +89,5 @@ public class Member extends Timestamp {
         if (!MEMBER_EMAIL_PATTERN.matcher(email).matches()) {
             throw new IllegalArgumentException("유효한 이메일 형식이 아닙니다.");
         }
-    }
-
-    private void validatePassword(final String password) {
-        if (password == null || password.isBlank()) {
-            throw new IllegalArgumentException("비밀번호는 null 이거나 빈 문자열일 수 없습니다.");
-        }
-        if (password.length() < 6 || password.length() > 20) {
-            throw new IllegalArgumentException("비밀번호는 6자 이상 20자 이하이어야 합니다.");
-        }
-    }
-
-    public boolean isWrongPassword(final String password) {
-        return !this.password.equals(password);
     }
 }

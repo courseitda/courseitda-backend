@@ -1,12 +1,10 @@
 package courseitda.member.infrastructure;
 
-import java.util.Optional;
-
-import org.springframework.stereotype.Repository;
-
 import courseitda.member.domain.Member;
 import courseitda.member.domain.MemberRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
@@ -22,5 +20,10 @@ public class MemberRepositoryImpl implements MemberRepository {
     @Override
     public Optional<Member> findByEmail(final String email) {
         return jpaMemberRepository.findByEmail(email);
+    }
+
+    @Override
+    public Optional<Member> findById(final Long id) {
+        return jpaMemberRepository.findById(id);
     }
 }

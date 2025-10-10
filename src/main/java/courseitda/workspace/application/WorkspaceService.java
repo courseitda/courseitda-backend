@@ -22,6 +22,8 @@ public class WorkspaceService {
 
     @Transactional
     public WorkspaceCreateResponse createWorkspace(final Member member, final WorkspaceCreateRequest request) {
+        validateDuplicatedTitle(member, request.title());
+
         final var workspace = Workspace.createEmpty(member, request.title());
         final var savedWorkspace = workspaceRepository.save(workspace);
 
@@ -35,8 +37,8 @@ public class WorkspaceService {
             final WorkspaceUpdateRequest request
     ) {
         final var workspace = getById(workspaceId);
-
         final var newTitle = Workspace.formatTitle(request.title());
+
         validateOwnership(member, workspace);
         validateDuplicatedTitle(member, newTitle);
         workspace.rename(newTitle);

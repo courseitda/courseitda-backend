@@ -18,15 +18,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/categories/{categoryId}/representative-place")
 @RequiresRole(authRoles = {AuthRole.MEMBER})
+@RequestMapping("/api/categories/{categoryId}/representative-place")
 public class RepresentativeCategoryPlaceController {
 
     private final RepresentativeCategoryPlaceService representativeCategoryPlaceService;
 
     @PutMapping
     public ResponseEntity<RepresentativeCategoryPlaceUpdateResponse> updateRepresentativeCategoryPlace(
-            // TODO: 헤더 인증 필요
             Member member,
             @PathVariable Long categoryId,
             @Valid @RequestBody RepresentativeCategoryPlaceUpdateRequest request
@@ -38,7 +37,6 @@ public class RepresentativeCategoryPlaceController {
 
     @DeleteMapping
     public ResponseEntity<Void> deleteRepresentativeCategoryPlace(
-            // TODO: 헤더 인증 필요
             Member member,
             @PathVariable Long categoryId
     ) {

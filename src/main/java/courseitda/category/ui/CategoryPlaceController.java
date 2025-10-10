@@ -1,5 +1,7 @@
 package courseitda.category.ui;
 
+import courseitda.auth.domain.AuthRole;
+import courseitda.auth.domain.RequiresRole;
 import courseitda.category.application.CategoryPlaceService;
 import courseitda.category.ui.dto.request.CategoryPlaceCreateRequest;
 import courseitda.category.ui.dto.response.CategoryPlaceCreateResponse;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
+@RequiresRole(authRoles = {AuthRole.MEMBER})
 @RequestMapping("/api/categories/{categoryId}/category-places")
 public class CategoryPlaceController {
 
@@ -26,7 +29,6 @@ public class CategoryPlaceController {
     // 카테고리 장소 생성
     @PostMapping
     public ResponseEntity<CategoryPlaceCreateResponse> createCategoryPlace(
-            // TODO: 헤더 인증 필요
             @PathVariable Long categoryId,
             @Valid @RequestBody CategoryPlaceCreateRequest request
     ) {
@@ -53,7 +55,6 @@ public class CategoryPlaceController {
     // 카테고리 장소 목록 조회
     @GetMapping
     public ResponseEntity<CategoryPlaceResponses> readCategoryPlaces(
-            // TODO: 헤더 인증 필요
             @PathVariable Long categoryId
     ) {
 

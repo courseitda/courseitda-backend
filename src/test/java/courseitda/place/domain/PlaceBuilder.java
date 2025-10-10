@@ -37,4 +37,3 @@ public class PlaceBuilder {
         return Place.createNew(name, roadAddressName, addressName, latitude, longitude);
     }
 }
-

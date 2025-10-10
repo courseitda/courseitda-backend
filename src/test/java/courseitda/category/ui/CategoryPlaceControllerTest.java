@@ -206,4 +206,3 @@ class CategoryPlaceControllerTest {
                 .as(CategoryPlaceCreateResponse.class);
     }
 }
-

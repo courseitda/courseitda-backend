@@ -158,4 +158,3 @@ class WorkspaceControllerTest {
         return loginResponse.tokenType() + " " + loginResponse.accessToken();
     }
 }
-

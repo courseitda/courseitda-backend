@@ -167,4 +167,3 @@ class CategoryControllerTest {
                 .as(CategoryCreateResponse.class);
     }
 }
-

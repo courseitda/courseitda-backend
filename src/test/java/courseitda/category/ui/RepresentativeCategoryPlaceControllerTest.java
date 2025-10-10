@@ -188,4 +188,3 @@ class RepresentativeCategoryPlaceControllerTest {
                 .as(CategoryPlaceCreateResponse.class);
     }
 }
-

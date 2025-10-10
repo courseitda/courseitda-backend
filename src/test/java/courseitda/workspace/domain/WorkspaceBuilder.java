@@ -22,4 +22,3 @@ public class WorkspaceBuilder {
         return Workspace.createEmpty(member, title);
     }
 }
-

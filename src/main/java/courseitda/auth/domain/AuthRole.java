@@ -20,7 +20,7 @@ public enum AuthRole {
         if (roleName == null) {
             return GUEST;
         }
-        
+
         for (final AuthRole authRole : values()) {
             if (authRole.name().equals(roleName) || authRole.getRoleName().equals(roleName)) {
                 return authRole;

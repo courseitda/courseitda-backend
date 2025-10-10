@@ -34,4 +34,3 @@ public class CategoryBuilder {
         return Category.createNew(workspace, name, color, sequence);
     }
 }
-

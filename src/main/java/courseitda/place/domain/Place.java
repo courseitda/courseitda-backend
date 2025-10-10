@@ -39,7 +39,7 @@ public class Place extends Timestamp {
     private String placeUrl;
 
     private Place(Long id, String name, String roadAddressName, String addressName, double latitude, double longitude,
-                  String placeUrl) {
+            String placeUrl) {
         this.id = id;
         this.name = name;
         this.roadAddressName = roadAddressName;

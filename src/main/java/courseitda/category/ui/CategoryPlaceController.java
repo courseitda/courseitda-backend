@@ -1,17 +1,19 @@
 package courseitda.category.ui;
 
-import courseitda.category.application.CategoryPlaceService;
-import courseitda.category.ui.dto.request.CategoryPlaceCreateRequest;
-import courseitda.category.ui.dto.response.CategoryPlaceCreateResponse;
-import jakarta.validation.Valid;
 import java.net.URI;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import courseitda.category.application.CategoryPlaceService;
+import courseitda.category.ui.dto.request.CategoryPlaceCreateRequest;
+import courseitda.category.ui.dto.response.CategoryPlaceCreateResponse;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor

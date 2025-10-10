@@ -1,5 +1,8 @@
 package courseitda.category.application;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import courseitda.category.domain.Category;
 import courseitda.category.domain.CategoryPlace;
 import courseitda.category.domain.CategoryPlaceRepository;
@@ -9,8 +12,6 @@ import courseitda.category.ui.dto.response.CategoryPlaceCreateResponse;
 import courseitda.place.domain.Place;
 import courseitda.place.domain.PlaceRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor

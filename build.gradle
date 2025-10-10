@@ -21,6 +21,11 @@ checkstyle {
     configFile = file("config/checkstyle/checkstyle.xml")
 }
 
+// 테스트 코드에 대한 Checkstyle 검사 비활성화
+tasks.named('checkstyleTest') {
+    enabled = false
+}
+
 spotless {
     java {
         // 코드 스타일 파일 적용

@@ -1,6 +1,7 @@
 package courseitda.member.application;
 
 import courseitda.auth.domain.AuthRole;
+import courseitda.exception.resource.ResourceNotFoundException;
 import courseitda.member.domain.Member;
 import courseitda.member.domain.MemberRepository;
 import courseitda.member.ui.dto.request.SignUpRequest;
@@ -24,5 +25,10 @@ public class MemberService {
         final Member createdMember = memberRepository.save(member);
 
         return SignUpResponse.from(createdMember);
+    }
+
+    public Member findById(final Long id) {
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("회원을 찾을 수 없습니다."));
     }
 }

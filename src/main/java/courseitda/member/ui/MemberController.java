@@ -32,7 +32,7 @@ public class MemberController {
                 .body(signUpResponse);
     }
 
-    @GetMapping
+    @GetMapping("/me/navigator")
     public ResponseEntity<MemberNavigatorViewResponse> readMemberNavigatorView(
             final Member member
     ) {

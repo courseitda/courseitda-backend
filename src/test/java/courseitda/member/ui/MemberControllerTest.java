@@ -3,8 +3,11 @@ package courseitda.member.ui;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import courseitda.auth.ui.dto.request.LoginRequest;
+import courseitda.auth.ui.dto.response.LoginResponse;
 import courseitda.member.domain.MemberFixture;
 import courseitda.member.ui.dto.request.SignUpRequest;
+import courseitda.member.ui.dto.response.MemberNavigatorViewResponse;
 import courseitda.member.ui.dto.response.SignUpResponse;
 import io.restassured.RestAssured;
 import jakarta.transaction.Transactional;
@@ -13,6 +16,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
@@ -55,5 +59,50 @@ class MemberControllerTest {
         assertThat(response.id()).isNotNull();
         assertThat(response.nickname()).isEqualTo(nickname);
         assertThat(response.email()).isEqualTo(email);
+    }
+
+    @Test
+    @DisplayName("회원 네비게이터 뷰 조회에 성공한다")
+    void readMemberNavigatorView_success() {
+        // given
+        final String nickname = MemberFixture.anyNickname();
+        final String email = MemberFixture.anyEmail();
+        final String password = MemberFixture.anyPassword();
+        final SignUpRequest signUpRequest = new SignUpRequest(nickname, email, password);
+
+        given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(signUpRequest)
+                .when()
+                .post("/members")
+                .then()
+                .statusCode(HttpStatus.CREATED.value());
+
+        final LoginRequest loginRequest = new LoginRequest(email, password);
+        final LoginResponse loginResponse = given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(loginRequest)
+                .when()
+                .post("/login")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .as(LoginResponse.class);
+
+        final String accessToken = loginResponse.tokenType() + " " + loginResponse.accessToken();
+        System.out.printf("accessToken = %s%n", accessToken);
+        // when
+        final MemberNavigatorViewResponse response = given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .when()
+                .get("/me/navigator")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .as(MemberNavigatorViewResponse.class);
+
+        // then
+        assertThat(response.nickname()).isEqualTo(nickname);
     }
 }

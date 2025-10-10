@@ -6,7 +6,6 @@ public class MemberFixture {
 
     public static AtomicLong sequenceNickName = new AtomicLong(0L);
     public static AtomicLong sequenceEmail = new AtomicLong(0L);
-    public static AtomicLong sequencePassword = new AtomicLong(0L);
     public static AtomicLong sequenceLoginAuthenticationIdentifier = new AtomicLong(0L);
 
     public static String anyNickname() {
@@ -18,7 +17,7 @@ public class MemberFixture {
     }
 
     public static String anyPassword() {
-        return "password" + sequencePassword.incrementAndGet();
+        return "password";
     }
 
     public static String anyProfileImageUrl() {

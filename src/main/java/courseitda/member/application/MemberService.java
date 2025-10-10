@@ -7,6 +7,7 @@ import courseitda.member.domain.MemberRepository;
 import courseitda.member.ui.dto.request.SignUpRequest;
 import courseitda.member.ui.dto.response.SignUpResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,12 +15,15 @@ import org.springframework.stereotype.Service;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public SignUpResponse create(final SignUpRequest request) {
+        final String encodedPassword = passwordEncoder.encode(request.password());
+
         final Member member = Member.builder()
                 .nickname(request.nickname())
                 .email(request.email())
-                .password(request.password())
+                .password(encodedPassword)
                 .authRole(AuthRole.MEMBER)
                 .build();
         final Member createdMember = memberRepository.save(member);

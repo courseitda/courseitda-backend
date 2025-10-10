@@ -22,8 +22,6 @@ public class WorkspaceService {
 
     @Transactional
     public WorkspaceCreateResponse createWorkspace(final Member member, final WorkspaceCreateRequest request) {
-
-        // 400 Bad Request	필수 필드 누락, 유효성 검증
         final var workspace = Workspace.createEmpty(member, request.title());
         final var savedWorkspace = workspaceRepository.save(workspace);
 
@@ -36,8 +34,6 @@ public class WorkspaceService {
             final Long workspaceId,
             final WorkspaceUpdateRequest request
     ) {
-
-        // 400 Bad Request	필수 필드 누락, 유효성 검증 실패
         final var workspace = getById(workspaceId);
 
         final var newTitle = Workspace.formatTitle(request.title());
@@ -50,7 +46,6 @@ public class WorkspaceService {
 
     @Transactional
     public void deleteWorkspace(final Member member, final Long workspaceId) {
-
         final var workspace = getById(workspaceId);
         validateOwnership(member, workspace);
 

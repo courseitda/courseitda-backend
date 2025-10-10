@@ -35,4 +35,3 @@ public class CategoryPlaceRepositoryImpl implements CategoryPlaceRepository {
         return jpaCategoryPlaceRepository.findAllByCategoryId(categoryId);
     }
 }
-

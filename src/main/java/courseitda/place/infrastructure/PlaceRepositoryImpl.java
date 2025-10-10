@@ -24,4 +24,3 @@ public class PlaceRepositoryImpl implements PlaceRepository {
         return jpaPlaceRepository.findPlaceByNameAndAddressName(name, addressName);
     }
 }
-

@@ -10,4 +10,3 @@ public interface JpaCategoryPlaceRepository extends JpaRepository<CategoryPlace,
 
     List<CategoryPlace> findAllByCategoryId(Long categoryId);
 }
-

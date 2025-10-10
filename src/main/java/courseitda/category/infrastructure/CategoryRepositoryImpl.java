@@ -19,4 +19,3 @@ public class CategoryRepositoryImpl implements CategoryRepository {
         return jpaCategoryRepository.findById(categoryId);
     }
 }
-

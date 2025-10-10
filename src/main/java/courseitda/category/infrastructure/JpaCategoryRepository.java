@@ -6,4 +6,3 @@ import courseitda.category.domain.Category;
 
 public interface JpaCategoryRepository extends JpaRepository<Category, Long> {
 }
-

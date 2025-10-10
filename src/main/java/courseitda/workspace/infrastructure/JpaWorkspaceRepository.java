@@ -9,4 +9,3 @@ public interface JpaWorkspaceRepository extends JpaRepository<Workspace, Long> {
 
     boolean existsByMemberAndTitle(Member member, String title);
 }
-

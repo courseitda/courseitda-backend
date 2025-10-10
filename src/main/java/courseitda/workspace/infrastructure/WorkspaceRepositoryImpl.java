@@ -35,4 +35,3 @@ public class WorkspaceRepositoryImpl implements WorkspaceRepository {
         return jpaWorkspaceRepository.existsByMemberAndTitle(member, title);
     }
 }
-

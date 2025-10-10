@@ -10,4 +10,3 @@ public interface JpaPlaceRepository extends JpaRepository<Place, Long> {
 
     Optional<Place> findPlaceByNameAndAddressName(String name, String addressName);
 }
-

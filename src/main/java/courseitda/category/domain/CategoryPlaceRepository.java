@@ -1,12 +1,15 @@
 package courseitda.category.domain;
 
 import java.util.List;
+import java.util.Optional;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+public interface CategoryPlaceRepository {
 
-@Repository
-public interface CategoryPlaceRepository extends JpaRepository<CategoryPlace, Long> {
+    CategoryPlace save(CategoryPlace categoryPlace);
+
+    void delete(CategoryPlace categoryPlace);
+
+    Optional<CategoryPlace> findById(Long categoryPlaceId);
 
     List<CategoryPlace> findAllByCategoryId(Long categoryId);
 }

@@ -6,6 +6,7 @@ import courseitda.workspace.ui.dto.request.WorkspaceCreateRequest;
 import courseitda.workspace.ui.dto.request.WorkspaceUpdateRequest;
 import courseitda.workspace.ui.dto.response.WorkspaceCreateResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceUpdateResponse;
+import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -29,10 +30,10 @@ public class WorkspaceController {
     public ResponseEntity<WorkspaceCreateResponse> createWorkspace(
             // TODO: 헤더 인증 필요
             Member member,
-            @RequestBody WorkspaceCreateRequest request
+            @Valid @RequestBody WorkspaceCreateRequest request
     ) {
         // ✅ 201 Created	워크스페이스 생성 성공
-        //    400 Bad Request	필수 필드 누락, 유효성 검증 실패
+        // ✅ 400 Bad Request	필수 필드 누락, 유효성 검증 실패 -> request dto에서 검증 진행
         // ✅ 401 Unauthorized	로그인하지 않은 사용자의 생성 요청 -> Member 받아오는 과정에서 알아서 처리
 
         WorkspaceCreateResponse response = workspaceService.createWorkspace(member, request);
@@ -46,10 +47,10 @@ public class WorkspaceController {
             // TODO: 헤더 인증 필요
             Member member,
             @PathVariable Long workspaceId,
-            @RequestBody WorkspaceUpdateRequest request
+            @Valid @RequestBody WorkspaceUpdateRequest request
     ) {
         // ✅ 200 OK	        이름 변경 성공
-        //    400 Bad Request	필수 필드 누락, 유효성 검증 실패
+        // ✅ 400 Bad Request	필수 필드 누락, 유효성 검증 실패 -> request dto에서 검증 진행
         // ✅ 401 Unauthorized	토큰 누락 또는 유효하지 않은 토큰 -> Member 받아오는 과정에서 알아서 처리
         // ✅ 403 Forbidden	    유효한 토큰을 갖고 있지만, 해당 워크스페이스의 수정 권한이 없음 -> 워크스페이스 소유자 여부 예외 처리
         // ✅ 404 Not Found	    워크스페이스 ID가 존재하지 않음 -> findById 예외 처리

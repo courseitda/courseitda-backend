@@ -3,7 +3,9 @@ package courseitda.member.ui;
 import courseitda.member.application.MemberService;
 import courseitda.member.domain.Member;
 import courseitda.member.ui.dto.request.SignUpRequest;
-import courseitda.member.ui.dto.response.MemberNavigatorViewResponse;
+import courseitda.member.ui.dto.response.MemberReadDropdownResponse;
+import courseitda.member.ui.dto.response.MemberReadNavigatorResponse;
+import courseitda.member.ui.dto.response.MemberReadProfileResponse;
 import courseitda.member.ui.dto.response.SignUpResponse;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -33,10 +35,30 @@ public class MemberController {
     }
 
     @GetMapping("/me/navigator")
-    public ResponseEntity<MemberNavigatorViewResponse> readMemberNavigatorView(
+    public ResponseEntity<MemberReadNavigatorResponse> readMemberNavigator(
             final Member member
     ) {
-        final var response = new MemberNavigatorViewResponse(member.getNickname());
+        final var response = MemberReadNavigatorResponse.from(member);
+
+        return ResponseEntity.ok()
+                .body(response);
+    }
+
+    @GetMapping("/me/dropdown")
+    public ResponseEntity<MemberReadDropdownResponse> readMemberDropdown(
+            final Member member
+    ) {
+        final var response = MemberReadDropdownResponse.from(member);
+
+        return ResponseEntity.ok()
+                .body(response);
+    }
+
+    @GetMapping("/me/profile")
+    public ResponseEntity<MemberReadProfileResponse> readMemberProfile(
+            final Member member
+    ) {
+        final var response = MemberReadProfileResponse.from(member);
 
         return ResponseEntity.ok()
                 .body(response);

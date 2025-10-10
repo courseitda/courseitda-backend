@@ -56,7 +56,7 @@ class AuthControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(loginRequest)
                 .when()
-                .post("/login")
+                .post("/auth/login")
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .extract()

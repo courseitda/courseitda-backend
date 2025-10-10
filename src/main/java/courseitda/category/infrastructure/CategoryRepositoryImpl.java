@@ -1,13 +1,11 @@
 package courseitda.category.infrastructure;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.stereotype.Repository;
-
 import courseitda.category.domain.Category;
 import courseitda.category.domain.CategoryRepository;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
@@ -28,5 +26,10 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     @Override
     public List<Category> findAllById(final Iterable<Long> categoryIds) {
         return jpaCategoryRepository.findAllById(categoryIds);
+    }
+
+    @Override
+    public int countByWorkspaceId(final Long workspaceId) {
+        return jpaCategoryRepository.countByWorkspaceId(workspaceId);
     }
 }

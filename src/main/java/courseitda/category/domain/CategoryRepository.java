@@ -10,4 +10,6 @@ public interface CategoryRepository {
     Optional<Category> findById(Long categoryId);
 
     List<Category> findAllById(Iterable<Long> categoryIds);
+
+    int countByWorkspaceId(Long workspaceId);
 }

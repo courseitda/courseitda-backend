@@ -35,7 +35,8 @@ public class CategoryService {
         final var workspace = getWorkspaceById(workspaceId);
         validateOwnership(member, workspace);
 
-        final var nextSequence = workspace.getCategories().size() + 1;
+        // N+1 문제 해결: workspace.getCategories().size() 대신 직접 count 쿼리 사용
+        final var nextSequence = categoryRepository.countByWorkspaceId(workspaceId) + 1;
         final var category = Category.createNew(workspace, request.name(), request.color(), nextSequence);
         final var savedCategory = categoryRepository.save(category);
 

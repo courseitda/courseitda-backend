@@ -48,6 +48,15 @@ public class WorkspaceService {
         return WorkspaceUpdateResponse.from(workspace);
     }
 
+    @Transactional
+    public void deleteWorkspace(final Member member, final Long workspaceId) {
+
+        final var workspace = getById(workspaceId);
+        validateOwnership(member, workspace);
+
+        workspaceRepository.deleteById(workspaceId);
+    }
+
     private Workspace getById(final Long workspaceId) {
         return workspaceRepository.findById(workspaceId)
                 .orElseThrow(() -> new NotFoundException("ID에 해당하는 워크스페이스를 찾을 수 없습니다."));

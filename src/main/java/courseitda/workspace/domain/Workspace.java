@@ -1,6 +1,8 @@
 package courseitda.workspace.domain;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import courseitda.category.domain.Category;
 import courseitda.common.Timestamp;
@@ -37,4 +39,44 @@ public class Workspace extends Timestamp {
 
     @OneToMany(mappedBy = "workspace")
     private List<Category> categories;
+
+    private Workspace(
+            final Long id,
+            final Member member,
+            final String title,
+            final List<Category> categories
+    ) {
+        validateTitle(title);
+
+        this.id = id;
+        this.member = member;
+        this.title = title;
+        this.categories = categories;
+    }
+
+    public static Workspace createEmpty(final Member member, final String title) {
+        return new Workspace(null, member, title, new ArrayList<>());
+    }
+
+    public static String formatTitle(final String unformattedTitle) {
+        return unformattedTitle.trim();
+    }
+
+    public boolean isOwner(final Member member) {
+        return Objects.equals(this.member.getId(), member.getId());
+    }
+
+    public void rename(final String newTitle) {
+        validateTitle(newTitle);
+        this.title = newTitle;
+    }
+
+    private void validateTitle(final String title) {
+        if (title.isBlank()) {
+            throw new IllegalArgumentException();
+        }
+        if (title.length() > 20) {
+            throw new IllegalArgumentException();
+        }
+    }
 }

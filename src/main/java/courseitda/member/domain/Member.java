@@ -1,5 +1,11 @@
 package courseitda.member.domain;
 
+import java.time.LocalDateTime;
+import java.util.regex.Pattern;
+
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
 import courseitda.auth.domain.AuthRole;
 import courseitda.common.Timestamp;
 import jakarta.persistence.Column;
@@ -10,14 +16,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
-import java.util.regex.Pattern;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter

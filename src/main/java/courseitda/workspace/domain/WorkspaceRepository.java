@@ -2,8 +2,6 @@ package courseitda.workspace.domain;
 
 import java.util.Optional;
 
-import courseitda.member.domain.Member;
-
 public interface WorkspaceRepository {
 
     Workspace save(Workspace workspace);
@@ -12,5 +10,5 @@ public interface WorkspaceRepository {
 
     void deleteById(Long workspaceId);
 
-    boolean existsByMemberAndTitle(Member member, String title);
+    boolean existsByMemberIdAndTitle(Long memberId, String title);
 }

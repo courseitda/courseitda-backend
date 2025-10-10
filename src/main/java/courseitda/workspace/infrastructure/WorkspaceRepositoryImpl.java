@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
 
-import courseitda.member.domain.Member;
 import courseitda.workspace.domain.Workspace;
 import courseitda.workspace.domain.WorkspaceRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +30,7 @@ public class WorkspaceRepositoryImpl implements WorkspaceRepository {
     }
 
     @Override
-    public boolean existsByMemberAndTitle(final Member member, final String title) {
-        return jpaWorkspaceRepository.existsByMemberAndTitle(member, title);
+    public boolean existsByMemberIdAndTitle(final Long memberId, final String title) {
+        return jpaWorkspaceRepository.existsByMemberIdAndTitle(memberId, title);
     }
 }

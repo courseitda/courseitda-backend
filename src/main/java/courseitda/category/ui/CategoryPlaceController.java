@@ -35,7 +35,7 @@ public class CategoryPlaceController {
 
         // ✅ 201 Created	카테고리 장소 생성 성공
         CategoryPlaceCreateResponse response = categoryPlaceService.createCategoryPlace(categoryId, request);
-        return ResponseEntity.created(URI.create("/api/categories/" + categoryId + "/category-places" + response.id()))
+        return ResponseEntity.created(URI.create("/api/categories/" + categoryId + "/category-places/" + response.id()))
                 .body(response);
     }
 

@@ -53,7 +53,33 @@ public class Category extends Timestamp {
     )
     private CategoryPlace representativePlace;
 
-    // 대표 설정 시 같은 카테고리인지 검증
+    private Category(
+            final Long id,
+            final Workspace workspace,
+            final List<CategoryPlace> categoryPlaces,
+            final String name,
+            final String color,
+            final Integer sequence,
+            final CategoryPlace representativePlace
+    ) {
+        this.id = id;
+        this.workspace = workspace;
+        this.categoryPlaces = categoryPlaces;
+        this.name = name;
+        this.color = color;
+        this.sequence = sequence;
+        this.representativePlace = representativePlace;
+    }
+
+    public static Category createNew(
+            final Workspace workspace,
+            final String name,
+            final String color,
+            final Integer sequence
+    ) {
+        return new Category(null, workspace, null, name, color, sequence, null);
+    }
+
     public void updateRepresentativePlaceTo(final CategoryPlace candidatePlace) {
         if (candidatePlace == null) {
             this.representativePlace = null;
@@ -61,6 +87,10 @@ public class Category extends Timestamp {
         }
         validateCategoryOwnership(candidatePlace);
         this.representativePlace = candidatePlace;
+    }
+
+    public void updateSequence(final Integer newSequence) {
+        this.sequence = newSequence;
     }
 
     public boolean isOwnedBy(final Member member) {

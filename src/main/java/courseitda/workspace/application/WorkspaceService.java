@@ -61,7 +61,7 @@ public class WorkspaceService {
 
     private void validateOwnership(final Member member, final Workspace workspace) {
         // 해당 워크스페이스의 유효한 주인이 맞는지
-        if (workspace.isOwner(member)) {
+        if (workspace.isOwnedBy(member)) {
             throw new ForbiddenException("해당 워크스페이스의 수정 권한이 없습니다.");
         }
     }

@@ -61,7 +61,7 @@ public class Workspace extends Timestamp {
         return unformattedTitle.trim();
     }
 
-    public boolean isOwner(final Member member) {
+    public boolean isOwnedBy(final Member member) {
         return Objects.equals(this.member.getId(), member.getId());
     }
 

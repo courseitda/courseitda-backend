@@ -14,6 +14,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -54,6 +55,19 @@ public class Workspace extends Timestamp {
 
     public static Workspace createEmpty(final Member member, final String title) {
         return new Workspace(null, member, title, new ArrayList<>());
+    }
+
+    public static String formatTitle(final String unformattedTitle) {
+        return unformattedTitle.trim();
+    }
+
+    public boolean isOwner(final Member member) {
+        return Objects.equals(this.member.getId(), member.getId());
+    }
+
+    public void rename(final String newTitle) {
+        validateTitle(newTitle);
+        this.title = newTitle;
     }
 
     private void validateTitle(final String title) {

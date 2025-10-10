@@ -4,6 +4,7 @@ import java.net.URI;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import courseitda.category.application.CategoryPlaceService;
 import courseitda.category.ui.dto.request.CategoryPlaceCreateRequest;
 import courseitda.category.ui.dto.response.CategoryPlaceCreateResponse;
+import courseitda.category.ui.dto.response.CategoryPlaceResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -43,8 +45,20 @@ public class CategoryPlaceController {
     public ResponseEntity<Void> deleteCategoryPlace(
             @PathVariable Long categoryPlaceId
     ) {
-        // 204 No Content	카테고리 장소 삭제 성공
+        // ✅ 204 No Content	카테고리 장소 삭제 성공
         categoryPlaceService.deleteCategoryPlace(categoryPlaceId);
         return ResponseEntity.noContent().build();
+    }
+
+    // 카테고리 장소 목록 조회
+    @GetMapping("/categories/{categoryId}/category-places")
+    public ResponseEntity<CategoryPlaceResponses> readCategoryPlaces(
+            // TODO: 헤더 인증 필요
+            @PathVariable Long categoryId
+    ) {
+
+        // ✅ 200 OK	카테고리 장소 목록 조회 성공
+        CategoryPlaceResponses response = categoryPlaceService.findCategoryPlaces(categoryId);
+        return ResponseEntity.ok(response);
     }
 }

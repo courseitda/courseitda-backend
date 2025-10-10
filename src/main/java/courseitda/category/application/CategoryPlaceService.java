@@ -1,16 +1,18 @@
 package courseitda.category.application;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import courseitda.category.domain.Category;
 import courseitda.category.domain.CategoryPlace;
 import courseitda.category.domain.CategoryPlaceRepository;
 import courseitda.category.domain.CategoryRepository;
 import courseitda.category.ui.dto.request.CategoryPlaceCreateRequest;
 import courseitda.category.ui.dto.response.CategoryPlaceCreateResponse;
+import courseitda.category.ui.dto.response.CategoryPlaceResponses;
 import courseitda.place.domain.Place;
 import courseitda.place.domain.PlaceRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +39,12 @@ public class CategoryPlaceService {
     @Transactional
     public void deleteCategoryPlace(final Long categoryPlaceId) {
         categoryPlaceRepository.deleteById(categoryPlaceId);
+    }
+
+    public CategoryPlaceResponses findCategoryPlaces(final Long categoryId) {
+        final var categoryPlaces = categoryPlaceRepository.findAllByCategoryId(categoryId);
+
+        return CategoryPlaceResponses.from(categoryPlaces);
     }
 
     private Category getCategoryById(final Long categoryId) {

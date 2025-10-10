@@ -74,7 +74,7 @@ public class CategoryPlaceService {
                 .orElseThrow(() -> new NotFoundException("카테고리 플레이스 id에 해당하는 카테고리 플레이스를 찾을 수 없습니다."));
     }
 
-    private void validateCategoryOwnership(Long categoryId, CategoryPlace categoryPlace) {
+    private void validateCategoryOwnership(final Long categoryId, final CategoryPlace categoryPlace) {
         if (!categoryPlace.belongsToCategory(categoryId)) {
             throw new ForbiddenException("해당 카테고리에 속한 장소가 아닙니다.");
         }

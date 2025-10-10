@@ -1,11 +1,5 @@
 package courseitda.member.domain;
 
-import java.time.LocalDateTime;
-import java.util.regex.Pattern;
-
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
-
 import courseitda.auth.domain.AuthRole;
 import courseitda.common.Timestamp;
 import jakarta.persistence.Column;
@@ -16,15 +10,21 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
+import java.util.regex.Pattern;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
 @Table(name = "members")
 @SQLRestriction("deleted_at is Null")
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE users SET deleted_at = NOW() WHERE id = ?")
 public class Member extends Timestamp {

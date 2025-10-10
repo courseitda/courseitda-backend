@@ -1,8 +1,5 @@
 package courseitda.category.application;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import courseitda.category.domain.Category;
 import courseitda.category.domain.CategoryPlace;
 import courseitda.category.domain.CategoryPlaceRepository;
@@ -10,9 +7,12 @@ import courseitda.category.domain.CategoryRepository;
 import courseitda.category.ui.dto.request.CategoryPlaceCreateRequest;
 import courseitda.category.ui.dto.response.CategoryPlaceCreateResponse;
 import courseitda.category.ui.dto.response.CategoryPlaceResponses;
+import courseitda.exception.NotFoundException;
 import courseitda.place.domain.Place;
 import courseitda.place.domain.PlaceRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -49,7 +49,7 @@ public class CategoryPlaceService {
 
     private Category getCategoryById(final Long categoryId) {
         return categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new IllegalArgumentException("")); // todo: notfound로 수정
+                .orElseThrow(() -> new NotFoundException("카테고리 id에 해당하는 카테고리를 찾을 수 없습니다."));
     }
 
     private Place findOrCreatePlace(final CategoryPlaceCreateRequest request) {

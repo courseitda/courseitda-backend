@@ -45,7 +45,7 @@ public class CategoryPlaceService {
     }
 
     public CategoryPlaceResponses findCategoryPlaces(final Long categoryId) {
-        final var categoryPlaces = categoryPlaceRepository.findAllByCategoryId(categoryId);
+        final var categoryPlaces = getCategoryById(categoryId).getCategoryPlaces();
 
         final var representativePlace = getCategoryById(categoryId)
                 .getRepresentativePlace();

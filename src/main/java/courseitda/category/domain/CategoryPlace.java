@@ -30,4 +30,14 @@ public class CategoryPlace extends Timestamp {
     @ManyToOne
     @JoinColumn(nullable = false)
     private Place place;
+
+    private CategoryPlace(Long id, Category category, Place place) {
+        this.id = id;
+        this.category = category;
+        this.place = place;
+    }
+
+    public static CategoryPlace createNew(final Category category, final Place place) {
+        return new CategoryPlace(null, category, place);
+    }
 }

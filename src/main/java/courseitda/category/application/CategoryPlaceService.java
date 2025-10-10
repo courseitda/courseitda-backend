@@ -54,15 +54,15 @@ public class CategoryPlaceService {
 
     private Place findOrCreatePlace(final CategoryPlaceCreateRequest request) {
         return placeRepository.findPlaceByNameAndAddressName(request.name(), request.addressName())
-                .orElse(
-                        placeRepository.save(
-                                Place.createNew(
-                                        request.name(),
-                                        request.roadAddressName(),
-                                        request.addressName(),
-                                        request.lat(),
-                                        request.lng()
-                                )
-                        ));
+                .orElseGet(() -> {
+                    Place newPlace = Place.createNew(
+                            request.name(),
+                            request.roadAddressName(),
+                            request.addressName(),
+                            request.lat(),
+                            request.lng()
+                    );
+                    return placeRepository.save(newPlace);
+                });
     }
 }

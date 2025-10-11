@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,4 +31,22 @@ public class CategoryPlace extends Timestamp {
     @ManyToOne
     @JoinColumn(nullable = false)
     private Place place;
+
+    private CategoryPlace(
+            final Long id,
+            final Category category,
+            final Place place
+    ) {
+        this.id = id;
+        this.category = category;
+        this.place = place;
+    }
+
+    public static CategoryPlace createNew(final Category category, final Place place) {
+        return new CategoryPlace(null, category, place);
+    }
+
+    public boolean belongsToCategory(final Long categoryId) {
+        return Objects.equals(this.category.getId(), categoryId);
+    }
 }

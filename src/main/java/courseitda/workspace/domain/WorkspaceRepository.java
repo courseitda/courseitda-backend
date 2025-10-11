@@ -1,10 +1,14 @@
 package courseitda.workspace.domain;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.Optional;
 
-import courseitda.member.domain.Member;
+public interface WorkspaceRepository {
 
-public interface WorkspaceRepository extends JpaRepository<Workspace, Long> {
+    Workspace save(Workspace workspace);
 
-    boolean existsByMemberAndTitle(Member member, String title);
+    Optional<Workspace> findById(Long workspaceId);
+
+    void deleteById(Long workspaceId);
+
+    boolean existsByMemberIdAndTitle(Long memberId, String title);
 }

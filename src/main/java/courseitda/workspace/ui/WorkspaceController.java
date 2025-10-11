@@ -1,5 +1,7 @@
 package courseitda.workspace.ui;
 
+import courseitda.auth.domain.AuthRole;
+import courseitda.auth.domain.RequiresRole;
 import courseitda.member.domain.Member;
 import courseitda.workspace.application.WorkspaceService;
 import courseitda.workspace.ui.dto.request.WorkspaceCreateRequest;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/workspaces")
+@RequiresRole(authRoles = {AuthRole.MEMBER})
 public class WorkspaceController {
 
     private final WorkspaceService workspaceService;
@@ -28,7 +31,6 @@ public class WorkspaceController {
     // 워크스페이스 생성
     @PostMapping
     public ResponseEntity<WorkspaceCreateResponse> createWorkspace(
-            // TODO: 헤더 인증 필요
             Member member,
             @Valid @RequestBody WorkspaceCreateRequest request
     ) {
@@ -44,7 +46,6 @@ public class WorkspaceController {
     // 워크스페이스 제목 수정
     @PatchMapping("/{workspaceId}")
     public ResponseEntity<WorkspaceUpdateResponse> updateWorkspace(
-            // TODO: 헤더 인증 필요
             Member member,
             @PathVariable Long workspaceId,
             @Valid @RequestBody WorkspaceUpdateRequest request
@@ -63,7 +64,6 @@ public class WorkspaceController {
     // 워크스페이스 삭제
     @DeleteMapping("/{workspaceId}")
     public ResponseEntity<Void> deleteWorkspace(
-            // TODO: 헤더 인증 필요
             Member member,
             @PathVariable Long workspaceId
     ) {

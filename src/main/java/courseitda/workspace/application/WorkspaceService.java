@@ -61,14 +61,14 @@ public class WorkspaceService {
 
     private void validateOwnership(final Member member, final Workspace workspace) {
         // 해당 워크스페이스의 유효한 주인이 맞는지
-        if (workspace.isOwner(member)) {
+        if (!workspace.isOwnedBy(member)) {
             throw new ForbiddenException("해당 워크스페이스의 수정 권한이 없습니다.");
         }
     }
 
     private void validateDuplicatedTitle(final Member member, final String newTitle) {
         // 해당 회원 소유의 워크스페이스에 이미 해당 타이틀을 사용중인지
-        if (workspaceRepository.existsByMemberAndTitle(member, newTitle)) {
+        if (workspaceRepository.existsByMemberIdAndTitle(member.getId(), newTitle)) {
             throw new ConflictException(newTitle + "은(는) 이미 사용중 입니다.");
         }
     }

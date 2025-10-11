@@ -37,4 +37,33 @@ public class Place extends Timestamp {
     private double longitude;
 
     private String placeUrl;
+
+    private Place(
+            final Long id,
+            final String name,
+            final String roadAddressName,
+            final String addressName,
+            final double latitude,
+            final double longitude,
+            final String placeUrl
+    ) {
+        this.id = id;
+        this.name = name;
+        this.roadAddressName = roadAddressName;
+        this.addressName = addressName;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.placeUrl = placeUrl;
+    }
+
+    public static Place createNew(
+            final String name,
+            final String roadAddressName,
+            final String addressName,
+            final double latitude,
+            final double longitude
+    ) {
+        final var emptyPlaceUrl = "";
+        return new Place(null, name, roadAddressName, addressName, latitude, longitude, emptyPlaceUrl);
+    }
 }

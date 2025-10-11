@@ -70,6 +70,7 @@ jobs:
                 'refactor': '🖌️ refactor',
                 'test': '✅ test',
                 'fix': '⚒️ fix',
+                'hotfix': '🔥 hotfix',
                 'chore': '🧹 chore',
                 'docs': '📝 docs'
             };

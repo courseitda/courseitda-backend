@@ -102,8 +102,10 @@ public class Category extends Timestamp {
         this.color = newColor;
     }
 
-    public boolean isOwnedBy(final Member member) {
-        return workspace.isOwnedBy(member);
+    public void validateOwnership(final Member member) {
+        if (!workspace.isOwnedBy(member)) {
+            throw new ForbiddenException("해당 카테고리를 수정할 권한이 없습니다.");
+        }
     }
 
     private void validateCategoryOwnership(CategoryPlace candidatePlace) {

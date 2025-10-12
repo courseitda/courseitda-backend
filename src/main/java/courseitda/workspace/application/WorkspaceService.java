@@ -1,7 +1,6 @@
 package courseitda.workspace.application;
 
 import courseitda.exception.ConflictException;
-import courseitda.exception.ForbiddenException;
 import courseitda.exception.NotFoundException;
 import courseitda.member.domain.Member;
 import courseitda.workspace.domain.Workspace;
@@ -39,7 +38,7 @@ public class WorkspaceService {
         final var workspace = getById(workspaceId);
         final var newTitle = Workspace.formatTitle(request.title());
 
-        validateOwnership(member, workspace);
+        workspace.validateOwnership(member);
         validateDuplicatedTitle(member, newTitle);
         workspace.rename(newTitle);
 
@@ -49,7 +48,7 @@ public class WorkspaceService {
     @Transactional
     public void deleteWorkspace(final Member member, final Long workspaceId) {
         final var workspace = getById(workspaceId);
-        validateOwnership(member, workspace);
+        workspace.validateOwnership(member);
 
         workspaceRepository.deleteById(workspaceId);
     }
@@ -57,13 +56,6 @@ public class WorkspaceService {
     private Workspace getById(final Long workspaceId) {
         return workspaceRepository.findById(workspaceId)
                 .orElseThrow(() -> new NotFoundException("ID에 해당하는 워크스페이스를 찾을 수 없습니다."));
-    }
-
-    private void validateOwnership(final Member member, final Workspace workspace) {
-        // 해당 워크스페이스의 유효한 주인이 맞는지
-        if (!workspace.isOwnedBy(member)) {
-            throw new ForbiddenException("해당 워크스페이스의 수정 권한이 없습니다.");
-        }
     }
 
     private void validateDuplicatedTitle(final Member member, final String newTitle) {

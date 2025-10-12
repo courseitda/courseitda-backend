@@ -38,7 +38,7 @@ public class CategoryService {
             final CategoryCreateRequest request
     ) {
         final var workspace = getWorkspaceById(workspaceId);
-        validateOwnership(member, workspace);
+        workspace.validateOwnership(member);
 
         // N+1 문제 해결: workspace.getCategories().size() 대신 직접 count 쿼리 사용
         final var nextSequence = categoryRepository.countByWorkspaceId(workspaceId) + 1;
@@ -55,7 +55,7 @@ public class CategoryService {
             final CategoryReorderRequest request
     ) {
         final var workspace = getWorkspaceById(workspaceId);
-        validateOwnership(member, workspace);
+        workspace.validateOwnership(member);
 
         final var categoryIds = request.categorySequenceRequests().stream()
                 .map(CategorySequenceRequest::id)
@@ -90,7 +90,7 @@ public class CategoryService {
             final CategoryUpdateRequest request
     ) {
         final var workspace = getWorkspaceById(workspaceId);
-        validateOwnership(member, workspace);
+        workspace.validateOwnership(member);
 
         final var category = getCategoryById(categoryId);
         validateCategoryOwnership(workspace, category);
@@ -106,7 +106,7 @@ public class CategoryService {
             final Long categoryId
     ) {
         final var workspace = getWorkspaceById(workspaceId);
-        validateOwnership(member, workspace);
+        workspace.validateOwnership(member);
 
         final var category = getCategoryById(categoryId);
         validateCategoryOwnership(workspace, category);
@@ -121,7 +121,7 @@ public class CategoryService {
             final Long categoryId
     ) {
         final var workspace = getWorkspaceById(workspaceId);
-        validateOwnership(member, workspace);
+        workspace.validateOwnership(member);
 
         final var category = getCategoryById(categoryId);
         validateCategoryOwnership(workspace, category);
@@ -135,7 +135,7 @@ public class CategoryService {
             final Long workspaceId
     ) {
         final var workspace = getWorkspaceById(workspaceId);
-        validateOwnership(member, workspace);
+        workspace.validateOwnership(member);
 
         final var categories = workspace.getCategories();
         return CategoriesResponse.from(categories);
@@ -144,12 +144,6 @@ public class CategoryService {
     private Workspace getWorkspaceById(final Long workspaceId) {
         return workspaceRepository.findById(workspaceId)
                 .orElseThrow(() -> new NotFoundException("ID에 해당하는 워크스페이스를 찾을 수 없습니다."));
-    }
-
-    private void validateOwnership(final Member member, final Workspace workspace) {
-        if (!workspace.isOwnedBy(member)) {
-            throw new ForbiddenException("해당 워크스페이스의 수정 권한이 없습니다.");
-        }
     }
 
     private void validateAllCategoriesExist(final List<Category> categories, final List<Long> categoryIds) {

@@ -9,6 +9,7 @@ import courseitda.category.ui.dto.response.CategoryPlaceCreateResponse;
 import courseitda.category.ui.dto.response.CategoryPlacesResponse;
 import courseitda.exception.ForbiddenException;
 import courseitda.exception.NotFoundException;
+import courseitda.member.domain.Member;
 import courseitda.place.domain.Place;
 import courseitda.place.domain.PlaceRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,10 +26,13 @@ public class CategoryPlaceService {
 
     @Transactional
     public CategoryPlaceCreateResponse createCategoryPlace(
+            final Member member,
             final Long categoryId,
             final CategoryPlaceCreateRequest request
     ) {
         final var category = getCategoryById(categoryId);
+        category.validateOwnership(member);
+
         final var place = findOrCreatePlace(request);
 
         final var categoryPlace = CategoryPlace.createNew(category, place);
@@ -38,17 +42,21 @@ public class CategoryPlaceService {
     }
 
     @Transactional
-    public void deleteCategoryPlace(final Long categoryId, final Long categoryPlaceId) {
+    public void deleteCategoryPlace(final Member member, final Long categoryId, final Long categoryPlaceId) {
         final var categoryPlace = getCategoryPlaceById(categoryPlaceId);
+        categoryPlace.validateOwnership(member);
+
         validateCategoryOwnership(categoryId, categoryPlace);
         categoryPlaceRepository.delete(categoryPlace);
     }
 
-    public CategoryPlacesResponse findCategoryPlaces(final Long categoryId) {
-        final var categoryPlaces = getCategoryById(categoryId).getCategoryPlaces();
+    @Transactional(readOnly = true)
+    public CategoryPlacesResponse findCategoryPlaces(final Member member, final Long categoryId) {
+        final var category = getCategoryById(categoryId);
+        category.validateOwnership(member);
 
-        final var representativePlace = getCategoryById(categoryId)
-                .getRepresentativePlace();
+        final var categoryPlaces = category.getCategoryPlaces();
+        final var representativePlace = category.getRepresentativePlace();
 
         return CategoryPlacesResponse.of(categoryPlaces, representativePlace);
     }

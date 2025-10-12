@@ -4,6 +4,7 @@ import courseitda.category.domain.Category;
 import courseitda.common.Timestamp;
 import courseitda.exception.BadRequestException;
 import courseitda.exception.BusinessRuleException;
+import courseitda.exception.ForbiddenException;
 import courseitda.member.domain.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -70,6 +71,12 @@ public class Workspace extends Timestamp {
     public void rename(final String newTitle) {
         validateTitle(newTitle);
         this.title = newTitle;
+    }
+
+    public void validateOwnership(final Member member) {
+        if (!isOwnedBy(member)) {
+            throw new ForbiddenException("해당 워크스페이스의 수정 권한이 없습니다.");
+        }
     }
 
     private void validateTitle(final String title) {

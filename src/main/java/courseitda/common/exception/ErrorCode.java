@@ -59,7 +59,7 @@ public enum ErrorCode {
     // 2000 Series: Workspace Errors
     WORKSPACE_TITLE_EMPTY(
             "2001",
-            "워크스페이스 제목은 공백일 수 없습니다.",
+            "워크스페이스 제목은 null 또는 공백일 수 없습니다.",
             HttpStatus.BAD_REQUEST
     ),
 
@@ -71,7 +71,7 @@ public enum ErrorCode {
 
     WORKSPACE_NOT_FOUND(
             "2003",
-            "ID에 해당하는 워크스페이스를 찾을 수 없습니다.",
+            "존재하지 않는 워크스페이스 입니다.",
             HttpStatus.NOT_FOUND
     ),
 
@@ -90,7 +90,7 @@ public enum ErrorCode {
     // 3000 Series: Category Errors
     CATEGORY_NAME_EMPTY(
             "3001",
-            "카테고리 이름은 공백일 수 없습니다.",
+            "카테고리 이름은 null 또는 공백일 수 없습니다.",
             HttpStatus.BAD_REQUEST
     ),
 
@@ -102,19 +102,19 @@ public enum ErrorCode {
 
     CATEGORY_COLOR_EMPTY(
             "3003",
-            "카테고리 색상은 공백일 수 없습니다.",
+            "카테고리 색상은 null 또는 공백일 수 없습니다.",
             HttpStatus.BAD_REQUEST
     ),
 
     INVALID_CATEGORY_COLOR_FORMAT(
             "3004",
-            "올바른 색상 형식이 아닙니다.",
+            "유효하지 않은 색상 형식입니다.",
             HttpStatus.UNPROCESSABLE_ENTITY
     ),
 
     CATEGORY_NOT_FOUND(
             "3005",
-            "ID에 해당하는 카테고리를 찾을 수 없습니다.",
+            "존재하지 않는 카테고리 입니다.",
             HttpStatus.NOT_FOUND
     ),
 
@@ -157,13 +157,13 @@ public enum ErrorCode {
     // 4000 Series: Category Place Errors
     PLACE_NAME_EMPTY(
             "4001",
-            "장소 이름은 공백일 수 없습니다.",
+            "장소 이름은 null 또는 공백일 수 없습니다.",
             HttpStatus.BAD_REQUEST
     ),
 
     PLACE_ADDRESS_EMPTY(
             "4002",
-            "주소는 공백일 수 없습니다.",
+            "주소는 null 또는 공백일 수 없습니다.",
             HttpStatus.BAD_REQUEST
     ),
 
@@ -181,7 +181,7 @@ public enum ErrorCode {
 
     CATEGORY_PLACE_NOT_FOUND(
             "4005",
-            "ID에 해당하는 카테고리 장소를 찾을 수 없습니다.",
+            "존재하지 않는 카테고리 장소 입니다.",
             HttpStatus.NOT_FOUND
     ),
 
@@ -194,7 +194,7 @@ public enum ErrorCode {
     // 5000 Series: Member Errors
     MEMBER_NOT_FOUND(
             "5001",
-            "회원을 찾을 수 없습니다.",
+            "존재하지 않는 회원 입니다.",
             HttpStatus.NOT_FOUND
     ),
 
@@ -218,13 +218,13 @@ public enum ErrorCode {
 
     MEMBER_EMAIL_EMPTY(
             "5005",
-            "이메일은 null 이거나 빈 문자열일 수 없습니다.",
+            "이메일은 null 또는 공백일 수 없습니다.",
             HttpStatus.BAD_REQUEST
     ),
 
     INVALID_EMAIL_FORMAT(
             "5006",
-            "유효한 이메일 형식이 아닙니다.",
+            "유효하지 않은 이메일 형식입니다.",
             HttpStatus.BAD_REQUEST
     ),
     ;

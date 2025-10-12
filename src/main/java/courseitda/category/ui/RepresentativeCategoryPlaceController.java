@@ -24,6 +24,7 @@ public class RepresentativeCategoryPlaceController {
 
     private final RepresentativeCategoryPlaceService representativeCategoryPlaceService;
 
+    // 카테고리 대표 장소 수정
     @PutMapping
     public ResponseEntity<RepresentativeCategoryPlaceUpdateResponse> updateRepresentativeCategoryPlace(
             Member member,
@@ -35,6 +36,7 @@ public class RepresentativeCategoryPlaceController {
         return ResponseEntity.ok(response);
     }
 
+    // 카테고리 대표 장소 해제
     @DeleteMapping
     public ResponseEntity<Void> deleteRepresentativeCategoryPlace(
             Member member,

@@ -30,6 +30,7 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
+    // 카테고리 생성
     @PostMapping
     public ResponseEntity<CategoryCreateResponse> createCategory(
             Member member,
@@ -41,6 +42,7 @@ public class CategoryController {
                 .body(response);
     }
 
+    // 카테고리 순서 변경
     @PostMapping("/reorder")
     public ResponseEntity<CategoryReorderResponse> updateCategorySequence(
             Member member,
@@ -51,6 +53,7 @@ public class CategoryController {
         return ResponseEntity.ok(response);
     }
 
+    // 카테고리 (이름/색상) 수정
     @PatchMapping("/{categoryId}")
     public ResponseEntity<CategoryUpdateResponse> updateCategory(
             Member member,
@@ -62,6 +65,7 @@ public class CategoryController {
         return ResponseEntity.ok(response);
     }
 
+    // 카테고리 삭제
     @DeleteMapping("/{categoryId}")
     public ResponseEntity<Void> deleteCategory(
             Member member,

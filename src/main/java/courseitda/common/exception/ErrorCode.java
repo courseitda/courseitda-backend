@@ -22,210 +22,214 @@ public enum ErrorCode {
     TEMPORARY_ERROR(
             "0000",
             "커스텀 예외로 전환된 임시 에러입니다.",
-            HttpStatus.INTERNAL_SERVER_ERROR
+            HttpStatus.INTERNAL_SERVER_ERROR // 500
     ),
 
     // 1000 Series: Authentication and Authorization Errors
     MISSING_AUTH_HEADER(
             "1001",
             "Authorization 헤더가 존재하지 않습니다.",
-            HttpStatus.UNAUTHORIZED
+            HttpStatus.UNAUTHORIZED // 401
     ),
 
     MALFORMED_BEARER_TOKEN(
             "1002",
             "Bearer 토큰 형식이 아닙니다.",
-            HttpStatus.UNAUTHORIZED
+            HttpStatus.UNAUTHORIZED // 401
     ),
 
     EXPIRED_OR_INVALID_TOKEN(
             "1003",
             "유효하지 않은 토큰입니다.",
-            HttpStatus.UNAUTHORIZED
+            HttpStatus.UNAUTHORIZED // 401
     ),
 
     INCORRECT_PASSWORD(
             "1004",
             "비밀번호가 올바르지 않습니다.",
-            HttpStatus.UNAUTHORIZED
+            HttpStatus.UNAUTHORIZED // 401
     ),
 
     ACCESS_FORBIDDEN(
             "1005",
             "권한이 없습니다.",
-            HttpStatus.FORBIDDEN
+            HttpStatus.FORBIDDEN // 403
     ),
 
+    //-----------------------------------------------------------------------------------
     // 2000 Series: Workspace Errors
     WORKSPACE_TITLE_EMPTY(
             "2001",
             "워크스페이스 제목은 null 또는 공백일 수 없습니다.",
-            HttpStatus.BAD_REQUEST
+            HttpStatus.BAD_REQUEST // 400
     ),
 
-    WORKSPACE_TITLE_LENGTH_EXCEEDED(
+    WORKSPACE_MODIFY_FORBIDDEN(
             "2002",
-            "워크스페이스 제목은 20자 이하이어야 합니다.",
-            HttpStatus.UNPROCESSABLE_ENTITY
+            "해당 워크스페이스의 수정 권한이 없습니다.",
+            HttpStatus.FORBIDDEN // 403
     ),
 
     WORKSPACE_NOT_FOUND(
             "2003",
             "존재하지 않는 워크스페이스 입니다.",
-            HttpStatus.NOT_FOUND
+            HttpStatus.NOT_FOUND // 404
     ),
 
     DUPLICATE_WORKSPACE_TITLE(
             "2004",
             "이미 사용중인 워크스페이스 제목입니다.",
-            HttpStatus.CONFLICT
+            HttpStatus.CONFLICT // 409
     ),
 
-    WORKSPACE_MODIFY_FORBIDDEN(
+    WORKSPACE_TITLE_LENGTH_EXCEEDED(
             "2005",
-            "해당 워크스페이스의 수정 권한이 없습니다.",
-            HttpStatus.FORBIDDEN
+            "워크스페이스 제목은 20자 이하이어야 합니다.",
+            HttpStatus.UNPROCESSABLE_ENTITY // 422
     ),
 
+    //-----------------------------------------------------------------------------------
     // 3000 Series: Category Errors
     CATEGORY_NAME_EMPTY(
             "3001",
             "카테고리 이름은 null 또는 공백일 수 없습니다.",
-            HttpStatus.BAD_REQUEST
-    ),
-
-    CATEGORY_NAME_LENGTH_EXCEEDED(
-            "3002",
-            "카테고리 이름은 10자를 초과할 수 없습니다.",
-            HttpStatus.UNPROCESSABLE_ENTITY
+            HttpStatus.BAD_REQUEST // 400
     ),
 
     CATEGORY_COLOR_EMPTY(
-            "3003",
+            "3002",
             "카테고리 색상은 null 또는 공백일 수 없습니다.",
-            HttpStatus.BAD_REQUEST
-    ),
-
-    INVALID_CATEGORY_COLOR_FORMAT(
-            "3004",
-            "유효하지 않은 색상 형식입니다.",
-            HttpStatus.UNPROCESSABLE_ENTITY
-    ),
-
-    CATEGORY_NOT_FOUND(
-            "3005",
-            "존재하지 않는 카테고리 입니다.",
-            HttpStatus.NOT_FOUND
-    ),
-
-    PARTIAL_CATEGORY_NOT_FOUND(
-            "3006",
-            "일부 카테고리를 찾을 수 없습니다.",
-            HttpStatus.NOT_FOUND
-    ),
-
-    DUPLICATE_CATEGORY_ID_IN_REQUEST(
-            "3007",
-            "요청에 중복된 카테고리 ID가 있습니다.",
-            HttpStatus.BAD_REQUEST
+            HttpStatus.BAD_REQUEST // 400
     ),
 
     DUPLICATE_CATEGORY_ORDER_IN_REQUEST(
-            "3008",
+            "3003",
             "요청에 중복된 순서 값이 있습니다.",
-            HttpStatus.BAD_REQUEST
+            HttpStatus.BAD_REQUEST // 400
+    ),
+
+    DUPLICATE_CATEGORY_ID_IN_REQUEST(
+            "3004",
+            "요청에 중복된 카테고리 ID가 있습니다.",
+            HttpStatus.BAD_REQUEST // 400
     ),
 
     CATEGORY_MODIFY_FORBIDDEN(
-            "3009",
+            "3005",
             "해당 카테고리의 수정 권한이 없습니다.",
-            HttpStatus.FORBIDDEN
+            HttpStatus.FORBIDDEN // 403
     ),
 
     CATEGORY_OUT_OF_WORKSPACE(
-            "3010",
+            "3006",
             "해당 워크스페이스에 속한 카테고리가 아닙니다.",
-            HttpStatus.FORBIDDEN
+            HttpStatus.FORBIDDEN // 403
     ),
 
     INVALID_REPRESENTATIVE_PLACE_ASSIGNMENT(
-            "3011",
+            "3007",
             "다른 카테고리의 장소를 대표로 지정할 수 없습니다.",
-            HttpStatus.FORBIDDEN
+            HttpStatus.FORBIDDEN // 403
     ),
 
+    CATEGORY_NOT_FOUND(
+            "3008",
+            "존재하지 않는 카테고리 입니다.",
+            HttpStatus.NOT_FOUND // 404
+    ),
+
+    PARTIAL_CATEGORY_NOT_FOUND(
+            "3009",
+            "일부 카테고리를 찾을 수 없습니다.",
+            HttpStatus.NOT_FOUND // 404
+    ),
+
+    CATEGORY_NAME_LENGTH_EXCEEDED(
+            "3010",
+            "카테고리 이름은 10자를 초과할 수 없습니다.",
+            HttpStatus.UNPROCESSABLE_ENTITY // 422
+    ),
+
+    INVALID_CATEGORY_COLOR_FORMAT(
+            "3011",
+            "유효하지 않은 색상 형식입니다.",
+            HttpStatus.UNPROCESSABLE_ENTITY // 422
+    ),
+
+    //-----------------------------------------------------------------------------------
     // 4000 Series: Category Place Errors
     PLACE_NAME_EMPTY(
             "4001",
             "장소 이름은 null 또는 공백일 수 없습니다.",
-            HttpStatus.BAD_REQUEST
+            HttpStatus.BAD_REQUEST // 400
     ),
 
     PLACE_ADDRESS_EMPTY(
             "4002",
             "주소는 null 또는 공백일 수 없습니다.",
-            HttpStatus.BAD_REQUEST
+            HttpStatus.BAD_REQUEST // 400
     ),
 
     INVALID_LATITUDE_RANGE(
             "4003",
             "위도는 -90에서 90 사이여야 합니다.",
-            HttpStatus.BAD_REQUEST
+            HttpStatus.BAD_REQUEST // 400
     ),
 
     INVALID_LONGITUDE_RANGE(
             "4004",
             "경도는 -180에서 180 사이여야 합니다.",
-            HttpStatus.BAD_REQUEST
-    ),
-
-    CATEGORY_PLACE_NOT_FOUND(
-            "4005",
-            "존재하지 않는 카테고리 장소 입니다.",
-            HttpStatus.NOT_FOUND
+            HttpStatus.BAD_REQUEST // 400
     ),
 
     PLACE_NOT_BELONG_TO_CATEGORY(
-            "4006",
+            "4005",
             "해당 카테고리에 속한 장소가 아닙니다.",
-            HttpStatus.FORBIDDEN
+            HttpStatus.FORBIDDEN // 403
     ),
 
+    CATEGORY_PLACE_NOT_FOUND(
+            "4006",
+            "존재하지 않는 카테고리 장소 입니다.",
+            HttpStatus.NOT_FOUND // 404
+    ),
+
+    //-----------------------------------------------------------------------------------
     // 5000 Series: Member Errors
-    MEMBER_NOT_FOUND(
-            "5001",
-            "존재하지 않는 회원 입니다.",
-            HttpStatus.NOT_FOUND
-    ),
-
-    MEMBER_NOT_FOUND_BY_EMAIL(
-            "5002",
-            "해당 이메일을 가진 회원이 존재하지 않습니다.",
-            HttpStatus.NOT_FOUND
-    ),
-
     MEMBER_NICKNAME_EMPTY(
-            "5003",
+            "5001",
             "닉네임은 null 또는 공백일 수 없습니다.",
-            HttpStatus.BAD_REQUEST
-    ),
-
-    INVALID_NICKNAME_LENGTH(
-            "5004",
-            "닉네임은 2자 이상 20자 이하이어야 합니다.",
-            HttpStatus.BAD_REQUEST
+            HttpStatus.BAD_REQUEST // 400
     ),
 
     MEMBER_EMAIL_EMPTY(
-            "5005",
+            "5002",
             "이메일은 null 또는 공백일 수 없습니다.",
-            HttpStatus.BAD_REQUEST
+            HttpStatus.BAD_REQUEST // 400
+    ),
+
+    INVALID_NICKNAME_LENGTH(
+            "5003",
+            "닉네임은 2자 이상 20자 이하이어야 합니다.",
+            HttpStatus.BAD_REQUEST // 400
     ),
 
     INVALID_EMAIL_FORMAT(
-            "5006",
+            "5004",
             "유효하지 않은 이메일 형식입니다.",
-            HttpStatus.BAD_REQUEST
+            HttpStatus.BAD_REQUEST // 400
+    ),
+
+    MEMBER_NOT_FOUND(
+            "5005",
+            "존재하지 않는 회원 입니다.",
+            HttpStatus.NOT_FOUND // 404
+    ),
+
+    MEMBER_NOT_FOUND_BY_EMAIL(
+            "5006",
+            "해당 이메일을 가진 회원이 존재하지 않습니다.",
+            HttpStatus.NOT_FOUND // 404
     ),
     ;
 

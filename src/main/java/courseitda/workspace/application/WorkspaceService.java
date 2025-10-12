@@ -39,7 +39,10 @@ public class WorkspaceService {
         final var newTitle = Workspace.formatTitle(request.title());
 
         workspace.validateOwnership(member);
-        validateDuplicatedTitle(member, newTitle);
+        // 제목이 변경되는 경우에만 중복 검증
+        if (!workspace.getTitle().equals(newTitle)) {
+            validateDuplicatedTitle(member, newTitle);
+        }
         workspace.rename(newTitle);
 
         return WorkspaceUpdateResponse.from(workspace);

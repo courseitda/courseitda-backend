@@ -5,8 +5,10 @@ import courseitda.category.domain.CategoryRepository;
 import courseitda.category.ui.dto.request.CategoryCreateRequest;
 import courseitda.category.ui.dto.request.CategoryReorderRequest;
 import courseitda.category.ui.dto.request.CategorySequenceRequest;
+import courseitda.category.ui.dto.request.CategoryUpdateRequest;
 import courseitda.category.ui.dto.response.CategoryCreateResponse;
 import courseitda.category.ui.dto.response.CategoryReorderResponse;
+import courseitda.category.ui.dto.response.CategoryUpdateResponse;
 import courseitda.exception.ForbiddenException;
 import courseitda.exception.NotFoundException;
 import courseitda.member.domain.Member;
@@ -77,6 +79,38 @@ public class CategoryService {
         return CategoryReorderResponse.from(categories);
     }
 
+    @Transactional
+    public CategoryUpdateResponse updateCategory(
+            final Member member,
+            final Long workspaceId,
+            final Long categoryId,
+            final CategoryUpdateRequest request
+    ) {
+        final var workspace = getWorkspaceById(workspaceId);
+        validateOwnership(member, workspace);
+
+        final var category = getCategoryById(categoryId);
+        validateCategoryOwnership(workspace, category);
+
+        category.updateNameAndColor(request.name(), request.color());
+        return CategoryUpdateResponse.from(category);
+    }
+
+    @Transactional
+    public void deleteCategory(
+            final Member member,
+            final Long workspaceId,
+            final Long categoryId
+    ) {
+        final var workspace = getWorkspaceById(workspaceId);
+        validateOwnership(member, workspace);
+
+        final var category = getCategoryById(categoryId);
+        validateCategoryOwnership(workspace, category);
+
+        categoryRepository.delete(category);
+    }
+
     private Workspace getWorkspaceById(final Long workspaceId) {
         return workspaceRepository.findById(workspaceId)
                 .orElseThrow(() -> new NotFoundException("ID에 해당하는 워크스페이스를 찾을 수 없습니다."));
@@ -107,5 +141,10 @@ public class CategoryService {
         if (!category.getWorkspace().getId().equals(workspace.getId())) {
             throw new ForbiddenException("해당 워크스페이스에 속한 카테고리가 아닙니다.");
         }
+    }
+
+    private Category getCategoryById(Long categoryId) {
+        return categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new NotFoundException("ID에 해당하는 카테고리를 찾을 수 없습니다."));
     }
 }

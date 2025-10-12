@@ -32,4 +32,9 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     public int countByWorkspaceId(final Long workspaceId) {
         return jpaCategoryRepository.countByWorkspaceId(workspaceId);
     }
+
+    @Override
+    public void delete(final Category category) {
+        jpaCategoryRepository.delete(category);
+    }
 }

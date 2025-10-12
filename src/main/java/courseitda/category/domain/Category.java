@@ -93,6 +93,11 @@ public class Category extends Timestamp {
         this.sequence = newSequence;
     }
 
+    public void updateNameAndColor(final String newName, final String newColor) {
+        this.name = newName;
+        this.color = newColor;
+    }
+
     public boolean isOwnedBy(final Member member) {
         return workspace.isOwnedBy(member);
     }

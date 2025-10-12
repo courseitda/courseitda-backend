@@ -9,8 +9,12 @@ import courseitda.category.domain.CategoryFixture;
 import courseitda.category.ui.dto.request.CategoryCreateRequest;
 import courseitda.category.ui.dto.request.CategoryReorderRequest;
 import courseitda.category.ui.dto.request.CategorySequenceRequest;
+import courseitda.category.ui.dto.request.CategoryUpdateRequest;
+import courseitda.category.ui.dto.response.CategoriesResponse;
 import courseitda.category.ui.dto.response.CategoryCreateResponse;
 import courseitda.category.ui.dto.response.CategoryReorderResponse;
+import courseitda.category.ui.dto.response.CategoryResponse;
+import courseitda.category.ui.dto.response.CategoryUpdateResponse;
 import courseitda.member.domain.MemberFixture;
 import courseitda.member.ui.dto.request.SignUpRequest;
 import courseitda.workspace.domain.WorkspaceFixture;
@@ -103,6 +107,106 @@ class CategoryControllerTest {
         assertThat(response.categorySequenceResponses()).hasSize(2);
         assertThat(response.categorySequenceResponses()).extracting("id")
                 .containsExactlyInAnyOrder(category1.id(), category2.id());
+    }
+
+    @Test
+    @DisplayName("카테고리 수정에 성공한다")
+    void updateCategory_success() {
+        // given
+        final String accessToken = signUpAndLogin();
+        final Long workspaceId = createWorkspace(accessToken);
+        final CategoryCreateResponse category = createCategory(accessToken, workspaceId);
+
+        final String newName = CategoryFixture.anyName();
+        final String newColor = "#123456";
+        final CategoryUpdateRequest request = new CategoryUpdateRequest(newName, newColor);
+
+        // when
+        final CategoryUpdateResponse response = given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .body(request)
+                .when()
+                .patch("/api/workspaces/" + workspaceId + "/categories/" + category.id())
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .as(CategoryUpdateResponse.class);
+
+        // then
+        assertThat(response.id()).isEqualTo(category.id());
+        assertThat(response.name()).isEqualTo(newName);
+        assertThat(response.color()).isEqualTo(newColor);
+    }
+
+    @Test
+    @DisplayName("카테고리 삭제에 성공한다")
+    void deleteCategory_success() {
+        // given
+        final String accessToken = signUpAndLogin();
+        final Long workspaceId = createWorkspace(accessToken);
+        final CategoryCreateResponse category = createCategory(accessToken, workspaceId);
+
+        // when & then
+        given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .when()
+                .delete("/api/workspaces/" + workspaceId + "/categories/" + category.id())
+                .then()
+                .statusCode(HttpStatus.NO_CONTENT.value());
+    }
+
+    @Test
+    @DisplayName("카테고리 단건 조회에 성공한다")
+    void readCategory_success() {
+        // given
+        final String accessToken = signUpAndLogin();
+        final Long workspaceId = createWorkspace(accessToken);
+        final CategoryCreateResponse category = createCategory(accessToken, workspaceId);
+
+        // when
+        final CategoryResponse response = given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .when()
+                .get("/api/workspaces/" + workspaceId + "/categories/" + category.id())
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .as(CategoryResponse.class);
+
+        // then
+        assertThat(response.id()).isEqualTo(category.id());
+        assertThat(response.name()).isEqualTo(category.name());
+        assertThat(response.color()).isEqualTo(category.color());
+        assertThat(response.sequence()).isEqualTo(category.sequence());
+    }
+
+    @Test
+    @DisplayName("카테고리 목록 조회에 성공한다")
+    void readAllCategories_success() {
+        // given
+        final String accessToken = signUpAndLogin();
+        final Long workspaceId = createWorkspace(accessToken);
+
+        createCategory(accessToken, workspaceId);
+        createCategory(accessToken, workspaceId);
+        createCategory(accessToken, workspaceId);
+
+        // when
+        final CategoriesResponse response = given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .when()
+                .get("/api/workspaces/" + workspaceId + "/categories")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .as(CategoriesResponse.class);
+
+        // then
+        assertThat(response.categoryResponses()).hasSize(3);
     }
 
     private String signUpAndLogin() {

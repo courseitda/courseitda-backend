@@ -28,3 +28,7 @@ security:
     access-token:
       secret-key: since-jjwt-api-0.11-secret-key-must-be-longer-than-32-bytes-for-test
       validity-in-milliseconds: 3600000 # 1 hour
+
+kakao:
+  api:
+    key: kakao-api-key-for-test

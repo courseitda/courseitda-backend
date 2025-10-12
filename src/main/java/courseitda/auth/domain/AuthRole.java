@@ -16,16 +16,13 @@ public enum AuthRole {
         this.roleName = roleName;
     }
 
-    public static AuthRole from(final String roleName) {
-        if (roleName == null) {
-            return GUEST;
-        }
-
+    public static AuthRole from(final String role) {
         for (final AuthRole authRole : values()) {
-            if (authRole.name().equals(roleName) || authRole.getRoleName().equals(roleName)) {
+            if (authRole.name().equals(role)) {
                 return authRole;
             }
         }
+
         return GUEST;
     }
 }

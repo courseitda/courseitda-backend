@@ -1,4 +1,4 @@
-package courseitda.exception.auth;
+package courseitda.common.exception.auth;
 
 public class AuthenticationException extends RuntimeException {
 

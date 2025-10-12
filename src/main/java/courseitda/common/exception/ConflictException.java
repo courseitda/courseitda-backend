@@ -1,7 +1,7 @@
-package courseitda.exception;
+package courseitda.common.exception;
 
 public class ConflictException extends RuntimeException {
-    public ConflictException(String message) {
+    public ConflictException(final String message) {
         super(message);
     }
 }

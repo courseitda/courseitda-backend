@@ -1,7 +1,7 @@
-package courseitda.exception;
+package courseitda.common.exception;
 
 public class ForbiddenException extends RuntimeException {
-    public ForbiddenException(String message) {
+    public ForbiddenException(final String message) {
         super(message);
     }
 }

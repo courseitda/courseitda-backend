@@ -1,4 +1,4 @@
-package courseitda.exception;
+package courseitda.common.exception;
 
 import lombok.Getter;
 

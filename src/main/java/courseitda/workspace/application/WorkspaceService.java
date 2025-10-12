@@ -1,8 +1,8 @@
 package courseitda.workspace.application;
 
 import courseitda.auth.domain.MemberAuthInfo;
-import courseitda.exception.ConflictException;
-import courseitda.exception.NotFoundException;
+import courseitda.common.exception.ConflictException;
+import courseitda.common.exception.NotFoundException;
 import courseitda.member.domain.Member;
 import courseitda.workspace.domain.Workspace;
 import courseitda.workspace.domain.WorkspaceRepository;

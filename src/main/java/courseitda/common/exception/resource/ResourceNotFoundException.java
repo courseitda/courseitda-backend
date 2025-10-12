@@ -1,4 +1,4 @@
-package courseitda.exception.resource;
+package courseitda.common.exception.resource;
 
 public class ResourceNotFoundException extends RuntimeException {
 

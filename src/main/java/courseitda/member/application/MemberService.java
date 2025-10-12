@@ -1,7 +1,7 @@
 package courseitda.member.application;
 
 import courseitda.auth.domain.AuthRole;
-import courseitda.exception.resource.ResourceNotFoundException;
+import courseitda.common.exception.resource.ResourceNotFoundException;
 import courseitda.member.domain.Member;
 import courseitda.member.domain.MemberRepository;
 import courseitda.member.ui.dto.request.SignUpRequest;

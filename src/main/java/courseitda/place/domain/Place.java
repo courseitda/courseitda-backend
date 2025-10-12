@@ -1,7 +1,7 @@
 package courseitda.place.domain;
 
-import courseitda.common.Timestamp;
-import courseitda.exception.BadRequestException;
+import courseitda.common.entity.Timestamp;
+import courseitda.common.exception.BadRequestException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

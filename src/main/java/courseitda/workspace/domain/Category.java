@@ -1,9 +1,9 @@
 package courseitda.workspace.domain;
 
-import courseitda.common.Timestamp;
-import courseitda.exception.BadRequestException;
-import courseitda.exception.BusinessRuleException;
-import courseitda.exception.ForbiddenException;
+import courseitda.common.entity.Timestamp;
+import courseitda.common.exception.BadRequestException;
+import courseitda.common.exception.BusinessRuleException;
+import courseitda.common.exception.ForbiddenException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;

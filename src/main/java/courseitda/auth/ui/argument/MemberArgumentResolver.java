@@ -2,7 +2,7 @@ package courseitda.auth.ui.argument;
 
 import courseitda.auth.domain.AuthTokenExtractor;
 import courseitda.auth.domain.AuthTokenProvider;
-import courseitda.exception.auth.AuthenticationException;
+import courseitda.common.exception.auth.AuthenticationException;
 import courseitda.member.application.MemberService;
 import courseitda.member.domain.Member;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,8 +1,8 @@
 package courseitda.workspace.application;
 
 import courseitda.auth.domain.MemberAuthInfo;
-import courseitda.exception.ForbiddenException;
-import courseitda.exception.NotFoundException;
+import courseitda.common.exception.ForbiddenException;
+import courseitda.common.exception.NotFoundException;
 import courseitda.place.domain.Place;
 import courseitda.place.domain.PlaceRepository;
 import courseitda.workspace.domain.Category;

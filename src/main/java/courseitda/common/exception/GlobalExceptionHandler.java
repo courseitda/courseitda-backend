@@ -1,4 +1,4 @@
-package courseitda.exception;
+package courseitda.common.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -11,14 +11,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ProblemDetail handleException(Exception e) {
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    public ProblemDetail handleException(final Exception e) {
+        final ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         problemDetail.setDetail(e.getMessage());
         return problemDetail;
     }
 
     @ExceptionHandler(BusinessException.class)
-    public ProblemDetail handleBusinessException(BusinessException e) {
+    public ProblemDetail handleBusinessException(final BusinessException e) {
         return e.getErrorCode().toProblemDetail();
     }
 }

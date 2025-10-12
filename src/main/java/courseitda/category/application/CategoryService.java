@@ -75,7 +75,7 @@ public class CategoryService {
                     .findFirst()
                     .orElseThrow(() -> new NotFoundException("ID에 해당하는 카테고리를 찾을 수 없습니다."));
 
-            validateCategoryOwnership(workspace, category);
+            validateCategoryBelongsToWorkspace(workspace, category);
             category.updateSequence(sequenceRequest.sequence());
         }
 
@@ -93,7 +93,7 @@ public class CategoryService {
         workspace.validateOwnership(member);
 
         final var category = getCategoryById(categoryId);
-        validateCategoryOwnership(workspace, category);
+        validateCategoryBelongsToWorkspace(workspace, category);
 
         category.updateNameAndColor(request.name(), request.color());
         return CategoryUpdateResponse.from(category);
@@ -109,7 +109,7 @@ public class CategoryService {
         workspace.validateOwnership(member);
 
         final var category = getCategoryById(categoryId);
-        validateCategoryOwnership(workspace, category);
+        validateCategoryBelongsToWorkspace(workspace, category);
 
         categoryRepository.delete(category);
     }
@@ -124,7 +124,7 @@ public class CategoryService {
         workspace.validateOwnership(member);
 
         final var category = getCategoryById(categoryId);
-        validateCategoryOwnership(workspace, category);
+        validateCategoryBelongsToWorkspace(workspace, category);
 
         return CategoryResponse.from(category);
     }
@@ -161,7 +161,7 @@ public class CategoryService {
         }
     }
 
-    private void validateCategoryOwnership(final Workspace workspace, final Category category) {
+    private void validateCategoryBelongsToWorkspace(final Workspace workspace, final Category category) {
         if (!category.getWorkspace().getId().equals(workspace.getId())) {
             throw new ForbiddenException("해당 워크스페이스에 속한 카테고리가 아닙니다.");
         }

@@ -6,7 +6,7 @@ import courseitda.category.domain.CategoryPlaceRepository;
 import courseitda.category.domain.CategoryRepository;
 import courseitda.category.ui.dto.request.CategoryPlaceCreateRequest;
 import courseitda.category.ui.dto.response.CategoryPlaceCreateResponse;
-import courseitda.category.ui.dto.response.CategoryPlaceResponses;
+import courseitda.category.ui.dto.response.CategoryPlacesResponse;
 import courseitda.exception.ForbiddenException;
 import courseitda.exception.NotFoundException;
 import courseitda.place.domain.Place;
@@ -44,13 +44,13 @@ public class CategoryPlaceService {
         categoryPlaceRepository.delete(categoryPlace);
     }
 
-    public CategoryPlaceResponses findCategoryPlaces(final Long categoryId) {
+    public CategoryPlacesResponse findCategoryPlaces(final Long categoryId) {
         final var categoryPlaces = getCategoryById(categoryId).getCategoryPlaces();
 
         final var representativePlace = getCategoryById(categoryId)
                 .getRepresentativePlace();
 
-        return CategoryPlaceResponses.of(categoryPlaces, representativePlace);
+        return CategoryPlacesResponse.of(categoryPlaces, representativePlace);
     }
 
     private Category getCategoryById(final Long categoryId) {

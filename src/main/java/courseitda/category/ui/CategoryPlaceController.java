@@ -5,7 +5,7 @@ import courseitda.auth.domain.RequiresRole;
 import courseitda.category.application.CategoryPlaceService;
 import courseitda.category.ui.dto.request.CategoryPlaceCreateRequest;
 import courseitda.category.ui.dto.response.CategoryPlaceCreateResponse;
-import courseitda.category.ui.dto.response.CategoryPlaceResponses;
+import courseitda.category.ui.dto.response.CategoryPlacesResponse;
 import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
@@ -54,12 +54,12 @@ public class CategoryPlaceController {
 
     // 카테고리 장소 목록 조회
     @GetMapping
-    public ResponseEntity<CategoryPlaceResponses> readCategoryPlaces(
+    public ResponseEntity<CategoryPlacesResponse> readCategoryPlaces(
             @PathVariable Long categoryId
     ) {
 
         // ✅ 200 OK	카테고리 장소 목록 조회 성공
-        CategoryPlaceResponses response = categoryPlaceService.findCategoryPlaces(categoryId);
+        CategoryPlacesResponse response = categoryPlaceService.findCategoryPlaces(categoryId);
         return ResponseEntity.ok(response);
     }
 }

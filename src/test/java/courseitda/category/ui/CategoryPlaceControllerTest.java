@@ -10,7 +10,7 @@ import courseitda.category.ui.dto.request.CategoryCreateRequest;
 import courseitda.category.ui.dto.request.CategoryPlaceCreateRequest;
 import courseitda.category.ui.dto.response.CategoryCreateResponse;
 import courseitda.category.ui.dto.response.CategoryPlaceCreateResponse;
-import courseitda.category.ui.dto.response.CategoryPlaceResponses;
+import courseitda.category.ui.dto.response.CategoryPlacesResponse;
 import courseitda.member.domain.MemberFixture;
 import courseitda.member.ui.dto.request.SignUpRequest;
 import courseitda.place.domain.PlaceFixture;
@@ -88,7 +88,7 @@ class CategoryPlaceControllerTest {
         createCategoryPlace(accessToken, categoryId);
 
         // when
-        final CategoryPlaceResponses response = given()
+        final CategoryPlacesResponse response = given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, accessToken)
                 .when()
@@ -96,7 +96,7 @@ class CategoryPlaceControllerTest {
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .extract()
-                .as(CategoryPlaceResponses.class);
+                .as(CategoryPlacesResponse.class);
 
         // then
         assertThat(response.categoryPlaceResponses()).hasSize(2);

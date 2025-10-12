@@ -72,7 +72,7 @@ public record CategoryResponse(
                         categoryPlace.getPlace().getLatitude(),
                         categoryPlace.getPlace().getLongitude(),
                         isRepresentative
-                        // todo: 도로명 주소가 있으면 도로명 주소, 없으면 지번 주소
+                // todo: 도로명 주소가 있으면 도로명 주소, 없으면 지번 주소
                 );
             }
         }

@@ -7,6 +7,7 @@ public class PlaceBuilder {
     private String addressName = PlaceFixture.anyAddressName();
     private double latitude = PlaceFixture.anyLatitude();
     private double longitude = PlaceFixture.anyLongitude();
+    private String placeUrl = "";
 
     public PlaceBuilder name(final String name) {
         this.name = name;
@@ -33,15 +34,19 @@ public class PlaceBuilder {
         return this;
     }
 
+    public PlaceBuilder placeUrl(final String placeUrl) {
+        this.placeUrl = placeUrl;
+        return this;
+    }
+
     public Place build() {
-        return new Place(
-                null,
-                name,
-                roadAddressName,
-                addressName,
-                latitude,
-                longitude,
-                null
-        );
+        return Place.builder()
+                .name(name)
+                .roadAddressName(roadAddressName)
+                .addressName(addressName)
+                .latitude(latitude)
+                .longitude(longitude)
+                .placeUrl(placeUrl)
+                .build();
     }
 }

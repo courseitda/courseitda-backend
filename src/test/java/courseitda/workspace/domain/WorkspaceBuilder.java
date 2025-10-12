@@ -19,11 +19,9 @@ public class WorkspaceBuilder {
     }
 
     public Workspace build() {
-        return new Workspace(
-                null,
-                member,
-                title,
-                null
-        );
+        return Workspace.builder()
+                .member(member)
+                .title(title)
+                .build();
     }
 }

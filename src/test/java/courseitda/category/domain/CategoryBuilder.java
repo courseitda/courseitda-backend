@@ -31,14 +31,11 @@ public class CategoryBuilder {
     }
 
     public Category build() {
-        return new Category(
-                null,
-                workspace,
-                null,
-                name,
-                color,
-                sequence,
-                null
-        );
+        return Category.builder()
+                .workspace(workspace)
+                .name(name)
+                .color(color)
+                .sequence(sequence)
+                .build();
     }
 }

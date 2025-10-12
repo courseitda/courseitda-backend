@@ -43,10 +43,18 @@ public class CategoryPlaceService {
 
     @Transactional
     public void deleteCategoryPlace(final Member member, final Long categoryId, final Long categoryPlaceId) {
+        final var category = getCategoryById(categoryId);
         final var categoryPlace = getCategoryPlaceById(categoryPlaceId);
-        categoryPlace.validateOwnership(member);
 
+        categoryPlace.validateOwnership(member);
         validateCategoryOwnership(categoryId, categoryPlace);
+
+        // 대표 장소인 경우 먼저 해제
+        if (category.getRepresentativePlace() != null &&
+                category.getRepresentativePlace().getId().equals(categoryPlaceId)) {
+            category.updateRepresentativePlaceTo(null);
+        }
+
         categoryPlaceRepository.delete(categoryPlace);
     }
 

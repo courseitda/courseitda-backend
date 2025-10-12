@@ -66,6 +66,9 @@ public class CategoryService {
         // 요청된 카테고리 ID 개수와 실제 조회된 카테고리 개수가 일치하는지 검증
         validateAllCategoriesExist(categories, categoryIds);
 
+        // 순서 변경 요청에 동일 ID가 중복되는지 검증
+        validateNoDuplicateCategoryIds(categoryIds);
+
         // 중복된 sequence 값 검증
         validateNoDuplicateSequences(request);
 
@@ -149,6 +152,12 @@ public class CategoryService {
     private void validateAllCategoriesExist(final List<Category> categories, final List<Long> categoryIds) {
         if (categories.size() != categoryIds.size()) {
             throw new NotFoundException("일부 카테고리를 찾을 수 없습니다.");
+        }
+    }
+
+    private void validateNoDuplicateCategoryIds(final List<Long> ids) {
+        if (ids.size() != new HashSet<>(ids).size()) {
+            throw new BadRequestException("중복된 카테고리 ID가 있습니다.");
         }
     }
 

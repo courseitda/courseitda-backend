@@ -1,6 +1,7 @@
 package courseitda.place.domain;
 
 import courseitda.common.Timestamp;
+import courseitda.exception.BadRequestException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -47,6 +48,10 @@ public class Place extends Timestamp {
             final double longitude,
             final String placeUrl
     ) {
+        validateName(name);
+        validateAddressName(addressName);
+        validateCoordinates(latitude, longitude);
+
         this.id = id;
         this.name = name;
         this.roadAddressName = roadAddressName;
@@ -65,5 +70,26 @@ public class Place extends Timestamp {
     ) {
         final var emptyPlaceUrl = "";
         return new Place(null, name, roadAddressName, addressName, latitude, longitude, emptyPlaceUrl);
+    }
+
+    private static void validateName(final String name) {
+        if (name == null || name.isBlank()) {
+            throw new BadRequestException("장소 이름은 필수입니다.");
+        }
+    }
+
+    private static void validateAddressName(final String addressName) {
+        if (addressName == null || addressName.isBlank()) {
+            throw new BadRequestException("주소는 필수입니다.");
+        }
+    }
+
+    private static void validateCoordinates(final double latitude, final double longitude) {
+        if (latitude < -90 || latitude > 90) {
+            throw new BadRequestException("위도는 -90에서 90 사이여야 합니다.");
+        }
+        if (longitude < -180 || longitude > 180) {
+            throw new BadRequestException("경도는 -180에서 180 사이여야 합니다.");
+        }
     }
 }

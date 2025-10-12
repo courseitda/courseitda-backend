@@ -4,8 +4,8 @@ import courseitda.auth.domain.AuthRole;
 import courseitda.auth.domain.AuthTokenExtractor;
 import courseitda.auth.domain.AuthTokenProvider;
 import courseitda.auth.domain.RequiresRole;
-import courseitda.common.exception.auth.AuthenticationException;
-import courseitda.common.exception.auth.AuthorizationException;
+import courseitda.common.exception.BusinessException;
+import courseitda.common.exception.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
@@ -24,7 +24,7 @@ public class AuthRoleCheckInterceptor implements HandlerInterceptor {
             final HttpServletRequest request,
             final HttpServletResponse response,
             final Object handler
-    ) throws AuthenticationException {
+    ) throws BusinessException {
         if (!(handler instanceof final HandlerMethod handlerMethod)) {
             return true;
         }
@@ -43,13 +43,13 @@ public class AuthRoleCheckInterceptor implements HandlerInterceptor {
 
         final String accessToken = authTokenExtractor.extract(request);
         if (!authTokenProvider.isValidToken(accessToken)) {
-            throw new AuthenticationException("유효하지 않은 토큰입니다.");
+            throw new BusinessException(ErrorCode.INVALID_TOKEN);
         }
 
         final AuthRole role = authTokenProvider.getRole(accessToken);
         if (Arrays.stream(requiresRole.authRoles())
                 .noneMatch(authRole -> authRole == role)) {
-            throw new AuthorizationException("권한이 없습니다.");
+            throw new BusinessException(ErrorCode.ACCESS_FORBIDDEN);
         }
         return true;
     }

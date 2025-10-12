@@ -2,6 +2,8 @@ package courseitda.member.domain;
 
 import courseitda.auth.domain.AuthRole;
 import courseitda.common.entity.Timestamp;
+import courseitda.common.exception.BusinessException;
+import courseitda.common.exception.ErrorCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -75,19 +77,19 @@ public class Member extends Timestamp {
 
     private void validateNickname(final String nickname) {
         if (nickname == null || nickname.isBlank()) {
-            throw new IllegalArgumentException("닉네임은 null 또는 공백일 수 없습니다.");
+            throw new BusinessException(ErrorCode.MEMBER_NICKNAME_EMPTY);
         }
         if (nickname.length() < 2 || nickname.length() > 20) {
-            throw new IllegalArgumentException("닉네임은 2자 이상 20자 이하이어야 합니다.");
+            throw new BusinessException(ErrorCode.INVALID_NICKNAME_LENGTH);
         }
     }
 
     private void validateEmail(final String email) {
         if (email == null || email.isBlank()) {
-            throw new IllegalArgumentException("이메일은 null 이거나 빈 문자열일 수 없습니다.");
+            throw new BusinessException(ErrorCode.MEMBER_EMAIL_EMPTY);
         }
         if (!MEMBER_EMAIL_PATTERN.matcher(email).matches()) {
-            throw new IllegalArgumentException("유효한 이메일 형식이 아닙니다.");
+            throw new BusinessException(ErrorCode.INVALID_EMAIL_FORMAT);
         }
     }
 }

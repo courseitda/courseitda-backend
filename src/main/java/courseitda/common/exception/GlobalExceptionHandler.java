@@ -21,4 +21,6 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleBusinessException(final BusinessException e) {
         return e.getErrorCode().toProblemDetail();
     }
+
+    // todo: 요청 DTO 검증 실패 예외 핸들러 추가
 }

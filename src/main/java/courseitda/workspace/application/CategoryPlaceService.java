@@ -1,8 +1,8 @@
 package courseitda.workspace.application;
 
 import courseitda.auth.domain.MemberAuthInfo;
-import courseitda.common.exception.ForbiddenException;
-import courseitda.common.exception.NotFoundException;
+import courseitda.common.exception.BusinessException;
+import courseitda.common.exception.ErrorCode;
 import courseitda.place.domain.Place;
 import courseitda.place.domain.PlaceRepository;
 import courseitda.workspace.domain.Category;
@@ -75,7 +75,7 @@ public class CategoryPlaceService {
 
     private Category getCategoryById(final Long categoryId) {
         return categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new NotFoundException("ID에 해당하는 카테고리를 찾을 수 없습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
     }
 
     private Place findOrCreatePlace(final CategoryPlaceCreateRequest request) {
@@ -94,12 +94,12 @@ public class CategoryPlaceService {
 
     private CategoryPlace getCategoryPlaceById(final Long categoryPlaceId) {
         return categoryPlaceRepository.findById(categoryPlaceId)
-                .orElseThrow(() -> new NotFoundException("ID에 해당하는 카테고리 장소를 찾을 수 없습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_PLACE_NOT_FOUND));
     }
 
     private void validateCategoryOwnership(final Long categoryId, final CategoryPlace categoryPlace) {
         if (!categoryPlace.belongsToCategory(categoryId)) {
-            throw new ForbiddenException("해당 카테고리에 속한 장소가 아닙니다.");
+            throw new BusinessException(ErrorCode.PLACE_NOT_BELONG_TO_CATEGORY);
         }
     }
 }

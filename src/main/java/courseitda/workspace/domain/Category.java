@@ -1,9 +1,8 @@
 package courseitda.workspace.domain;
 
 import courseitda.common.entity.Timestamp;
-import courseitda.common.exception.BadRequestException;
-import courseitda.common.exception.BusinessRuleException;
-import courseitda.common.exception.ForbiddenException;
+import courseitda.common.exception.BusinessException;
+import courseitda.common.exception.ErrorCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;
@@ -104,31 +103,31 @@ public class Category extends Timestamp {
 
     public void validateOwnership(final Long memberId) {
         if (!workspace.isOwnedBy(memberId)) {
-            throw new ForbiddenException("해당 카테고리를 수정할 권한이 없습니다.");
+            throw new BusinessException(ErrorCode.CATEGORY_MODIFY_FORBIDDEN);
         }
     }
 
     private void validateCategoryOwnership(final CategoryPlace candidatePlace) {
         if (!Objects.equals(candidatePlace.getCategory().getId(), this.id)) {
-            throw new ForbiddenException("다른 카테고리의 장소를 대표로 지정할 수 없습니다.");
+            throw new BusinessException(ErrorCode.INVALID_REPRESENTATIVE_PLACE_ASSIGNMENT);
         }
     }
 
     private void validateName(final String name) {
         if (name == null || name.isBlank()) {
-            throw new BadRequestException("카테고리 이름은 필수입니다.");
+            throw new BusinessException(ErrorCode.CATEGORY_NAME_EMPTY);
         }
         if (name.length() > 10) {
-            throw new BusinessRuleException("카테고리 이름은 10자를 초과할 수 없습니다.");
+            throw new BusinessException(ErrorCode.CATEGORY_NAME_LENGTH_EXCEEDED);
         }
     }
 
     private void validateColor(final String color) {
         if (color == null || color.isBlank()) {
-            throw new BadRequestException("카테고리 색상은 필수입니다.");
+            throw new BusinessException(ErrorCode.CATEGORY_COLOR_EMPTY);
         }
         if (!color.matches("^#[0-9A-Fa-f]{6}$")) {
-            throw new BusinessRuleException("올바른 색상 형식이 아닙니다.");
+            throw new BusinessException(ErrorCode.INVALID_CATEGORY_COLOR_FORMAT);
         }
     }
 }

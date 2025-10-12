@@ -2,7 +2,8 @@ package courseitda.auth.ui.argument;
 
 import courseitda.auth.domain.AuthTokenExtractor;
 import courseitda.auth.domain.AuthTokenProvider;
-import courseitda.common.exception.auth.AuthenticationException;
+import courseitda.common.exception.BusinessException;
+import courseitda.common.exception.ErrorCode;
 import courseitda.member.application.MemberService;
 import courseitda.member.domain.Member;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,7 +36,7 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
         final HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         final String token = authTokenExtractor.extract(request);
         if (!authTokenProvider.isValidToken(token)) {
-            throw new AuthenticationException("유효하지 않은 토큰입니다.");
+            throw new BusinessException(ErrorCode.INVALID_TOKEN);
         }
         final Long memberId = Long.parseLong(authTokenProvider.getPrincipal(token));
 

@@ -4,7 +4,8 @@ import courseitda.auth.domain.AuthRole;
 import courseitda.auth.domain.AuthTokenExtractor;
 import courseitda.auth.domain.AuthTokenProvider;
 import courseitda.auth.domain.MemberAuthInfo;
-import courseitda.common.exception.auth.AuthenticationException;
+import courseitda.common.exception.BusinessException;
+import courseitda.common.exception.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
@@ -34,7 +35,7 @@ public class MemberAuthInfoArgumentResolver implements HandlerMethodArgumentReso
         final HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         final String token = authTokenExtractor.extract(request);
         if (!authTokenProvider.isValidToken(token)) {
-            throw new AuthenticationException("유효하지 않은 토큰입니다.");
+            throw new BusinessException(ErrorCode.INVALID_TOKEN);
         }
         final Long id = Long.parseLong(authTokenProvider.getPrincipal(token));
         final AuthRole role = authTokenProvider.getRole(token);

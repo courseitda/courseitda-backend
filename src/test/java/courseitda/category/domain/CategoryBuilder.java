@@ -31,6 +31,14 @@ public class CategoryBuilder {
     }
 
     public Category build() {
-        return Category.createNew(workspace, name, color, sequence);
+        return new Category(
+                null,
+                workspace,
+                null,
+                name,
+                color,
+                sequence,
+                null
+        );
     }
 }

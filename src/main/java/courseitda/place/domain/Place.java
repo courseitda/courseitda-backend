@@ -9,12 +9,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @Table(name = "places")
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Place extends Timestamp {
 
@@ -39,8 +42,8 @@ public class Place extends Timestamp {
 
     private String placeUrl;
 
-    private Place(
-            final Long id,
+    @Builder
+    public Place(
             final String name,
             final String roadAddressName,
             final String addressName,
@@ -52,7 +55,6 @@ public class Place extends Timestamp {
         validateAddressName(addressName);
         validateCoordinates(latitude, longitude);
 
-        this.id = id;
         this.name = name;
         this.roadAddressName = roadAddressName;
         this.addressName = addressName;
@@ -69,7 +71,7 @@ public class Place extends Timestamp {
             final double longitude
     ) {
         final var emptyPlaceUrl = "";
-        return new Place(null, name, roadAddressName, addressName, latitude, longitude, emptyPlaceUrl);
+        return new Place(name, roadAddressName, addressName, latitude, longitude, emptyPlaceUrl);
     }
 
     private static void validateName(final String name) {

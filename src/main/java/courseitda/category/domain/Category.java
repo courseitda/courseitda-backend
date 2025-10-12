@@ -20,6 +20,8 @@ import jakarta.persistence.Table;
 import java.util.List;
 import java.util.Objects;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -27,6 +29,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Table(name = "categories")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
 public class Category extends Timestamp {
 
     @Id
@@ -55,8 +58,8 @@ public class Category extends Timestamp {
     )
     private CategoryPlace representativePlace;
 
-    private Category(
-            final Long id,
+    @Builder
+    public Category(
             final Workspace workspace,
             final List<CategoryPlace> categoryPlaces,
             final String name,
@@ -64,7 +67,6 @@ public class Category extends Timestamp {
             final Integer sequence,
             final CategoryPlace representativePlace
     ) {
-        this.id = id;
         this.workspace = workspace;
         this.categoryPlaces = categoryPlaces;
         this.name = name;
@@ -79,7 +81,7 @@ public class Category extends Timestamp {
             final String color,
             final Integer sequence
     ) {
-        return new Category(null, workspace, null, name, color, sequence, null);
+        return new Category(workspace, null, name, color, sequence, null);
     }
 
     public void updateRepresentativePlaceTo(final CategoryPlace candidatePlace) {

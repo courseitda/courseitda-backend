@@ -19,6 +19,11 @@ public class WorkspaceBuilder {
     }
 
     public Workspace build() {
-        return Workspace.createNew(member, title);
+        return new Workspace(
+                null,
+                member,
+                title,
+                null
+        );
     }
 }

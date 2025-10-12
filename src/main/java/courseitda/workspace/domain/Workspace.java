@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,6 +28,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Table(name = "workspaces")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
 public class Workspace extends Timestamp {
 
     @Id
@@ -42,22 +45,21 @@ public class Workspace extends Timestamp {
     @OneToMany(mappedBy = "workspace")
     private List<Category> categories;
 
-    private Workspace(
-            final Long id,
+    @Builder
+    public Workspace(
             final Member member,
             final String title,
             final List<Category> categories
     ) {
         validateTitle(title);
 
-        this.id = id;
         this.member = member;
         this.title = title;
         this.categories = categories;
     }
 
     public static Workspace createNew(final Member member, final String title) {
-        return new Workspace(null, member, title, new ArrayList<>());
+        return new Workspace(member, title, new ArrayList<>());
     }
 
     public static String formatTitle(final String unformattedTitle) {

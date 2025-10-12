@@ -1,6 +1,5 @@
 package courseitda.workspace.domain;
 
-import courseitda.category.domain.Category;
 import courseitda.common.Timestamp;
 import courseitda.exception.BadRequestException;
 import courseitda.exception.BusinessRuleException;

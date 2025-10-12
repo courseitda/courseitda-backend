@@ -1,6 +1,7 @@
 package courseitda.workspace.ui;
 
 import courseitda.auth.domain.AuthRole;
+import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.auth.domain.RequiresRole;
 import courseitda.member.domain.Member;
 import courseitda.workspace.application.WorkspaceService;
@@ -46,7 +47,7 @@ public class WorkspaceController {
     // 워크스페이스 제목 수정
     @PatchMapping("/{workspaceId}")
     public ResponseEntity<WorkspaceUpdateResponse> updateWorkspace(
-            Member member,
+            MemberAuthInfo memberAuthInfo,
             @PathVariable Long workspaceId,
             @Valid @RequestBody WorkspaceUpdateRequest request
     ) {
@@ -57,14 +58,14 @@ public class WorkspaceController {
         // ✅ 404 Not Found	    워크스페이스 ID가 존재하지 않음 -> findById 예외 처리
         // ✅ 409 Conflict      워크스페이스 삭제 과정에서 충돌이 일어난 경우 -> 라젤 추가) 동일한 워크스페이스 닉네임이 존재하는 경우
 
-        WorkspaceUpdateResponse response = workspaceService.updateWorkspace(member, workspaceId, request);
+        WorkspaceUpdateResponse response = workspaceService.updateWorkspace(memberAuthInfo, workspaceId, request);
         return ResponseEntity.ok(response);
     }
 
     // 워크스페이스 삭제
     @DeleteMapping("/{workspaceId}")
     public ResponseEntity<Void> deleteWorkspace(
-            Member member,
+            MemberAuthInfo memberAuthInfo,
             @PathVariable Long workspaceId
     ) {
         // ✅ 204 No Content	워크스페이스 삭제 성공
@@ -73,7 +74,7 @@ public class WorkspaceController {
         // ✅ 404 Not Found	    워크스페이스 ID가 존재하지 않음 -> findById 예외 처리
         // ❌ 409 Conflict	    무언가 제약 조건 때문에 워크스페이스 삭제가 불가한 상태 -> 공유 기능있으면 들어가야 한다.
 
-        workspaceService.deleteWorkspace(member, workspaceId);
+        workspaceService.deleteWorkspace(memberAuthInfo, workspaceId);
         return ResponseEntity.noContent().build();
     }
 }

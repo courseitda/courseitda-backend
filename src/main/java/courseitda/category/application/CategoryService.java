@@ -1,5 +1,6 @@
 package courseitda.category.application;
 
+import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.category.domain.Category;
 import courseitda.category.domain.CategoryRepository;
 import courseitda.category.ui.dto.request.CategoryCreateRequest;
@@ -14,7 +15,6 @@ import courseitda.category.ui.dto.response.CategoryUpdateResponse;
 import courseitda.exception.BadRequestException;
 import courseitda.exception.ForbiddenException;
 import courseitda.exception.NotFoundException;
-import courseitda.member.domain.Member;
 import courseitda.workspace.domain.Workspace;
 import courseitda.workspace.domain.WorkspaceRepository;
 import java.util.HashSet;
@@ -33,12 +33,12 @@ public class CategoryService {
 
     @Transactional
     public CategoryCreateResponse createCategory(
-            final Member member,
+            final MemberAuthInfo memberAuthInfo,
             final Long workspaceId,
             final CategoryCreateRequest request
     ) {
         final var workspace = getWorkspaceById(workspaceId);
-        workspace.validateOwnership(member);
+        workspace.validateOwnership(memberAuthInfo.id());
 
         // N+1 문제 해결: workspace.getCategories().size() 대신 직접 count 쿼리 사용
         final var nextSequence = categoryRepository.countByWorkspaceId(workspaceId) + 1;
@@ -50,12 +50,12 @@ public class CategoryService {
 
     @Transactional
     public CategoryReorderResponse updateCategorySequence(
-            final Member member,
+            final MemberAuthInfo memberAuthInfo,
             final Long workspaceId,
             final CategoryReorderRequest request
     ) {
         final var workspace = getWorkspaceById(workspaceId);
-        workspace.validateOwnership(member);
+        workspace.validateOwnership(memberAuthInfo.id());
 
         final var categoryIds = request.categorySequenceRequests().stream()
                 .map(CategorySequenceRequest::id)
@@ -84,13 +84,13 @@ public class CategoryService {
 
     @Transactional
     public CategoryUpdateResponse updateCategory(
-            final Member member,
+            final MemberAuthInfo memberAuthInfo,
             final Long workspaceId,
             final Long categoryId,
             final CategoryUpdateRequest request
     ) {
         final var workspace = getWorkspaceById(workspaceId);
-        workspace.validateOwnership(member);
+        workspace.validateOwnership(memberAuthInfo.id());
 
         final var category = getCategoryById(categoryId);
         validateCategoryBelongsToWorkspace(workspace, category);
@@ -101,12 +101,12 @@ public class CategoryService {
 
     @Transactional
     public void deleteCategory(
-            final Member member,
+            final MemberAuthInfo memberAuthInfo,
             final Long workspaceId,
             final Long categoryId
     ) {
         final var workspace = getWorkspaceById(workspaceId);
-        workspace.validateOwnership(member);
+        workspace.validateOwnership(memberAuthInfo.id());
 
         final var category = getCategoryById(categoryId);
         validateCategoryBelongsToWorkspace(workspace, category);
@@ -116,12 +116,12 @@ public class CategoryService {
 
     @Transactional(readOnly = true)
     public CategoryResponse findCategory(
-            final Member member,
+            final MemberAuthInfo memberAuthInfo,
             final Long workspaceId,
             final Long categoryId
     ) {
         final var workspace = getWorkspaceById(workspaceId);
-        workspace.validateOwnership(member);
+        workspace.validateOwnership(memberAuthInfo.id());
 
         final var category = getCategoryById(categoryId);
         validateCategoryBelongsToWorkspace(workspace, category);
@@ -131,11 +131,11 @@ public class CategoryService {
 
     @Transactional(readOnly = true)
     public CategoriesResponse findAllCategories(
-            final Member member,
+            final MemberAuthInfo memberAuthInfo,
             final Long workspaceId
     ) {
         final var workspace = getWorkspaceById(workspaceId);
-        workspace.validateOwnership(member);
+        workspace.validateOwnership(memberAuthInfo.id());
 
         final var categories = workspace.getCategories();
         return CategoriesResponse.from(categories);

@@ -1,5 +1,6 @@
 package courseitda.category.application;
 
+import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.category.domain.Category;
 import courseitda.category.domain.CategoryPlace;
 import courseitda.category.domain.CategoryPlaceRepository;
@@ -7,7 +8,6 @@ import courseitda.category.domain.CategoryRepository;
 import courseitda.category.ui.dto.request.RepresentativeCategoryPlaceUpdateRequest;
 import courseitda.category.ui.dto.response.RepresentativeCategoryPlaceUpdateResponse;
 import courseitda.exception.NotFoundException;
-import courseitda.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,12 +21,12 @@ public class RepresentativeCategoryPlaceService {
 
     @Transactional
     public RepresentativeCategoryPlaceUpdateResponse updateRepresentativeCategoryPlace(
-            final Member member,
+            final MemberAuthInfo memberAuthInfo,
             final Long categoryId,
             final RepresentativeCategoryPlaceUpdateRequest request
     ) {
         var category = getCategoryById(categoryId);
-        category.validateOwnership(member);
+        category.validateOwnership(memberAuthInfo.id());
 
         var candidatePlace = getCategoryPlaceById(request.categoryPlaceId());
 
@@ -37,11 +37,11 @@ public class RepresentativeCategoryPlaceService {
 
     @Transactional
     public void deleteRepresentativeCategoryPlace(
-            final Member member,
+            final MemberAuthInfo memberAuthInfo,
             final Long categoryId
     ) {
         var category = getCategoryById(categoryId);
-        category.validateOwnership(member);
+        category.validateOwnership(memberAuthInfo.id());
 
         category.updateRepresentativePlaceTo(null);
     }

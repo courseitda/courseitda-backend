@@ -66,8 +66,8 @@ public class Workspace extends Timestamp {
         return unformattedTitle.trim();
     }
 
-    public boolean isOwnedBy(final Member member) {
-        return Objects.equals(this.member.getId(), member.getId());
+    public boolean isOwnedBy(final Long memberId) {
+        return Objects.equals(this.member.getId(), memberId);
     }
 
     public void rename(final String newTitle) {
@@ -75,8 +75,8 @@ public class Workspace extends Timestamp {
         this.title = newTitle;
     }
 
-    public void validateOwnership(final Member member) {
-        if (!isOwnedBy(member)) {
+    public void validateOwnership(final Long memberId) {
+        if (!isOwnedBy(memberId)) {
             throw new ForbiddenException("해당 워크스페이스의 수정 권한이 없습니다.");
         }
     }

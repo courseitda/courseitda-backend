@@ -1,7 +1,6 @@
 package courseitda.category.domain;
 
 import courseitda.common.Timestamp;
-import courseitda.member.domain.Member;
 import courseitda.place.domain.Place;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -47,8 +46,8 @@ public class CategoryPlace extends Timestamp {
         return new CategoryPlace(null, category, place);
     }
 
-    public void validateOwnership(final Member member) {
-        this.category.validateOwnership(member);
+    public void validateOwnership(final Long memberId) {
+        this.category.validateOwnership(memberId);
     }
 
     public boolean belongsToCategory(final Long categoryId) {

@@ -1,11 +1,11 @@
 package courseitda.category.ui;
 
 import courseitda.auth.domain.AuthRole;
+import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.auth.domain.RequiresRole;
 import courseitda.category.application.RepresentativeCategoryPlaceService;
 import courseitda.category.ui.dto.request.RepresentativeCategoryPlaceUpdateRequest;
 import courseitda.category.ui.dto.response.RepresentativeCategoryPlaceUpdateResponse;
-import courseitda.member.domain.Member;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,22 +27,22 @@ public class RepresentativeCategoryPlaceController {
     // 카테고리 대표 장소 수정
     @PutMapping
     public ResponseEntity<RepresentativeCategoryPlaceUpdateResponse> updateRepresentativeCategoryPlace(
-            Member member,
+            MemberAuthInfo memberAuthInfo,
             @PathVariable Long categoryId,
             @Valid @RequestBody RepresentativeCategoryPlaceUpdateRequest request
     ) {
         RepresentativeCategoryPlaceUpdateResponse response = representativeCategoryPlaceService
-                .updateRepresentativeCategoryPlace(member, categoryId, request);
+                .updateRepresentativeCategoryPlace(memberAuthInfo, categoryId, request);
         return ResponseEntity.ok(response);
     }
 
     // 카테고리 대표 장소 해제
     @DeleteMapping
     public ResponseEntity<Void> deleteRepresentativeCategoryPlace(
-            Member member,
+            MemberAuthInfo memberAuthInfo,
             @PathVariable Long categoryId
     ) {
-        representativeCategoryPlaceService.deleteRepresentativeCategoryPlace(member, categoryId);
+        representativeCategoryPlaceService.deleteRepresentativeCategoryPlace(memberAuthInfo, categoryId);
         return ResponseEntity.noContent().build();
     }
 }

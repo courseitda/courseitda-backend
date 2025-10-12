@@ -4,7 +4,6 @@ import courseitda.common.Timestamp;
 import courseitda.exception.BadRequestException;
 import courseitda.exception.BusinessRuleException;
 import courseitda.exception.ForbiddenException;
-import courseitda.member.domain.Member;
 import courseitda.workspace.domain.Workspace;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -104,8 +103,8 @@ public class Category extends Timestamp {
         this.color = newColor;
     }
 
-    public void validateOwnership(final Member member) {
-        if (!workspace.isOwnedBy(member)) {
+    public void validateOwnership(final Long memberId) {
+        if (!workspace.isOwnedBy(memberId)) {
             throw new ForbiddenException("해당 카테고리를 수정할 권한이 없습니다.");
         }
     }

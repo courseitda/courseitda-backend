@@ -1,5 +1,6 @@
 package courseitda.category.application;
 
+import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.category.domain.Category;
 import courseitda.category.domain.CategoryPlace;
 import courseitda.category.domain.CategoryPlaceRepository;
@@ -9,7 +10,6 @@ import courseitda.category.ui.dto.response.CategoryPlaceCreateResponse;
 import courseitda.category.ui.dto.response.CategoryPlacesResponse;
 import courseitda.exception.ForbiddenException;
 import courseitda.exception.NotFoundException;
-import courseitda.member.domain.Member;
 import courseitda.place.domain.Place;
 import courseitda.place.domain.PlaceRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,12 +26,12 @@ public class CategoryPlaceService {
 
     @Transactional
     public CategoryPlaceCreateResponse createCategoryPlace(
-            final Member member,
+            final MemberAuthInfo memberAuthInfo,
             final Long categoryId,
             final CategoryPlaceCreateRequest request
     ) {
         final var category = getCategoryById(categoryId);
-        category.validateOwnership(member);
+        category.validateOwnership(memberAuthInfo.id());
 
         final var place = findOrCreatePlace(request);
 
@@ -42,11 +42,15 @@ public class CategoryPlaceService {
     }
 
     @Transactional
-    public void deleteCategoryPlace(final Member member, final Long categoryId, final Long categoryPlaceId) {
+    public void deleteCategoryPlace(
+            final MemberAuthInfo memberAuthInfo,
+            final Long categoryId,
+            final Long categoryPlaceId
+    ) {
         final var category = getCategoryById(categoryId);
         final var categoryPlace = getCategoryPlaceById(categoryPlaceId);
 
-        categoryPlace.validateOwnership(member);
+        categoryPlace.validateOwnership(memberAuthInfo.id());
         validateCategoryOwnership(categoryId, categoryPlace);
 
         // 대표 장소인 경우 먼저 해제
@@ -59,9 +63,9 @@ public class CategoryPlaceService {
     }
 
     @Transactional(readOnly = true)
-    public CategoryPlacesResponse findCategoryPlaces(final Member member, final Long categoryId) {
+    public CategoryPlacesResponse findCategoryPlaces(final MemberAuthInfo memberAuthInfo, final Long categoryId) {
         final var category = getCategoryById(categoryId);
-        category.validateOwnership(member);
+        category.validateOwnership(memberAuthInfo.id());
 
         final var categoryPlaces = category.getCategoryPlaces();
         final var representativePlace = category.getRepresentativePlace();

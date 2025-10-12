@@ -1,6 +1,8 @@
 package courseitda.category.domain;
 
 import courseitda.common.Timestamp;
+import courseitda.exception.BadRequestException;
+import courseitda.exception.BusinessRuleException;
 import courseitda.exception.ForbiddenException;
 import courseitda.member.domain.Member;
 import courseitda.workspace.domain.Workspace;
@@ -94,6 +96,8 @@ public class Category extends Timestamp {
     }
 
     public void updateNameAndColor(final String newName, final String newColor) {
+        validateName(newName);
+        validateColor(newColor);
         this.name = newName;
         this.color = newColor;
     }
@@ -105,6 +109,24 @@ public class Category extends Timestamp {
     private void validateCategoryOwnership(CategoryPlace candidatePlace) {
         if (!Objects.equals(candidatePlace.getCategory().getId(), this.id)) {
             throw new ForbiddenException("다른 카테고리의 장소를 대표로 지정할 수 없습니다.");
+        }
+    }
+
+    private void validateName(final String name) {
+        if (name == null || name.isBlank()) {
+            throw new BadRequestException("카테고리 이름은 필수입니다.");
+        }
+        if (name.length() > 20) {
+            throw new BusinessRuleException("카테고리 이름은 20자를 초과할 수 없습니다.");
+        }
+    }
+
+    private void validateColor(final String color) {
+        if (color == null || color.isBlank()) {
+            throw new BadRequestException("카테고리 색상은 필수입니다.");
+        }
+        if (!color.matches("^#[0-9A-Fa-f]{6}$")) {
+            throw new BusinessRuleException("올바른 색상 형식이 아닙니다.");
         }
     }
 }

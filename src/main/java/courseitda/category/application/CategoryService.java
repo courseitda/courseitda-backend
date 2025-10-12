@@ -6,9 +6,12 @@ import courseitda.category.ui.dto.request.CategoryCreateRequest;
 import courseitda.category.ui.dto.request.CategoryReorderRequest;
 import courseitda.category.ui.dto.request.CategorySequenceRequest;
 import courseitda.category.ui.dto.request.CategoryUpdateRequest;
+import courseitda.category.ui.dto.response.CategoriesResponse;
 import courseitda.category.ui.dto.response.CategoryCreateResponse;
 import courseitda.category.ui.dto.response.CategoryReorderResponse;
+import courseitda.category.ui.dto.response.CategoryResponse;
 import courseitda.category.ui.dto.response.CategoryUpdateResponse;
+import courseitda.exception.BadRequestException;
 import courseitda.exception.ForbiddenException;
 import courseitda.exception.NotFoundException;
 import courseitda.member.domain.Member;
@@ -111,6 +114,33 @@ public class CategoryService {
         categoryRepository.delete(category);
     }
 
+    @Transactional(readOnly = true)
+    public CategoryResponse findCategory(
+            final Member member,
+            final Long workspaceId,
+            final Long categoryId
+    ) {
+        final var workspace = getWorkspaceById(workspaceId);
+        validateOwnership(member, workspace);
+
+        final var category = getCategoryById(categoryId);
+        validateCategoryOwnership(workspace, category);
+
+        return CategoryResponse.from(category);
+    }
+
+    @Transactional(readOnly = true)
+    public CategoriesResponse findAllCategories(
+            final Member member,
+            final Long workspaceId
+    ) {
+        final var workspace = getWorkspaceById(workspaceId);
+        validateOwnership(member, workspace);
+
+        final var categories = workspace.getCategories();
+        return CategoriesResponse.from(categories);
+    }
+
     private Workspace getWorkspaceById(final Long workspaceId) {
         return workspaceRepository.findById(workspaceId)
                 .orElseThrow(() -> new NotFoundException("ID에 해당하는 워크스페이스를 찾을 수 없습니다."));
@@ -122,17 +152,17 @@ public class CategoryService {
         }
     }
 
-    private void validateAllCategoriesExist(List<Category> categories, List<Long> categoryIds) {
+    private void validateAllCategoriesExist(final List<Category> categories, final List<Long> categoryIds) {
         if (categories.size() != categoryIds.size()) {
             throw new NotFoundException("일부 카테고리를 찾을 수 없습니다.");
         }
     }
 
-    private void validateNoDuplicateSequences(CategoryReorderRequest request) {
+    private void validateNoDuplicateSequences(final CategoryReorderRequest request) {
         final Set<Integer> sequences = new HashSet<>();
         for (final var sequenceRequest : request.categorySequenceRequests()) {
             if (!sequences.add(sequenceRequest.sequence())) {
-                throw new IllegalArgumentException("중복된 순서 값이 있습니다.");
+                throw new BadRequestException("중복된 순서 값이 있습니다.");
             }
         }
     }
@@ -143,7 +173,7 @@ public class CategoryService {
         }
     }
 
-    private Category getCategoryById(Long categoryId) {
+    private Category getCategoryById(final Long categoryId) {
         return categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new NotFoundException("ID에 해당하는 카테고리를 찾을 수 없습니다."));
     }

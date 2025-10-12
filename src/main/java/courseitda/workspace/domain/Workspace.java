@@ -2,6 +2,8 @@ package courseitda.workspace.domain;
 
 import courseitda.category.domain.Category;
 import courseitda.common.Timestamp;
+import courseitda.exception.BadRequestException;
+import courseitda.exception.BusinessRuleException;
 import courseitda.member.domain.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -72,10 +74,10 @@ public class Workspace extends Timestamp {
 
     private void validateTitle(final String title) {
         if (title.isBlank()) {
-            throw new IllegalArgumentException();
+            throw new BadRequestException("워크스페이스 제목은 공백일 수 없습니다.");
         }
         if (title.length() > 20) {
-            throw new IllegalArgumentException();
+            throw new BusinessRuleException("워크스페이스 제목은 20자 이하이어야 합니다.");
         }
     }
 }

@@ -35,4 +35,3 @@ public class KakaoPlaceSearcher implements PlaceSearcher {
                 .toList();
     }
 }
-

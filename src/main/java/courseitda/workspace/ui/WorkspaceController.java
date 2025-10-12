@@ -53,7 +53,7 @@ public class WorkspaceController {
     ) {
         // ✅ 200 OK	        이름 변경 성공
         // ✅ 400 Bad Request	필수 필드 누락, 유효성 검증 실패 -> request dto에서 검증 진행
-        // ✅ 401 Unauthorized	토큰 누락 또는 유효하지 않은 토큰 -> Member 받아오는 과정에서 알아서 처리
+        // ✅ 401 Unauthorized	토큰 누락 또는 유효하지 않은 토큰 -> MemberAuthInfo 받아오는 과정에서 알아서 처리
         // ✅ 403 Forbidden	    유효한 토큰을 갖고 있지만, 해당 워크스페이스의 수정 권한이 없음 -> 워크스페이스 소유자 여부 예외 처리
         // ✅ 404 Not Found	    워크스페이스 ID가 존재하지 않음 -> findById 예외 처리
         // ✅ 409 Conflict      워크스페이스 삭제 과정에서 충돌이 일어난 경우 -> 라젤 추가) 동일한 워크스페이스 닉네임이 존재하는 경우
@@ -69,7 +69,7 @@ public class WorkspaceController {
             @PathVariable Long workspaceId
     ) {
         // ✅ 204 No Content	워크스페이스 삭제 성공
-        // ✅ 401 Unauthorized	토큰 누락 또는 유효하지 않은 토큰 -> Member 받아오는 과정에서 알아서 처리
+        // ✅ 401 Unauthorized	토큰 누락 또는 유효하지 않은 토큰 -> MemberAuthInfo 받아오는 과정에서 알아서 처리
         // ✅ 403 Forbidden	    유효한 토큰을 갖고 있지만, 해당 워크스페이스의 삭제 권한이 없음 -> 워크스페이스 소유자 여부 예외 처리
         // ✅ 404 Not Found	    워크스페이스 ID가 존재하지 않음 -> findById 예외 처리
         // ❌ 409 Conflict	    무언가 제약 조건 때문에 워크스페이스 삭제가 불가한 상태 -> 공유 기능있으면 들어가야 한다.

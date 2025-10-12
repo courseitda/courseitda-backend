@@ -75,16 +75,16 @@ public class Workspace extends Timestamp {
 
     public void validateOwnership(final Long memberId) {
         if (!isOwnedBy(memberId)) {
-            throw new BusinessException(ErrorCode.WORKSPACE_FORBIDDEN);
+            throw new BusinessException(ErrorCode.WORKSPACE_MODIFY_FORBIDDEN);
         }
     }
 
     private void validateTitle(final String title) {
         if (title.isBlank()) {
-            throw new BusinessException(ErrorCode.WORKSPACE_TITLE_BLANK);
+            throw new BusinessException(ErrorCode.WORKSPACE_TITLE_EMPTY);
         }
         if (title.length() > 20) {
-            throw new BusinessException(ErrorCode.WORKSPACE_TITLE_TOO_LONG);
+            throw new BusinessException(ErrorCode.WORKSPACE_TITLE_LENGTH_EXCEEDED);
         }
     }
 }

@@ -77,19 +77,19 @@ public class Member extends Timestamp {
 
     private void validateNickname(final String nickname) {
         if (nickname == null || nickname.isBlank()) {
-            throw new BusinessException(ErrorCode.MEMBER_NICKNAME_BLANK);
+            throw new BusinessException(ErrorCode.MEMBER_NICKNAME_EMPTY);
         }
         if (nickname.length() < 2 || nickname.length() > 20) {
-            throw new BusinessException(ErrorCode.MEMBER_NICKNAME_LENGTH_INVALID);
+            throw new BusinessException(ErrorCode.INVALID_NICKNAME_LENGTH);
         }
     }
 
     private void validateEmail(final String email) {
         if (email == null || email.isBlank()) {
-            throw new BusinessException(ErrorCode.MEMBER_EMAIL_BLANK);
+            throw new BusinessException(ErrorCode.MEMBER_EMAIL_EMPTY);
         }
         if (!MEMBER_EMAIL_PATTERN.matcher(email).matches()) {
-            throw new BusinessException(ErrorCode.MEMBER_EMAIL_INVALID);
+            throw new BusinessException(ErrorCode.INVALID_EMAIL_FORMAT);
         }
     }
 }

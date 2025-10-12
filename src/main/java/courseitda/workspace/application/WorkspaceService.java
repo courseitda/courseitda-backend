@@ -65,7 +65,7 @@ public class WorkspaceService {
     private void validateDuplicatedTitle(final Long memberId, final String newTitle) {
         // 해당 회원 소유의 워크스페이스에 이미 해당 타이틀을 사용중인지
         if (workspaceRepository.existsByMemberIdAndTitle(memberId, newTitle)) {
-            throw new BusinessException(ErrorCode.WORKSPACE_TITLE_DUPLICATE);
+            throw new BusinessException(ErrorCode.DUPLICATE_WORKSPACE_TITLE);
         }
     }
 }

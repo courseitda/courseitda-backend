@@ -77,22 +77,22 @@ public class Place extends Timestamp {
 
     private static void validateName(final String name) {
         if (name == null || name.isBlank()) {
-            throw new BusinessException(ErrorCode.PLACE_NAME_REQUIRED);
+            throw new BusinessException(ErrorCode.PLACE_NAME_EMPTY);
         }
     }
 
     private static void validateAddressName(final String addressName) {
         if (addressName == null || addressName.isBlank()) {
-            throw new BusinessException(ErrorCode.PLACE_ADDRESS_REQUIRED);
+            throw new BusinessException(ErrorCode.PLACE_ADDRESS_EMPTY);
         }
     }
 
     private static void validateCoordinates(final double latitude, final double longitude) {
         if (latitude < -90 || latitude > 90) {
-            throw new BusinessException(ErrorCode.PLACE_LATITUDE_INVALID);
+            throw new BusinessException(ErrorCode.INVALID_LATITUDE_RANGE);
         }
         if (longitude < -180 || longitude > 180) {
-            throw new BusinessException(ErrorCode.PLACE_LONGITUDE_INVALID);
+            throw new BusinessException(ErrorCode.INVALID_LONGITUDE_RANGE);
         }
     }
 }

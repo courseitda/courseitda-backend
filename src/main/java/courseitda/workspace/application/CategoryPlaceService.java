@@ -99,7 +99,7 @@ public class CategoryPlaceService {
 
     private void validateCategoryOwnership(final Long categoryId, final CategoryPlace categoryPlace) {
         if (!categoryPlace.belongsToCategory(categoryId)) {
-            throw new BusinessException(ErrorCode.CATEGORY_PLACE_FORBIDDEN);
+            throw new BusinessException(ErrorCode.PLACE_NOT_BELONG_TO_CATEGORY);
         }
     }
 }

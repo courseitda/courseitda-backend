@@ -23,7 +23,7 @@ public class AuthService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND_BY_EMAIL));
 
         if (!passwordEncoder.matches(request.password(), member.getPassword())) {
-            throw new BusinessException(ErrorCode.INVALID_PASSWORD);
+            throw new BusinessException(ErrorCode.INCORRECT_PASSWORD);
         }
 
         return authTokenProvider.createAccessToken(member.getId().toString(), member.getAuthRole());

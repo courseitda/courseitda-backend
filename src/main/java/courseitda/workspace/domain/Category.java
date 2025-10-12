@@ -103,31 +103,31 @@ public class Category extends Timestamp {
 
     public void validateOwnership(final Long memberId) {
         if (!workspace.isOwnedBy(memberId)) {
-            throw new BusinessException(ErrorCode.CATEGORY_FORBIDDEN);
+            throw new BusinessException(ErrorCode.CATEGORY_MODIFY_FORBIDDEN);
         }
     }
 
     private void validateCategoryOwnership(final CategoryPlace candidatePlace) {
         if (!Objects.equals(candidatePlace.getCategory().getId(), this.id)) {
-            throw new BusinessException(ErrorCode.CATEGORY_REPRESENTATIVE_PLACE_FORBIDDEN);
+            throw new BusinessException(ErrorCode.INVALID_REPRESENTATIVE_PLACE_ASSIGNMENT);
         }
     }
 
     private void validateName(final String name) {
         if (name == null || name.isBlank()) {
-            throw new BusinessException(ErrorCode.CATEGORY_NAME_REQUIRED);
+            throw new BusinessException(ErrorCode.CATEGORY_NAME_EMPTY);
         }
         if (name.length() > 10) {
-            throw new BusinessException(ErrorCode.CATEGORY_NAME_TOO_LONG);
+            throw new BusinessException(ErrorCode.CATEGORY_NAME_LENGTH_EXCEEDED);
         }
     }
 
     private void validateColor(final String color) {
         if (color == null || color.isBlank()) {
-            throw new BusinessException(ErrorCode.CATEGORY_COLOR_REQUIRED);
+            throw new BusinessException(ErrorCode.CATEGORY_COLOR_EMPTY);
         }
         if (!color.matches("^#[0-9A-Fa-f]{6}$")) {
-            throw new BusinessException(ErrorCode.CATEGORY_COLOR_INVALID);
+            throw new BusinessException(ErrorCode.INVALID_CATEGORY_COLOR_FORMAT);
         }
     }
 }

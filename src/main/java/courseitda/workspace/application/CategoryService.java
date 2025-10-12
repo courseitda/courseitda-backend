@@ -150,13 +150,13 @@ public class CategoryService {
 
     private void validateAllCategoriesExist(final List<Category> categories, final List<Long> categoryIds) {
         if (categories.size() != categoryIds.size()) {
-            throw new BusinessException(ErrorCode.CATEGORY_SOME_NOT_FOUND);
+            throw new BusinessException(ErrorCode.PARTIAL_CATEGORY_NOT_FOUND);
         }
     }
 
     private void validateNoDuplicateCategoryIds(final List<Long> ids) {
         if (ids.size() != new HashSet<>(ids).size()) {
-            throw new BusinessException(ErrorCode.CATEGORY_DUPLICATE_ID);
+            throw new BusinessException(ErrorCode.DUPLICATE_CATEGORY_ID);
         }
     }
 
@@ -164,14 +164,14 @@ public class CategoryService {
         final Set<Integer> sequences = new HashSet<>();
         for (final var sequenceRequest : request.categorySequenceRequests()) {
             if (!sequences.add(sequenceRequest.sequence())) {
-                throw new BusinessException(ErrorCode.CATEGORY_DUPLICATE_ORDER);
+                throw new BusinessException(ErrorCode.DUPLICATE_CATEGORY_ORDER);
             }
         }
     }
 
     private void validateCategoryBelongsToWorkspace(final Workspace workspace, final Category category) {
         if (!category.getWorkspace().getId().equals(workspace.getId())) {
-            throw new BusinessException(ErrorCode.CATEGORY_NOT_BELONG_TO_WORKSPACE);
+            throw new BusinessException(ErrorCode.CATEGORY_OUT_OF_WORKSPACE);
         }
     }
 

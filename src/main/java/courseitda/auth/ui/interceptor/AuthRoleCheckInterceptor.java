@@ -44,13 +44,13 @@ public class AuthRoleCheckInterceptor implements HandlerInterceptor {
 
         final String accessToken = authTokenExtractor.extract(request);
         if (!authTokenProvider.isValidToken(accessToken)) {
-            throw new BusinessException(ErrorCode.INVALID_TOKEN);
+            throw new BusinessException(ErrorCode.EXPIRED_OR_INVALID_TOKEN);
         }
 
         final AuthRole role = authTokenProvider.getRole(accessToken);
         if (Arrays.stream(requiresRole.authRoles())
                 .noneMatch(authRole -> authRole == role)) {
-            throw new BusinessException(ErrorCode.UNAUTHORIZED_ACCESS);
+            throw new BusinessException(ErrorCode.ACCESS_FORBIDDEN);
         }
         return true;
     }

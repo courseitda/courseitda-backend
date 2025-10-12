@@ -35,7 +35,7 @@ public class MemberAuthInfoArgumentResolver implements HandlerMethodArgumentReso
         final HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         final String token = authTokenExtractor.extract(request);
         if (!authTokenProvider.isValidToken(token)) {
-            throw new BusinessException(ErrorCode.INVALID_TOKEN);
+            throw new BusinessException(ErrorCode.EXPIRED_OR_INVALID_TOKEN);
         }
         final Long id = Long.parseLong(authTokenProvider.getPrincipal(token));
         final AuthRole role = authTokenProvider.getRole(token);

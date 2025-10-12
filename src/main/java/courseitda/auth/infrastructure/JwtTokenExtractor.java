@@ -17,11 +17,11 @@ public class JwtTokenExtractor implements AuthTokenExtractor<String> {
         final String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);
 
         if (authorizationHeader == null || authorizationHeader.isBlank()) {
-            throw new BusinessException(ErrorCode.AUTH_TOKEN_NOT_FOUND);
+            throw new BusinessException(ErrorCode.MISSING_AUTH_HEADER);
         }
 
         if (!authorizationHeader.startsWith(BEARER_PREFIX)) {
-            throw new BusinessException(ErrorCode.INVALID_TOKEN_FORMAT);
+            throw new BusinessException(ErrorCode.MALFORMED_BEARER_TOKEN);
         }
 
         return authorizationHeader.substring(BEARER_PREFIX.length());

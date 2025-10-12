@@ -116,8 +116,8 @@ public class Category extends Timestamp {
         if (name == null || name.isBlank()) {
             throw new BadRequestException("카테고리 이름은 필수입니다.");
         }
-        if (name.length() > 20) {
-            throw new BusinessRuleException("카테고리 이름은 20자를 초과할 수 없습니다.");
+        if (name.length() > 10) {
+            throw new BusinessRuleException("카테고리 이름은 10자를 초과할 수 없습니다.");
         }
     }
 

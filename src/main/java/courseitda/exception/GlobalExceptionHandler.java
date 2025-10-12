@@ -16,4 +16,9 @@ public class GlobalExceptionHandler {
         problemDetail.setDetail(e.getMessage());
         return problemDetail;
     }
+
+    @ExceptionHandler(BusinessException.class)
+    public ProblemDetail handleBusinessException(BusinessException e) {
+        return e.getErrorCode().toProblemDetail();
+    }
 }

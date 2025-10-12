@@ -38,7 +38,7 @@ public enum ErrorCode {
             HttpStatus.UNAUTHORIZED // 401
     ),
 
-    EXPIRED_OR_INVALID_TOKEN(
+    INVALID_TOKEN(
             "1003",
             "유효하지 않은 토큰입니다.",
             HttpStatus.UNAUTHORIZED // 401

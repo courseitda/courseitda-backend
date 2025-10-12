@@ -1,10 +1,9 @@
 package courseitda.auth.infrastructure;
 
-import org.springframework.stereotype.Component;
-
 import courseitda.auth.domain.AuthTokenExtractor;
-import courseitda.exception.auth.AuthTokenNotFoundException;
+import courseitda.common.exception.auth.AuthTokenNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.stereotype.Component;
 
 @Component
 public class JwtTokenExtractor implements AuthTokenExtractor<String> {

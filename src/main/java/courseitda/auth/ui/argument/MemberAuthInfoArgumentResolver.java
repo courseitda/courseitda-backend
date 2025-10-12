@@ -4,7 +4,7 @@ import courseitda.auth.domain.AuthRole;
 import courseitda.auth.domain.AuthTokenExtractor;
 import courseitda.auth.domain.AuthTokenProvider;
 import courseitda.auth.domain.MemberAuthInfo;
-import courseitda.exception.auth.AuthenticationException;
+import courseitda.common.exception.auth.AuthenticationException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;

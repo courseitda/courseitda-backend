@@ -1,8 +1,8 @@
 package courseitda.placesearch.infrastructure.kakao.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import courseitda.exception.BusinessException;
-import courseitda.exception.ErrorCode;
+import courseitda.common.exception.BusinessException;
+import courseitda.common.exception.ErrorCode;
 import courseitda.placesearch.infrastructure.kakao.dto.response.KakaoPlaceSearchErrorResponse;
 import java.io.IOException;
 import java.net.URI;

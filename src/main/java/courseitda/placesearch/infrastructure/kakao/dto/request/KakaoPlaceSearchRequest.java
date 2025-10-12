@@ -1,7 +1,7 @@
 package courseitda.placesearch.infrastructure.kakao.dto.request;
 
-import courseitda.exception.BusinessException;
-import courseitda.exception.ErrorCode;
+import courseitda.common.exception.BusinessException;
+import courseitda.common.exception.ErrorCode;
 
 public record KakaoPlaceSearchRequest(
         String query,

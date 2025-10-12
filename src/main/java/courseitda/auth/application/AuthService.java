@@ -1,15 +1,14 @@
 package courseitda.auth.application;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import courseitda.auth.domain.AuthTokenProvider;
 import courseitda.auth.ui.dto.request.LoginRequest;
-import courseitda.exception.auth.AuthenticationException;
-import courseitda.exception.resource.ResourceNotFoundException;
+import courseitda.common.exception.auth.AuthenticationException;
+import courseitda.common.exception.resource.ResourceNotFoundException;
 import courseitda.member.domain.Member;
 import courseitda.member.domain.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor

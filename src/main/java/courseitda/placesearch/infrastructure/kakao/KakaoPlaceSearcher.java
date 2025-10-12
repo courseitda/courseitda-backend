@@ -1,7 +1,7 @@
 package courseitda.placesearch.infrastructure.kakao;
 
-import courseitda.exception.BusinessException;
-import courseitda.exception.ErrorCode;
+import courseitda.common.exception.BusinessException;
+import courseitda.common.exception.ErrorCode;
 import courseitda.placesearch.domain.PlaceSearcher;
 import courseitda.placesearch.domain.SearchedPlace;
 import courseitda.placesearch.infrastructure.kakao.dto.request.KakaoPlaceSearchRequest;

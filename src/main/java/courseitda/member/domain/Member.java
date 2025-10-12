@@ -1,7 +1,7 @@
 package courseitda.member.domain;
 
 import courseitda.auth.domain.AuthRole;
-import courseitda.common.Timestamp;
+import courseitda.common.entity.Timestamp;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

@@ -6,7 +6,6 @@ import courseitda.auth.domain.AuthTokenProvider;
 import courseitda.auth.domain.RequiresRole;
 import courseitda.common.exception.BusinessException;
 import courseitda.common.exception.ErrorCode;
-import courseitda.common.exception.auth.AuthenticationException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
@@ -25,7 +24,7 @@ public class AuthRoleCheckInterceptor implements HandlerInterceptor {
             final HttpServletRequest request,
             final HttpServletResponse response,
             final Object handler
-    ) throws AuthenticationException {
+    ) throws BusinessException {
         if (!(handler instanceof final HandlerMethod handlerMethod)) {
             return true;
         }

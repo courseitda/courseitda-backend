@@ -2,6 +2,9 @@ package courseitda.workspace.domain;
 
 import courseitda.category.domain.Category;
 import courseitda.common.Timestamp;
+import courseitda.exception.BadRequestException;
+import courseitda.exception.BusinessRuleException;
+import courseitda.exception.ForbiddenException;
 import courseitda.member.domain.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,6 +28,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Table(name = "workspaces")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
 public class Workspace extends Timestamp {
 
     @Id
@@ -39,30 +45,29 @@ public class Workspace extends Timestamp {
     @OneToMany(mappedBy = "workspace")
     private List<Category> categories;
 
-    private Workspace(
-            final Long id,
+    @Builder
+    public Workspace(
             final Member member,
             final String title,
             final List<Category> categories
     ) {
         validateTitle(title);
 
-        this.id = id;
         this.member = member;
         this.title = title;
         this.categories = categories;
     }
 
-    public static Workspace createEmpty(final Member member, final String title) {
-        return new Workspace(null, member, title, new ArrayList<>());
+    public static Workspace createNew(final Member member, final String title) {
+        return new Workspace(member, title, new ArrayList<>());
     }
 
     public static String formatTitle(final String unformattedTitle) {
         return unformattedTitle.trim();
     }
 
-    public boolean isOwner(final Member member) {
-        return Objects.equals(this.member.getId(), member.getId());
+    public boolean isOwnedBy(final Long memberId) {
+        return Objects.equals(this.member.getId(), memberId);
     }
 
     public void rename(final String newTitle) {
@@ -70,12 +75,18 @@ public class Workspace extends Timestamp {
         this.title = newTitle;
     }
 
+    public void validateOwnership(final Long memberId) {
+        if (!isOwnedBy(memberId)) {
+            throw new ForbiddenException("해당 워크스페이스의 수정 권한이 없습니다.");
+        }
+    }
+
     private void validateTitle(final String title) {
         if (title.isBlank()) {
-            throw new IllegalArgumentException();
+            throw new BadRequestException("워크스페이스 제목은 공백일 수 없습니다.");
         }
         if (title.length() > 20) {
-            throw new IllegalArgumentException();
+            throw new BusinessRuleException("워크스페이스 제목은 20자 이하이어야 합니다.");
         }
     }
 }

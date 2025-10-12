@@ -19,6 +19,6 @@ public class WorkspaceBuilder {
     }
 
     public Workspace build() {
-        return Workspace.createEmpty(member, title);
+        return Workspace.createNew(member, title);
     }
 }

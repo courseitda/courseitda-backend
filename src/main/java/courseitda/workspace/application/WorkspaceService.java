@@ -23,7 +23,7 @@ public class WorkspaceService {
     public WorkspaceCreateResponse createWorkspace(final Member member, final WorkspaceCreateRequest request) {
         validateDuplicatedTitle(member, request.title());
 
-        final var workspace = Workspace.createEmpty(member, request.title());
+        final var workspace = Workspace.createNew(member, request.title());
         final var savedWorkspace = workspaceRepository.save(workspace);
 
         return WorkspaceCreateResponse.from(savedWorkspace);

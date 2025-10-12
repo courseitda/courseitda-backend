@@ -56,7 +56,7 @@ public class Workspace extends Timestamp {
         this.categories = categories;
     }
 
-    public static Workspace createEmpty(final Member member, final String title) {
+    public static Workspace createNew(final Member member, final String title) {
         return new Workspace(null, member, title, new ArrayList<>());
     }
 

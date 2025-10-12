@@ -124,21 +124,21 @@ public enum ErrorCode {
             HttpStatus.NOT_FOUND
     ),
 
-    DUPLICATE_CATEGORY_ID(
+    DUPLICATE_CATEGORY_ID_IN_REQUEST(
             "3007",
-            "중복된 카테고리 ID가 있습니다.",
+            "요청에 중복된 카테고리 ID가 있습니다.",
             HttpStatus.BAD_REQUEST
     ),
 
-    DUPLICATE_CATEGORY_ORDER(
+    DUPLICATE_CATEGORY_ORDER_IN_REQUEST(
             "3008",
-            "중복된 순서 값이 있습니다.",
+            "요청에 중복된 순서 값이 있습니다.",
             HttpStatus.BAD_REQUEST
     ),
 
     CATEGORY_MODIFY_FORBIDDEN(
             "3009",
-            "해당 카테고리를 수정할 권한이 없습니다.",
+            "해당 카테고리의 수정 권한이 없습니다.",
             HttpStatus.FORBIDDEN
     ),
 

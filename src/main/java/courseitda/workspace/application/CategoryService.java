@@ -156,7 +156,7 @@ public class CategoryService {
 
     private void validateNoDuplicateCategoryIds(final List<Long> ids) {
         if (ids.size() != new HashSet<>(ids).size()) {
-            throw new BusinessException(ErrorCode.DUPLICATE_CATEGORY_ID);
+            throw new BusinessException(ErrorCode.DUPLICATE_CATEGORY_ID_IN_REQUEST);
         }
     }
 
@@ -164,7 +164,7 @@ public class CategoryService {
         final Set<Integer> sequences = new HashSet<>();
         for (final var sequenceRequest : request.categorySequenceRequests()) {
             if (!sequences.add(sequenceRequest.sequence())) {
-                throw new BusinessException(ErrorCode.DUPLICATE_CATEGORY_ORDER);
+                throw new BusinessException(ErrorCode.DUPLICATE_CATEGORY_ORDER_IN_REQUEST);
             }
         }
     }

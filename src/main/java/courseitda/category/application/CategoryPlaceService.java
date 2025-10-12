@@ -71,7 +71,7 @@ public class CategoryPlaceService {
 
     private Category getCategoryById(final Long categoryId) {
         return categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new NotFoundException("카테고리 id에 해당하는 카테고리를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("ID에 해당하는 카테고리를 찾을 수 없습니다."));
     }
 
     private Place findOrCreatePlace(final CategoryPlaceCreateRequest request) {
@@ -90,7 +90,7 @@ public class CategoryPlaceService {
 
     private CategoryPlace getCategoryPlaceById(final Long categoryPlaceId) {
         return categoryPlaceRepository.findById(categoryPlaceId)
-                .orElseThrow(() -> new NotFoundException("카테고리 플레이스 id에 해당하는 카테고리 플레이스를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("ID에 해당하는 카테고리 장소를 찾을 수 없습니다."));
     }
 
     private void validateCategoryOwnership(final Long categoryId, final CategoryPlace categoryPlace) {

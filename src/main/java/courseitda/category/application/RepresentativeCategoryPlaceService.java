@@ -48,11 +48,11 @@ public class RepresentativeCategoryPlaceService {
 
     private Category getCategoryById(final Long categoryId) {
         return categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 카테고리입니다."));
+                .orElseThrow(() -> new NotFoundException("ID에 해당하는 카테고리를 찾을 수 없습니다."));
     }
 
     private CategoryPlace getCategoryPlaceById(final Long categoryPlaceId) {
         return categoryPlaceRepository.findById(categoryPlaceId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 카테고리 장소입니다."));
+                .orElseThrow(() -> new NotFoundException("ID에 해당하는 카테고리 장소를 찾을 수 없습니다."));
     }
 }

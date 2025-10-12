@@ -1,8 +1,8 @@
 package courseitda.workspace.application;
 
 import courseitda.auth.domain.MemberAuthInfo;
-import courseitda.common.exception.ConflictException;
-import courseitda.common.exception.NotFoundException;
+import courseitda.common.exception.BusinessException;
+import courseitda.common.exception.ErrorCode;
 import courseitda.member.domain.Member;
 import courseitda.workspace.domain.Workspace;
 import courseitda.workspace.domain.WorkspaceRepository;
@@ -59,13 +59,13 @@ public class WorkspaceService {
 
     private Workspace getById(final Long workspaceId) {
         return workspaceRepository.findById(workspaceId)
-                .orElseThrow(() -> new NotFoundException("ID에 해당하는 워크스페이스를 찾을 수 없습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.WORKSPACE_NOT_FOUND));
     }
 
     private void validateDuplicatedTitle(final Long memberId, final String newTitle) {
         // 해당 회원 소유의 워크스페이스에 이미 해당 타이틀을 사용중인지
         if (workspaceRepository.existsByMemberIdAndTitle(memberId, newTitle)) {
-            throw new ConflictException(newTitle + "은(는) 이미 사용중 입니다.");
+            throw new BusinessException(ErrorCode.WORKSPACE_TITLE_DUPLICATE);
         }
     }
 }

@@ -1,7 +1,8 @@
 package courseitda.workspace.application;
 
 import courseitda.auth.domain.MemberAuthInfo;
-import courseitda.common.exception.NotFoundException;
+import courseitda.common.exception.BusinessException;
+import courseitda.common.exception.ErrorCode;
 import courseitda.workspace.domain.Category;
 import courseitda.workspace.domain.CategoryPlace;
 import courseitda.workspace.domain.CategoryPlaceRepository;
@@ -48,11 +49,11 @@ public class RepresentativeCategoryPlaceService {
 
     private Category getCategoryById(final Long categoryId) {
         return categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new NotFoundException("ID에 해당하는 카테고리를 찾을 수 없습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
     }
 
     private CategoryPlace getCategoryPlaceById(final Long categoryPlaceId) {
         return categoryPlaceRepository.findById(categoryPlaceId)
-                .orElseThrow(() -> new NotFoundException("ID에 해당하는 카테고리 장소를 찾을 수 없습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_PLACE_NOT_FOUND));
     }
 }

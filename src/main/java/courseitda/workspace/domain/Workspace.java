@@ -1,9 +1,8 @@
 package courseitda.workspace.domain;
 
 import courseitda.common.entity.Timestamp;
-import courseitda.common.exception.BadRequestException;
-import courseitda.common.exception.BusinessRuleException;
-import courseitda.common.exception.ForbiddenException;
+import courseitda.common.exception.BusinessException;
+import courseitda.common.exception.ErrorCode;
 import courseitda.member.domain.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -76,16 +75,16 @@ public class Workspace extends Timestamp {
 
     public void validateOwnership(final Long memberId) {
         if (!isOwnedBy(memberId)) {
-            throw new ForbiddenException("해당 워크스페이스의 수정 권한이 없습니다.");
+            throw new BusinessException(ErrorCode.WORKSPACE_FORBIDDEN);
         }
     }
 
     private void validateTitle(final String title) {
         if (title.isBlank()) {
-            throw new BadRequestException("워크스페이스 제목은 공백일 수 없습니다.");
+            throw new BusinessException(ErrorCode.WORKSPACE_TITLE_BLANK);
         }
         if (title.length() > 20) {
-            throw new BusinessRuleException("워크스페이스 제목은 20자 이하이어야 합니다.");
+            throw new BusinessException(ErrorCode.WORKSPACE_TITLE_TOO_LONG);
         }
     }
 }

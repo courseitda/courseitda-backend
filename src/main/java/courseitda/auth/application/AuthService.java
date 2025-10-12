@@ -2,8 +2,8 @@ package courseitda.auth.application;
 
 import courseitda.auth.domain.AuthTokenProvider;
 import courseitda.auth.ui.dto.request.LoginRequest;
-import courseitda.common.exception.auth.AuthenticationException;
-import courseitda.common.exception.resource.ResourceNotFoundException;
+import courseitda.common.exception.BusinessException;
+import courseitda.common.exception.ErrorCode;
 import courseitda.member.domain.Member;
 import courseitda.member.domain.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +20,10 @@ public class AuthService {
 
     public String login(final LoginRequest request) {
         final Member member = memberRepository.findByEmail(request.email())
-                .orElseThrow(() -> new ResourceNotFoundException("해당 이메일을 가진 회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND_BY_EMAIL));
 
         if (!passwordEncoder.matches(request.password(), member.getPassword())) {
-            throw new AuthenticationException("비밀번호가 올바르지 않습니다.");
+            throw new BusinessException(ErrorCode.INVALID_PASSWORD);
         }
 
         return authTokenProvider.createAccessToken(member.getId().toString(), member.getAuthRole());

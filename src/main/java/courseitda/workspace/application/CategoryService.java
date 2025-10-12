@@ -1,9 +1,8 @@
 package courseitda.workspace.application;
 
 import courseitda.auth.domain.MemberAuthInfo;
-import courseitda.common.exception.BadRequestException;
-import courseitda.common.exception.ForbiddenException;
-import courseitda.common.exception.NotFoundException;
+import courseitda.common.exception.BusinessException;
+import courseitda.common.exception.ErrorCode;
 import courseitda.workspace.domain.Category;
 import courseitda.workspace.domain.CategoryRepository;
 import courseitda.workspace.domain.Workspace;
@@ -76,7 +75,7 @@ public class CategoryService {
             final var category = categories.stream()
                     .filter(c -> c.getId().equals(sequenceRequest.id()))
                     .findFirst()
-                    .orElseThrow(() -> new NotFoundException("ID에 해당하는 카테고리를 찾을 수 없습니다."));
+                    .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
 
             validateCategoryBelongsToWorkspace(workspace, category);
             category.updateSequence(sequenceRequest.sequence());
@@ -146,18 +145,18 @@ public class CategoryService {
 
     private Workspace getWorkspaceById(final Long workspaceId) {
         return workspaceRepository.findById(workspaceId)
-                .orElseThrow(() -> new NotFoundException("ID에 해당하는 워크스페이스를 찾을 수 없습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.WORKSPACE_NOT_FOUND));
     }
 
     private void validateAllCategoriesExist(final List<Category> categories, final List<Long> categoryIds) {
         if (categories.size() != categoryIds.size()) {
-            throw new NotFoundException("일부 카테고리를 찾을 수 없습니다.");
+            throw new BusinessException(ErrorCode.CATEGORY_SOME_NOT_FOUND);
         }
     }
 
     private void validateNoDuplicateCategoryIds(final List<Long> ids) {
         if (ids.size() != new HashSet<>(ids).size()) {
-            throw new BadRequestException("중복된 카테고리 ID가 있습니다.");
+            throw new BusinessException(ErrorCode.CATEGORY_DUPLICATE_ID);
         }
     }
 
@@ -165,19 +164,19 @@ public class CategoryService {
         final Set<Integer> sequences = new HashSet<>();
         for (final var sequenceRequest : request.categorySequenceRequests()) {
             if (!sequences.add(sequenceRequest.sequence())) {
-                throw new BadRequestException("중복된 순서 값이 있습니다.");
+                throw new BusinessException(ErrorCode.CATEGORY_DUPLICATE_ORDER);
             }
         }
     }
 
     private void validateCategoryBelongsToWorkspace(final Workspace workspace, final Category category) {
         if (!category.getWorkspace().getId().equals(workspace.getId())) {
-            throw new ForbiddenException("해당 워크스페이스에 속한 카테고리가 아닙니다.");
+            throw new BusinessException(ErrorCode.CATEGORY_NOT_BELONG_TO_WORKSPACE);
         }
     }
 
     private Category getCategoryById(final Long categoryId) {
         return categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new NotFoundException("ID에 해당하는 카테고리를 찾을 수 없습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
     }
 }

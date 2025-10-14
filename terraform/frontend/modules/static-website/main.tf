@@ -96,7 +96,7 @@ resource "aws_cloudfront_distribution" "cdn" {
     viewer_protocol_policy = "redirect-to-https"                    # HTTP 요청을 HTTPS로 리다이렉트
     allowed_methods        = ["GET", "HEAD", "OPTIONS"]             # CORS preflight 지원
     cached_methods         = ["GET", "HEAD"]                        # 캐싱할 HTTP 메서드 목록. GET과 HEAD 요청에 대한 응답만 캐싱.
-    cache_policy_id        = "658327ea-f89d-4fab-a63d-7e88639e58f6" # AWS 기본 관리형 캐시 정책(CachingOptimized)의 id. 최대 캐시 효율성을 보여주는 정책.
+    cache_policy_id        = "658327ea-f89d-4fab-a63d-7e88639e58f6" # AWS 기본 관리형 캐시 정책(CachingOptimized)의 id. 최대 캐시 효율성을 제공하는 정책.
     compress               = true                                   # CloudFront가 자동으로 압축 (gzip, brotli). 텍스트 기반 파일(HTML, CSS, JS)에 효과적.
   }
 

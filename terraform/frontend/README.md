@@ -6,68 +6,66 @@
 
 ```
 .
-├── environments/             # 환경별 설정
-│   └── dev/                  # 개발 환경
-│       ├── backend.tf        # 백엔드(테라폼 상태 저장소) 설정
-│       ├── main.tf           # 생성할 리소스 정의
+├── environments/
+│   └── dev/
+│       ├── backend.tf
+│       ├── main.tf
 │       ├── outputs.tf
-│       ├── provider.tf       # 프로바이더 및 Terraform 버전 설정
+│       ├── provider.tf
 │       └── variables.tf
-└── modules/                  # 재사용 가능한 모듈 정의
-    └── static-website/       # 정적 웹사이트 배포 모듈
-        ├── main.tf           # S3, CloudFront, ACM 리소스 정의
-        ├── variables.tf      # 모듈에 필요한 입력 변수 정의
-        └── outputs.tf        # 생성된 리소스 정보 출력
+└── modules/
+    └── static-website/
+        ├── main.tf
+        ├── variables.tf
+        └── outputs.tf
 ```
 
 ## 사용 방법
 
-### 1. 초기 설정
+### 1. Terraform 코드 실행
 
 ```bash
 cd environments/dev
 terraform init
-```
-
-### 2. 실행 계획 확인
-
-```bash
 terraform plan
-```
-
-### 3. 인프라 프로비저닝
-
-```bash
 terraform apply
 ```
 
-### 4. ACM 인증서 검증
+### 2. ACM 인증서 검증
 
-출력되는 `acm_dns_validation_records` 정보를 확인하여 외부 DNS 제공자(가비아 등)에 CNAME 레코드를 추가합니다.
+`acm_dns_validation_records` output을 확인해 외부 DNS 제공자(예: Gabia)에 검증 레코드를 추가합니다.
 
 ```bash
 terraform output acm_dns_validation_records
 ```
 
-### 5. 인증서 발급 완료 후 재배포
+CloudFront에 연결해서 사용할 도메인 레코드도 추가합니다.
 
-DNS 레코드 추가 후 ACM 인증서가 발급되면 다시 apply를 실행하여 CloudFront 배포를 완료합니다.
+CloudFront 도메인 주소는 `cloudfront_domain` output으로 확인할 수 있습니다.
+
+```bash
+terraform output cloudfront_domain
+```
+
+### 3. Terraform 코드 재실행
+
+검증 레코드 추가 후 ACM 인증서 발급이 완료되면, 다시 `terraform apply`를 실행해 리소스 생성을 마무리합니다.
 
 ```bash
 terraform apply
 ```
 
-### 6. 배포 확인
+리소스 생성이 완료되면, 연결한 커스텀 도메인으로 접속 가능합니다.
 
-인증서가 발급된 후 CloudFront 배포가 완료되면 웹사이트 URL로 접속 가능합니다.
+`website_url` output으로 연결한 커스텀 도메인 주소를 확인할 수 있습니다.
 
 ```bash
 terraform output website_url
 ```
 
-## 생성되는 리소스
+## 주요 리소스
 
-- S3 버킷: `courseitda-frontend-dev`
+- S3 버킷: 빌드된 프론트엔드 코드 배포 용도
 - CloudFront: CDN
 - ACM 인증서: SSL/TLS 인증서
 - CloudFront OAC(Origin Access Control): S3 버킷은 외부에서 직접 접근하지 못 하게 하고, CloudFront를 통해서만 접근하게 하기 위한 접근 제어

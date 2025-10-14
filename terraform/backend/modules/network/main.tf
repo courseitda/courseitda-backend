@@ -6,11 +6,9 @@ resource "aws_vpc" "vpc" {
   enable_dns_hostnames             = true # 인스턴스에 퍼블릭 DNS 이름 부여 가능
   instance_tenancy                 = "default"
 
-  tags = {
-    Project     = var.project_name
-    Environment = var.environment
-    Name        = "${var.project_name}-vpc"
-  }
+  tags = merge(var.base_tags, {
+    Name = "${var.project_name}-vpc"
+  })
 }
 
 # public Subnet in AZ-a
@@ -21,11 +19,9 @@ resource "aws_subnet" "public_a" {
   availability_zone               = "${var.region}a"
   map_public_ip_on_launch         = false # 인스턴스 자동 퍼블릭 IP 할당 x
 
-  tags = {
-    Project     = var.project_name
-    Environment = var.environment
-    Name        = "${var.project_name}-public-a"
-  }
+  tags = merge(var.base_tags, {
+    Name = "${var.project_name}-public-a"
+  })
 }
 
 # private Subnet in AZ-a
@@ -36,11 +32,9 @@ resource "aws_subnet" "private_a" {
   availability_zone               = "${var.region}a"
   map_public_ip_on_launch         = false
 
-  tags = {
-    Project     = var.project_name
-    Environment = var.environment
-    Name        = "${var.project_name}-private-a"
-  }
+  tags = merge(var.base_tags, {
+    Name = "${var.project_name}-private-a"
+  })
 }
 
 # public Subnet in AZ-b
@@ -51,11 +45,9 @@ resource "aws_subnet" "public_b" {
   availability_zone               = "${var.region}b"
   map_public_ip_on_launch         = false # 인스턴스 자동 퍼블릭 IP 할당 x
 
-  tags = {
-    Project     = var.project_name
-    Environment = var.environment
-    Name        = "${var.project_name}-public-b"
-  }
+  tags = merge(var.base_tags, {
+    Name = "${var.project_name}-public-b"
+  })
 }
 
 # private Subnet in AZ-b
@@ -66,22 +58,18 @@ resource "aws_subnet" "private_b" {
   availability_zone               = "${var.region}b"
   map_public_ip_on_launch         = false
 
-  tags = {
-    Project     = var.project_name
-    Environment = var.environment
-    Name        = "${var.project_name}-private-b"
-  }
+  tags = merge(var.base_tags, {
+    Name = "${var.project_name}-private-b"
+  })
 }
 
 # IGW
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.vpc.id
 
-  tags = {
-    Project     = var.project_name
-    Environment = var.environment
-    Name        = "${var.project_name}-igw"
-  }
+  tags = merge(var.base_tags, {
+    Name = "${var.project_name}-igw"
+  })
 }
 
 # public Route Table
@@ -93,11 +81,9 @@ resource "aws_route_table" "public_rt" {
     gateway_id = aws_internet_gateway.igw.id
   }
 
-  tags = {
-    Project     = var.project_name
-    Environment = var.environment
-    Name        = "${var.project_name}-public-rt"
-  }
+  tags = merge(var.base_tags, {
+    Name = "${var.project_name}-public-rt"
+  })
 }
 
 # Subnet Associations

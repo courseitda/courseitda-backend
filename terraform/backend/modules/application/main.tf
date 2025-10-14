@@ -46,11 +46,9 @@ resource "aws_security_group" "app_sg" {
     cidr_blocks = ["0.0.0.0/0"] # 전부 허용
   }
 
-  tags = {
-    Project     = var.project_name
-    Environment = var.environment
-    Name        = "${var.project_name}-ec2-sg"
-  }
+  tags = merge(var.base_tags, {
+    Name = "${var.project_name}-ec2-sg"
+  })
 }
 
 # 앱이 실행될 EC2 인스턴스
@@ -83,22 +81,18 @@ resource "aws_instance" "app_instance" {
   # filebase64()를 사용하면 Base64 인코딩 과정에서 개행 문자의 차이(\n vs \r\n)를 모두 같은 바이트 시퀀스로 처리.
   user_data_base64 = filebase64("${path.module}/user_data.tpl")
 
-  tags = {
-    Project     = var.project_name
-    Environment = var.environment
-    Name        = "${var.project_name}-app"
-  }
+  tags = merge(var.base_tags, {
+    Name = "${var.project_name}-${var.environment}-app"
+  })
 }
 
 # EC2가 사용할 고정 public IP
 resource "aws_eip" "app_eip" {
   domain = "vpc"
 
-  tags = {
-    Project     = var.project_name
-    Environment = var.environment
-    Name        = "${var.project_name}-${var.environment}-app-eip"
-  }
+  tags = merge(var.base_tags, {
+    Name = "${var.project_name}-${var.environment}-app-eip"
+  })
 }
 
 resource "aws_eip_association" "app_eip_association" {

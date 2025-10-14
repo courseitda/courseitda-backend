@@ -8,6 +8,11 @@ variable "environment" {
   description = "Environment name (e.g., dev, prod)"
 }
 
+variable "base_tags" {
+  type        = map(string)
+  description = "Base tags to apply to resources"
+}
+
 variable "instance_type" {
   type        = string
   description = "EC2 instance type (e.g., t4g.micro)"

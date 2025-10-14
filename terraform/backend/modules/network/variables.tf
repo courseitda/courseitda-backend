@@ -12,3 +12,8 @@ variable "environment" {
   type        = string
   description = "Environment name (e.g., dev, prod)"
 }
+
+variable "base_tags" {
+  type        = map(string)
+  description = "Base tags to apply to resources"
+}

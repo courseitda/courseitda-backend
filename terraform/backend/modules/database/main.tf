@@ -16,11 +16,9 @@ resource "aws_security_group" "db_sg" {
     cidr_blocks = ["0.0.0.0/0"] # 모든 ip 허용
   }
 
-  tags = {
-    Project     = var.project_name
-    Environment = var.environment
-    Name        = "${var.project_name}-db-sg"
-  }
+  tags = merge(var.base_tags, {
+    Name = "${var.project_name}-db-sg"
+  })
 }
 
 # RDS Subnet Group
@@ -28,11 +26,9 @@ resource "aws_db_subnet_group" "db_subnet_group" {
   name       = "${var.project_name}-${var.environment}-db-subnet-group"
   subnet_ids = var.private_subnet_ids
 
-  tags = {
-    Project     = var.project_name
-    Environment = var.environment
-    Name        = "${var.project_name}-db-subnet"
-  }
+  tags = merge(var.base_tags, {
+    Name = "${var.project_name}-db-subnet"
+  })
 }
 
 # RDS 파라미터 그룹 (문자셋, 타임존 설정)
@@ -77,11 +73,9 @@ resource "aws_db_parameter_group" "db_param_group" {
     value = "Asia/Seoul"
   }
 
-  tags = {
-    Project     = var.project_name
-    Environment = var.environment
-    Name        = "${var.project_name}-${var.environment}-db-params"
-  }
+  tags = merge(var.base_tags, {
+    Name = "${var.project_name}-${var.environment}-db-params"
+  })
 }
 
 # RDS 인스턴스
@@ -110,9 +104,7 @@ resource "aws_db_instance" "db" {
   publicly_accessible     = false # 보안상 내부 전용
   storage_encrypted       = true
 
-  tags = {
-    Project     = var.project_name
-    Environment = var.environment
-    Name        = "${var.project_name}-rds"
-  }
+  tags = merge(var.base_tags, {
+    Name = "${var.project_name}-rds"
+  })
 }

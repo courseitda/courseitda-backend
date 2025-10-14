@@ -97,7 +97,7 @@ resource "aws_db_instance" "db" {
   availability_zone      = "${var.region}a" # AZ-a 고정
   vpc_security_group_ids = [aws_security_group.db_sg.id]
 
-  multi_az                = false                          # Multi-AZ 불가 (비용 절감)
+  multi_az                = false                          # Multi-AZ 비활성화 (비용 절감)
   backup_retention_period = var.db_backup_retention_period # 무료 자동 백업 7일
   deletion_protection     = false
   skip_final_snapshot     = true

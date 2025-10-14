@@ -2,7 +2,7 @@
 resource "aws_s3_bucket" "bucket" {
   bucket = "${var.project_name}-${var.area}-${var.environment}" # e.g. courseitda-frontend-dev
 
-  tags = var.tags
+  tags = var.base_tags
 }
 
 # S3 버킷 생명 주기 정책 추가
@@ -57,7 +57,7 @@ resource "aws_acm_certificate" "acm_certificate" {
   domain_name       = var.fqdn
   validation_method = "DNS"
 
-  tags = var.tags
+  tags = var.base_tags
 }
 
 # CloudFront OAC 설정
@@ -133,7 +133,7 @@ resource "aws_cloudfront_distribution" "cdn" {
 
   depends_on = [data.aws_acm_certificate.issued_certificate] # depends_on 으로 ACM 인증서 리소스 생성 후, 인증서 정보 조회를 보장
 
-  tags = var.tags
+  tags = var.base_tags
 }
 
 # S3 버킷 정책: CloudFront OAC만 읽기 허용

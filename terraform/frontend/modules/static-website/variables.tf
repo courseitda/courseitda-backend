@@ -13,13 +13,12 @@ variable "environment" {
   description = "Environment name"
 }
 
+variable "base_tags" {
+  type        = map(string)
+  description = "Base tags to apply to all resources"
+}
+
 variable "fqdn" {
   type        = string
   description = "Fully qualified domain name for the website"
-}
-
-variable "tags" {
-  type        = map(string)
-  description = "Tags to apply to all resources"
-  default     = {}
 }

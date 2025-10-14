@@ -14,11 +14,9 @@ resource "aws_key_pair" "key_pair" {
 resource "aws_s3_bucket" "key_storage" {
   bucket = var.s3_bucket_name
 
-  tags = {
-    Project     = var.project_name
-    Environment = var.environment
-    Name        = "${var.project_name}-key-storage"
-  }
+  tags = merge(var.base_tags, {
+    Name = "${var.project_name}-key-storage"
+  })
 }
 
 # S3 버킷 버전 관리 활성화
@@ -59,9 +57,7 @@ resource "aws_s3_object" "private_key" {
 
   server_side_encryption = "AES256"
 
-  tags = {
-    Project     = var.project_name
-    Environment = var.environment
-    Name        = "${var.project_name}-private-key"
-  }
+  tags = merge(var.base_tags, {
+    Name = "${var.project_name}-private-key"
+  })
 }

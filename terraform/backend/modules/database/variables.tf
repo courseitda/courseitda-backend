@@ -13,6 +13,11 @@ variable "environment" {
   description = "Environment name (e.g., dev, prod)"
 }
 
+variable "base_tags" {
+  type        = map(string)
+  description = "Base tags to apply to resources"
+}
+
 variable "vpc_id" {
   type        = string
   description = "VPC ID where RDS will be deployed"

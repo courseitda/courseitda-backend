@@ -21,3 +21,9 @@ variable "environment" {
   description = "Environment name"
   default     = "dev"
 }
+
+variable "base_tags" {
+  type        = map(string)
+  description = "Base tags to apply to resources"
+  default     = {}
+}

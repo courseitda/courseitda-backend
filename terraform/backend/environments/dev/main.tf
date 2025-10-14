@@ -1,3 +1,10 @@
+locals {
+  base_tags = merge(var.base_tags, {
+    Project     = var.project_name
+    Environment = var.environment
+  })
+}
+
 module "secret" {
   source = "../../modules/secret"
 }
@@ -8,6 +15,8 @@ module "compute" {
   project_name   = var.project_name
   environment    = var.environment
   s3_bucket_name = "${var.project_name}-${var.environment}-key-storage"
+
+  base_tags = local.base_tags
 }
 
 module "network" {
@@ -16,6 +25,8 @@ module "network" {
   project_name = var.project_name
   region       = var.region
   environment  = var.environment
+
+  base_tags = local.base_tags
 }
 
 module "application" {
@@ -32,6 +43,8 @@ module "application" {
   # AZ-a의 public subnet에서 실행
   public_subnet_id = module.network.public_subnet_a_id
   key_pair_name    = module.compute.key_pair_name
+
+  base_tags = local.base_tags
 }
 
 module "database" {
@@ -57,4 +70,6 @@ module "database" {
 
   db_username = module.secret.db_username
   db_password = module.secret.db_password
+
+  base_tags = local.base_tags
 }

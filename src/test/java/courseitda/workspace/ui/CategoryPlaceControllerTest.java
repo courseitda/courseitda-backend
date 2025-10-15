@@ -131,7 +131,7 @@ class CategoryPlaceControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(signUpRequest)
                 .when()
-                .post("/members")
+                .post("/api/members")
                 .then()
                 .statusCode(HttpStatus.CREATED.value());
 
@@ -140,7 +140,7 @@ class CategoryPlaceControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(loginRequest)
                 .when()
-                .post("/auth/login")
+                .post("/api/auth/login")
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .extract()

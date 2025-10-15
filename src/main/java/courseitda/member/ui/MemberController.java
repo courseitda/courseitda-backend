@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/members")
+@RequestMapping("/api/members")
 public class MemberController {
 
     private final MemberService memberService;
@@ -30,7 +30,7 @@ public class MemberController {
     ) {
         final var signUpResponse = memberService.create(request);
 
-        return ResponseEntity.created(URI.create("/members/" + signUpResponse.id()))
+        return ResponseEntity.created(URI.create("/api/members/" + signUpResponse.id()))
                 .body(signUpResponse);
     }
 

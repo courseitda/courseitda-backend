@@ -22,10 +22,10 @@ public class WorkspaceService {
     private final WorkspaceRepository workspaceRepository;
 
     @Transactional
-    public WorkspaceCreateResponse createWorkspace(final Member member, final WorkspaceCreateRequest request) {
-        validateDuplicatedTitle(member.getId(), request.title());
+    public WorkspaceCreateResponse createWorkspace(final Member owner, final WorkspaceCreateRequest request) {
+        validateDuplicatedTitle(owner.getId(), request.title());
 
-        final var workspace = Workspace.createNew(member, request.title());
+        final var workspace = Workspace.createNew(owner, request.title());
         final var savedWorkspace = workspaceRepository.save(workspace);
 
         return WorkspaceCreateResponse.from(savedWorkspace);
@@ -59,8 +59,8 @@ public class WorkspaceService {
     }
 
     @Transactional(readOnly = true)
-    public WorkspacesResponse readWorkspacesByMemberId(final Long memberId) {
-        return WorkspacesResponse.from(workspaceRepository.findAllByMemberId(memberId));
+    public WorkspacesResponse readWorkspacesByMemberId(final Long ownerId) {
+        return WorkspacesResponse.from(workspaceRepository.findAllByOwnerId(ownerId));
     }
 
     private Workspace getById(final Long workspaceId) {
@@ -68,9 +68,9 @@ public class WorkspaceService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.WORKSPACE_NOT_FOUND));
     }
 
-    private void validateDuplicatedTitle(final Long memberId, final String newTitle) {
+    private void validateDuplicatedTitle(final Long ownerId, final String newTitle) {
         // 해당 회원 소유의 워크스페이스에 이미 해당 타이틀을 사용중인지
-        if (workspaceRepository.existsByMemberIdAndTitle(memberId, newTitle)) {
+        if (workspaceRepository.existsByOwnerIdAndTitle(ownerId, newTitle)) {
             throw new BusinessException(ErrorCode.DUPLICATE_WORKSPACE_TITLE);
         }
     }

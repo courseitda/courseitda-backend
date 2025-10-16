@@ -5,11 +5,11 @@ import courseitda.member.domain.MemberFixture;
 
 public class WorkspaceBuilder {
 
-    private Member member = MemberFixture.anyMember();
+    private Member owner = MemberFixture.anyMember();
     private String title = WorkspaceFixture.anyTitle();
 
-    public WorkspaceBuilder member(final Member member) {
-        this.member = member;
+    public WorkspaceBuilder owner(final Member owner) {
+        this.owner = owner;
         return this;
     }
 
@@ -20,7 +20,7 @@ public class WorkspaceBuilder {
 
     public Workspace build() {
         return Workspace.builder()
-                .member(member)
+                .owner(owner)
                 .title(title)
                 .build();
     }

@@ -59,7 +59,7 @@ class WorkspaceControllerTest {
         // then
         assertThat(response.id()).isNotNull();
         assertThat(response.title()).isEqualTo(title);
-        assertThat(response.memberId()).isNotNull();
+        assertThat(response.ownerId()).isNotNull();
     }
 
     @Test

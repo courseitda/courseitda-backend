@@ -9,9 +9,9 @@ public interface WorkspaceRepository {
 
     void deleteById(Long workspaceId);
 
-    boolean existsByMemberIdAndTitle(Long memberId, String title);
+    boolean existsByOwnerIdAndTitle(Long ownerId, String title);
 
     Optional<Workspace> findById(Long workspaceId);
 
-    List<Workspace> findAllByMemberId(Long memberId);
+    List<Workspace> findAllByOwnerId(Long ownerId);
 }

@@ -35,7 +35,7 @@ public class Workspace extends Timestamp {
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private Member member;
+    private Member owner;
 
     @Column(nullable = false)
     private String title;
@@ -45,19 +45,19 @@ public class Workspace extends Timestamp {
 
     @Builder
     public Workspace(
-            final Member member,
+            final Member owner,
             final String title,
             final List<Category> categories
     ) {
         validateTitle(title);
 
-        this.member = member;
+        this.owner = owner;
         this.title = title;
         this.categories = categories;
     }
 
-    public static Workspace createNew(final Member member, final String title) {
-        return new Workspace(member, title, new ArrayList<>());
+    public static Workspace createNew(final Member owner, final String title) {
+        return new Workspace(owner, title, new ArrayList<>());
     }
 
     public static String formatTitle(final String unformattedTitle) {
@@ -65,7 +65,7 @@ public class Workspace extends Timestamp {
     }
 
     public boolean isOwnedBy(final Long memberId) {
-        return Objects.equals(this.member.getId(), memberId);
+        return Objects.equals(this.owner.getId(), memberId);
     }
 
     public void rename(final String newTitle) {

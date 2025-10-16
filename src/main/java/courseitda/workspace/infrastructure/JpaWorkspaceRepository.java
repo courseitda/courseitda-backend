@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface JpaWorkspaceRepository extends JpaRepository<Workspace, Long> {
 
-    boolean existsByMemberIdAndTitle(Long memberId, String title);
+    boolean existsByOwnerIdAndTitle(Long ownerId, String title);
 
-    List<Workspace> findAllByMemberId(Long memberId);
+    List<Workspace> findAllByOwnerId(Long ownerId);
 }

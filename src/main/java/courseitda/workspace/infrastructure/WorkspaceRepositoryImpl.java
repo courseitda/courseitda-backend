@@ -24,8 +24,8 @@ public class WorkspaceRepositoryImpl implements WorkspaceRepository {
     }
 
     @Override
-    public boolean existsByMemberIdAndTitle(final Long memberId, final String title) {
-        return jpaWorkspaceRepository.existsByMemberIdAndTitle(memberId, title);
+    public boolean existsByOwnerIdAndTitle(final Long ownerId, final String title) {
+        return jpaWorkspaceRepository.existsByOwnerIdAndTitle(ownerId, title);
     }
 
     @Override
@@ -34,7 +34,7 @@ public class WorkspaceRepositoryImpl implements WorkspaceRepository {
     }
 
     @Override
-    public List<Workspace> findAllByMemberId(final Long memberId) {
-        return jpaWorkspaceRepository.findAllByMemberId(memberId);
+    public List<Workspace> findAllByOwnerId(final Long ownerId) {
+        return jpaWorkspaceRepository.findAllByOwnerId(ownerId);
     }
 }

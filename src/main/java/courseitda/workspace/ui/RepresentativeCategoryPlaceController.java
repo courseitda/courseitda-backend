@@ -33,6 +33,7 @@ public class RepresentativeCategoryPlaceController {
     ) {
         final RepresentativeCategoryPlaceUpdateResponse response = representativeCategoryPlaceService
                 .updateRepresentativeCategoryPlace(memberAuthInfo, categoryId, request);
+
         return ResponseEntity.ok(response);
     }
 
@@ -43,6 +44,7 @@ public class RepresentativeCategoryPlaceController {
             @PathVariable final Long categoryId
     ) {
         representativeCategoryPlaceService.deleteRepresentativeCategoryPlace(memberAuthInfo, categoryId);
+
         return ResponseEntity.noContent().build();
     }
 }

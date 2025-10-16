@@ -20,6 +20,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @Transactional
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class PlaceSearchControllerTest {
 
     @LocalServerPort
@@ -54,7 +55,7 @@ class PlaceSearchControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(signUpRequest)
                 .when()
-                .post("/members")
+                .post("/api/members")
                 .then()
                 .statusCode(HttpStatus.CREATED.value());
 
@@ -63,7 +64,7 @@ class PlaceSearchControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(loginRequest)
                 .when()
-                .post("/auth/login")
+                .post("/api/auth/login")
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .extract()

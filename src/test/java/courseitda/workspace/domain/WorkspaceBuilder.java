@@ -2,14 +2,21 @@ package courseitda.workspace.domain;
 
 import courseitda.member.domain.Member;
 import courseitda.member.domain.MemberFixture;
+import java.util.UUID;
 
 public class WorkspaceBuilder {
 
-    private Member member = MemberFixture.anyMember();
+    private Member owner = MemberFixture.anyMember();
+    private String identifier = UUID.randomUUID().toString();
     private String title = WorkspaceFixture.anyTitle();
 
-    public WorkspaceBuilder member(final Member member) {
-        this.member = member;
+    public WorkspaceBuilder owner(final Member owner) {
+        this.owner = owner;
+        return this;
+    }
+
+    public WorkspaceBuilder identifier(final String identifier) {
+        this.identifier = identifier;
         return this;
     }
 
@@ -20,7 +27,8 @@ public class WorkspaceBuilder {
 
     public Workspace build() {
         return Workspace.builder()
-                .member(member)
+                .owner(owner)
+                .identifier(identifier)
                 .title(title)
                 .build();
     }

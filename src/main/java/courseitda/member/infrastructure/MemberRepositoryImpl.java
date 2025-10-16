@@ -23,6 +23,16 @@ public class MemberRepositoryImpl implements MemberRepository {
     }
 
     @Override
+    public boolean existsByEmail(final String email) {
+        return jpaMemberRepository.existsByEmail(email);
+    }
+
+    @Override
+    public boolean existsByNickname(final String nickname) {
+        return jpaMemberRepository.existsByNickname(nickname);
+    }
+
+    @Override
     public Optional<Member> findById(final Long id) {
         return jpaMemberRepository.findById(id);
     }

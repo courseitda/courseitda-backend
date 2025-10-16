@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequiresRole(authRoles = {AuthRole.MEMBER})
-@RequestMapping("/api/workspaces/{workspaceId}/categories")
+@RequestMapping("/api/workspaces/{workspaceIdentifier}/categories")
 public class CategoryController {
 
     private final CategoryService categoryService;
@@ -37,23 +37,31 @@ public class CategoryController {
     @PostMapping
     public ResponseEntity<CategoryCreateResponse> createCategory(
             final MemberAuthInfo memberAuthInfo,
-            @PathVariable final Long workspaceId,
+            @PathVariable final String workspaceIdentifier,
             @Valid @RequestBody final CategoryCreateRequest request
     ) {
-        final CategoryCreateResponse response = categoryService.createCategory(memberAuthInfo, workspaceId, request);
-        return ResponseEntity.created(URI.create("/api/workspaces/" + workspaceId + "/categories/" + response.id()))
-                .body(response);
+        final CategoryCreateResponse response = categoryService.createCategory(memberAuthInfo, workspaceIdentifier,
+                request);
+        return ResponseEntity.created(
+                URI.create("/api/workspaces/"
+                        + workspaceIdentifier + "/categories/"
+                        + response.id()
+                )
+        ).body(response);
     }
 
     // 카테고리 순서 변경
     @PostMapping("/reorder")
     public ResponseEntity<CategoryReorderResponse> updateCategorySequence(
             final MemberAuthInfo memberAuthInfo,
-            @PathVariable final Long workspaceId,
+            @PathVariable final String workspaceIdentifier,
             @Valid @RequestBody final CategoryReorderRequest request
     ) {
-        final CategoryReorderResponse response = categoryService.updateCategorySequence(memberAuthInfo, workspaceId,
-                request);
+        final CategoryReorderResponse response = categoryService.updateCategorySequence(
+                memberAuthInfo,
+                workspaceIdentifier,
+                request
+        );
         return ResponseEntity.ok(response);
     }
 
@@ -61,12 +69,17 @@ public class CategoryController {
     @PatchMapping("/{categoryId}")
     public ResponseEntity<CategoryUpdateResponse> updateCategory(
             final MemberAuthInfo memberAuthInfo,
-            @PathVariable final Long workspaceId,
+            @PathVariable final String workspaceIdentifier,
             @PathVariable final Long categoryId,
             @Valid @RequestBody final CategoryUpdateRequest request
     ) {
-        final CategoryUpdateResponse response = categoryService.updateCategory(memberAuthInfo, workspaceId, categoryId,
-                request);
+        final CategoryUpdateResponse response = categoryService.updateCategory(
+                memberAuthInfo,
+                workspaceIdentifier,
+                categoryId,
+                request
+        );
+
         return ResponseEntity.ok(response);
     }
 
@@ -74,10 +87,11 @@ public class CategoryController {
     @DeleteMapping("/{categoryId}")
     public ResponseEntity<Void> deleteCategory(
             final MemberAuthInfo memberAuthInfo,
-            @PathVariable final Long workspaceId,
+            @PathVariable final String workspaceIdentifier,
             @PathVariable final Long categoryId
     ) {
-        categoryService.deleteCategory(memberAuthInfo, workspaceId, categoryId);
+        categoryService.deleteCategory(memberAuthInfo, workspaceIdentifier, categoryId);
+
         return ResponseEntity.noContent().build();
     }
 
@@ -85,10 +99,11 @@ public class CategoryController {
     @GetMapping("/{categoryId}")
     public ResponseEntity<CategoryResponse> readCategory(
             final MemberAuthInfo memberAuthInfo,
-            @PathVariable final Long workspaceId,
+            @PathVariable final String workspaceIdentifier,
             @PathVariable final Long categoryId
     ) {
-        final CategoryResponse response = categoryService.findCategory(memberAuthInfo, workspaceId, categoryId);
+        final CategoryResponse response = categoryService.findCategory(memberAuthInfo, workspaceIdentifier, categoryId);
+
         return ResponseEntity.ok(response);
     }
 
@@ -96,9 +111,10 @@ public class CategoryController {
     @GetMapping
     public ResponseEntity<CategoriesResponse> readAllCategories(
             final MemberAuthInfo memberAuthInfo,
-            @PathVariable final Long workspaceId
+            @PathVariable final String workspaceIdentifier
     ) {
-        final CategoriesResponse response = categoryService.findAllCategories(memberAuthInfo, workspaceId);
+        final CategoriesResponse response = categoryService.findAllCategories(memberAuthInfo, workspaceIdentifier);
+
         return ResponseEntity.ok(response);
     }
 }

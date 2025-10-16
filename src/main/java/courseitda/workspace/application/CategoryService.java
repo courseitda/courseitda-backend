@@ -33,14 +33,14 @@ public class CategoryService {
     @Transactional
     public CategoryCreateResponse createCategory(
             final MemberAuthInfo memberAuthInfo,
-            final Long workspaceId,
+            final String workspaceIdentifier,
             final CategoryCreateRequest request
     ) {
-        final var workspace = getWorkspaceById(workspaceId);
+        final var workspace = getWorkspaceByIdentifier(workspaceIdentifier);
         workspace.validateOwnership(memberAuthInfo.id());
 
         // N+1 문제 해결: workspace.getCategories().size() 대신 직접 count 쿼리 사용
-        final var nextSequence = categoryRepository.countByWorkspaceId(workspaceId) + 1;
+        final var nextSequence = categoryRepository.countByWorkspaceId(workspace.getId()) + 1;
         final var category = Category.createNew(workspace, request.name(), request.color(), nextSequence);
         final var savedCategory = categoryRepository.save(category);
 
@@ -50,10 +50,10 @@ public class CategoryService {
     @Transactional
     public CategoryReorderResponse updateCategorySequence(
             final MemberAuthInfo memberAuthInfo,
-            final Long workspaceId,
+            final String workspaceIdentifier,
             final CategoryReorderRequest request
     ) {
-        final var workspace = getWorkspaceById(workspaceId);
+        final var workspace = getWorkspaceByIdentifier(workspaceIdentifier);
         workspace.validateOwnership(memberAuthInfo.id());
 
         final var categoryIds = request.categorySequenceRequests().stream()
@@ -87,11 +87,11 @@ public class CategoryService {
     @Transactional
     public CategoryUpdateResponse updateCategory(
             final MemberAuthInfo memberAuthInfo,
-            final Long workspaceId,
+            final String workspaceIdentifier,
             final Long categoryId,
             final CategoryUpdateRequest request
     ) {
-        final var workspace = getWorkspaceById(workspaceId);
+        final var workspace = getWorkspaceByIdentifier(workspaceIdentifier);
         workspace.validateOwnership(memberAuthInfo.id());
 
         final var category = getCategoryById(categoryId);
@@ -104,10 +104,10 @@ public class CategoryService {
     @Transactional
     public void deleteCategory(
             final MemberAuthInfo memberAuthInfo,
-            final Long workspaceId,
+            final String workspaceIdentifier,
             final Long categoryId
     ) {
-        final var workspace = getWorkspaceById(workspaceId);
+        final var workspace = getWorkspaceByIdentifier(workspaceIdentifier);
         workspace.validateOwnership(memberAuthInfo.id());
 
         final var category = getCategoryById(categoryId);
@@ -119,10 +119,10 @@ public class CategoryService {
     @Transactional(readOnly = true)
     public CategoryResponse findCategory(
             final MemberAuthInfo memberAuthInfo,
-            final Long workspaceId,
+            final String workspaceIdentifier,
             final Long categoryId
     ) {
-        final var workspace = getWorkspaceById(workspaceId);
+        final var workspace = getWorkspaceByIdentifier(workspaceIdentifier);
         workspace.validateOwnership(memberAuthInfo.id());
 
         final var category = getCategoryById(categoryId);
@@ -134,17 +134,17 @@ public class CategoryService {
     @Transactional(readOnly = true)
     public CategoriesResponse findAllCategories(
             final MemberAuthInfo memberAuthInfo,
-            final Long workspaceId
+            final String workspaceIdentifier
     ) {
-        final var workspace = getWorkspaceById(workspaceId);
+        final var workspace = getWorkspaceByIdentifier(workspaceIdentifier);
         workspace.validateOwnership(memberAuthInfo.id());
 
         final var categories = workspace.getCategories();
         return CategoriesResponse.from(categories);
     }
 
-    private Workspace getWorkspaceById(final Long workspaceId) {
-        return workspaceRepository.findById(workspaceId)
+    private Workspace getWorkspaceByIdentifier(final String workspaceIdentifier) {
+        return workspaceRepository.findByIdentifier(workspaceIdentifier)
                 .orElseThrow(() -> new BusinessException(ErrorCode.WORKSPACE_NOT_FOUND));
     }
 

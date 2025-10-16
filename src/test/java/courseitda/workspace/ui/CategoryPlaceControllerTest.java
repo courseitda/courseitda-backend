@@ -22,6 +22,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class CategoryPlaceControllerTest {
 
     @LocalServerPort
@@ -46,8 +47,8 @@ class CategoryPlaceControllerTest {
     void createCategoryPlace_success() {
         // given
         final String accessToken = signUpAndLogin();
-        final Long workspaceId = createWorkspace(accessToken);
-        final Long categoryId = createCategory(accessToken, workspaceId).id();
+        final String workspaceIdentifier = createWorkspace(accessToken);
+        final Long categoryId = createCategory(accessToken, workspaceIdentifier).id();
 
         final String name = PlaceFixture.anyName();
         final String roadAddressName = PlaceFixture.anyRoadAddressName();
@@ -81,8 +82,8 @@ class CategoryPlaceControllerTest {
     void readCategoryPlaces_success() {
         // given
         final String accessToken = signUpAndLogin();
-        final Long workspaceId = createWorkspace(accessToken);
-        final Long categoryId = createCategory(accessToken, workspaceId).id();
+        final String workspaceIdentifier = createWorkspace(accessToken);
+        final Long categoryId = createCategory(accessToken, workspaceIdentifier).id();
 
         createCategoryPlace(accessToken, categoryId);
         createCategoryPlace(accessToken, categoryId);
@@ -107,8 +108,8 @@ class CategoryPlaceControllerTest {
     void deleteCategoryPlace_success() {
         // given
         final String accessToken = signUpAndLogin();
-        final Long workspaceId = createWorkspace(accessToken);
-        final Long categoryId = createCategory(accessToken, workspaceId).id();
+        final String workspaceIdentifier = createWorkspace(accessToken);
+        final Long categoryId = createCategory(accessToken, workspaceIdentifier).id();
         final Long categoryPlaceId = createCategoryPlace(accessToken, categoryId).id();
 
         // when & then
@@ -131,7 +132,7 @@ class CategoryPlaceControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(signUpRequest)
                 .when()
-                .post("/members")
+                .post("/api/members")
                 .then()
                 .statusCode(HttpStatus.CREATED.value());
 
@@ -140,7 +141,7 @@ class CategoryPlaceControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(loginRequest)
                 .when()
-                .post("/auth/login")
+                .post("/api/auth/login")
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .extract()
@@ -149,7 +150,7 @@ class CategoryPlaceControllerTest {
         return loginResponse.tokenType() + " " + loginResponse.accessToken();
     }
 
-    private Long createWorkspace(final String accessToken) {
+    private String createWorkspace(final String accessToken) {
         final String title = WorkspaceFixture.anyTitle();
         final WorkspaceCreateRequest request = new WorkspaceCreateRequest(title);
 
@@ -163,10 +164,10 @@ class CategoryPlaceControllerTest {
                 .statusCode(HttpStatus.CREATED.value())
                 .extract()
                 .as(WorkspaceCreateResponse.class)
-                .id();
+                .identifier();
     }
 
-    private CategoryCreateResponse createCategory(final String accessToken, final Long workspaceId) {
+    private CategoryCreateResponse createCategory(final String accessToken, final String workspaceIdentifier) {
         final String name = CategoryFixture.anyName();
         final String color = CategoryFixture.anyColor();
         final CategoryCreateRequest request = new CategoryCreateRequest(name, color);
@@ -176,7 +177,7 @@ class CategoryPlaceControllerTest {
                 .header(HttpHeaders.AUTHORIZATION, accessToken)
                 .body(request)
                 .when()
-                .post("/api/workspaces/" + workspaceId + "/categories")
+                .post("/api/workspaces/" + workspaceIdentifier + "/categories")
                 .then()
                 .statusCode(HttpStatus.CREATED.value())
                 .extract()

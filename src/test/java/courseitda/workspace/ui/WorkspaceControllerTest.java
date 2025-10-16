@@ -2,6 +2,7 @@ package courseitda.workspace.ui;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
 import courseitda.auth.ui.dto.request.LoginRequest;
 import courseitda.auth.ui.dto.response.LoginResponse;
@@ -25,7 +26,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class WorkspaceControllerTest {
 
     @LocalServerPort
@@ -57,9 +58,8 @@ class WorkspaceControllerTest {
                 .as(WorkspaceCreateResponse.class);
 
         // then
-        assertThat(response.id()).isNotNull();
+        assertThat(response.identifier()).isNotNull();
         assertThat(response.title()).isEqualTo(title);
-        assertThat(response.memberId()).isNotNull();
     }
 
     @Test
@@ -90,14 +90,14 @@ class WorkspaceControllerTest {
                 .header(HttpHeaders.AUTHORIZATION, accessToken)
                 .body(updateRequest)
                 .when()
-                .patch("/api/workspaces/" + createResponse.id())
+                .patch("/api/workspaces/" + createResponse.identifier())
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .extract()
                 .as(WorkspaceUpdateResponse.class);
 
         // then
-        assertThat(response.id()).isEqualTo(createResponse.id());
+        assertThat(response.identifier()).isEqualTo(createResponse.identifier());
         assertThat(response.title()).isEqualTo(newTitle);
     }
 
@@ -125,7 +125,7 @@ class WorkspaceControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, accessToken)
                 .when()
-                .delete("/api/workspaces/" + createResponse.id())
+                .delete("/api/workspaces/" + createResponse.identifier())
                 .then()
                 .statusCode(HttpStatus.NO_CONTENT.value());
     }
@@ -140,7 +140,7 @@ class WorkspaceControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(signUpRequest)
                 .when()
-                .post("/members")
+                .post("/api/members")
                 .then()
                 .statusCode(HttpStatus.CREATED.value());
 
@@ -149,7 +149,7 @@ class WorkspaceControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(loginRequest)
                 .when()
-                .post("/auth/login")
+                .post("/api/auth/login")
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .extract()

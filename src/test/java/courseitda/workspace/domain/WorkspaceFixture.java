@@ -16,9 +16,9 @@ public class WorkspaceFixture {
         return anyWorkspace(MemberFixture.anyMember());
     }
 
-    public static Workspace anyWorkspace(final Member member) {
+    public static Workspace anyWorkspace(final Member owner) {
         return new WorkspaceBuilder()
-                .member(member)
+                .owner(owner)
                 .build();
     }
 }

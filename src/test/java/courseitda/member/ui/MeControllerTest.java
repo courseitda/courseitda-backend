@@ -2,6 +2,7 @@ package courseitda.member.ui;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
 import courseitda.auth.ui.dto.request.LoginRequest;
 import courseitda.auth.ui.dto.response.LoginResponse;
@@ -29,7 +30,7 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 @Transactional
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class MeControllerTest {
 
     @LocalServerPort

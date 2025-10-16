@@ -60,6 +60,7 @@ public class WorkspaceController {
 
         final WorkspaceUpdateResponse response = workspaceService.updateWorkspace(memberAuthInfo, workspaceIdentifier,
                 request);
+
         return ResponseEntity.ok(response);
     }
 
@@ -76,6 +77,7 @@ public class WorkspaceController {
         // ❌ 409 Conflict	    무언가 제약 조건 때문에 워크스페이스 삭제가 불가한 상태 -> 공유 기능있으면 들어가야 한다.
 
         workspaceService.deleteWorkspace(memberAuthInfo, workspaceIdentifier);
+
         return ResponseEntity.noContent().build();
     }
 }

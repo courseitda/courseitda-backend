@@ -39,6 +39,7 @@ public class CategoryPlaceController {
         final CategoryPlaceCreateResponse response = categoryPlaceService.createCategoryPlace(memberAuthInfo,
                 categoryId,
                 request);
+
         return ResponseEntity.created(URI.create("/api/categories/" + categoryId + "/category-places/" + response.id()))
                 .body(response);
     }
@@ -54,6 +55,7 @@ public class CategoryPlaceController {
         // ✅ 204 No Content	카테고리 장소 삭제 성공
         // ✅ 403 Forbidden 카테고리 안의 장소가 아닐때
         categoryPlaceService.deleteCategoryPlace(memberAuthInfo, categoryId, categoryPlaceId);
+
         return ResponseEntity.noContent().build();
     }
 
@@ -66,6 +68,7 @@ public class CategoryPlaceController {
 
         // ✅ 200 OK	카테고리 장소 목록 조회 성공
         final CategoryPlacesResponse response = categoryPlaceService.findCategoryPlaces(memberAuthInfo, categoryId);
+
         return ResponseEntity.ok(response);
     }
 }

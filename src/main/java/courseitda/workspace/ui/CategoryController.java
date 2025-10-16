@@ -40,9 +40,14 @@ public class CategoryController {
             @PathVariable final String workspaceIdentifier,
             @Valid @RequestBody final CategoryCreateRequest request
     ) {
-        final CategoryCreateResponse response = categoryService.createCategory(memberAuthInfo, workspaceIdentifier, request);
-        return ResponseEntity.created(URI.create("/api/workspaces/" + workspaceIdentifier + "/categories/" + response.id()))
-                .body(response);
+        final CategoryCreateResponse response = categoryService.createCategory(memberAuthInfo, workspaceIdentifier,
+                request);
+        return ResponseEntity.created(
+                URI.create("/api/workspaces/"
+                        + workspaceIdentifier + "/categories/"
+                        + response.id()
+                )
+        ).body(response);
     }
 
     // 카테고리 순서 변경
@@ -52,8 +57,11 @@ public class CategoryController {
             @PathVariable final String workspaceIdentifier,
             @Valid @RequestBody final CategoryReorderRequest request
     ) {
-        final CategoryReorderResponse response = categoryService.updateCategorySequence(memberAuthInfo, workspaceIdentifier,
-                request);
+        final CategoryReorderResponse response = categoryService.updateCategorySequence(
+                memberAuthInfo,
+                workspaceIdentifier,
+                request
+        );
         return ResponseEntity.ok(response);
     }
 
@@ -65,8 +73,13 @@ public class CategoryController {
             @PathVariable final Long categoryId,
             @Valid @RequestBody final CategoryUpdateRequest request
     ) {
-        final CategoryUpdateResponse response = categoryService.updateCategory(memberAuthInfo, workspaceIdentifier, categoryId,
-                request);
+        final CategoryUpdateResponse response = categoryService.updateCategory(
+                memberAuthInfo,
+                workspaceIdentifier,
+                categoryId,
+                request
+        );
+
         return ResponseEntity.ok(response);
     }
 
@@ -78,6 +91,7 @@ public class CategoryController {
             @PathVariable final Long categoryId
     ) {
         categoryService.deleteCategory(memberAuthInfo, workspaceIdentifier, categoryId);
+
         return ResponseEntity.noContent().build();
     }
 
@@ -89,6 +103,7 @@ public class CategoryController {
             @PathVariable final Long categoryId
     ) {
         final CategoryResponse response = categoryService.findCategory(memberAuthInfo, workspaceIdentifier, categoryId);
+
         return ResponseEntity.ok(response);
     }
 
@@ -99,6 +114,7 @@ public class CategoryController {
             @PathVariable final String workspaceIdentifier
     ) {
         final CategoriesResponse response = categoryService.findAllCategories(memberAuthInfo, workspaceIdentifier);
+
         return ResponseEntity.ok(response);
     }
 }

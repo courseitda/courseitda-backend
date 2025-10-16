@@ -22,10 +22,10 @@ public class WorkspaceService {
     private final WorkspaceRepository workspaceRepository;
 
     @Transactional
-    public WorkspaceCreateResponse createWorkspace(final Member owner, final WorkspaceCreateRequest request) {
-        validateDuplicatedTitle(owner.getId(), request.title());
+    public WorkspaceCreateResponse createWorkspace(final Member member, final WorkspaceCreateRequest request) {
+        validateDuplicatedTitle(member.getId(), request.title());
 
-        final var workspace = Workspace.createNew(owner, request.title());
+        final var workspace = Workspace.createNew(member, request.title());
         final var savedWorkspace = workspaceRepository.save(workspace);
 
         return WorkspaceCreateResponse.from(savedWorkspace);
@@ -34,10 +34,10 @@ public class WorkspaceService {
     @Transactional
     public WorkspaceUpdateResponse updateWorkspace(
             final MemberAuthInfo memberAuthInfo,
-            final Long workspaceId,
+            final String workspaceIdentifier,
             final WorkspaceUpdateRequest request
     ) {
-        final var workspace = getById(workspaceId);
+        final var workspace = getByIdentifier(workspaceIdentifier);
         final var newTitle = Workspace.formatTitle(request.title());
 
         workspace.validateOwnership(memberAuthInfo.id());
@@ -51,16 +51,16 @@ public class WorkspaceService {
     }
 
     @Transactional
-    public void deleteWorkspace(final MemberAuthInfo memberAuthInfo, final Long workspaceId) {
-        final var workspace = getById(workspaceId);
+    public void deleteWorkspace(final MemberAuthInfo memberAuthInfo, final String workspaceIdentifier) {
+        final var workspace = getByIdentifier(workspaceIdentifier);
         workspace.validateOwnership(memberAuthInfo.id());
 
-        workspaceRepository.deleteById(workspaceId);
+        workspaceRepository.deleteById(workspace.getId());
     }
 
     @Transactional(readOnly = true)
-    public WorkspacesResponse readWorkspacesByMemberId(final Long ownerId) {
-        return WorkspacesResponse.from(workspaceRepository.findAllByOwnerId(ownerId));
+    public WorkspacesResponse readWorkspacesByMemberId(final Long memberId) {
+        return WorkspacesResponse.from(workspaceRepository.findAllByOwnerId(memberId));
     }
 
     private Workspace getById(final Long workspaceId) {
@@ -68,9 +68,14 @@ public class WorkspaceService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.WORKSPACE_NOT_FOUND));
     }
 
-    private void validateDuplicatedTitle(final Long ownerId, final String newTitle) {
+    private Workspace getByIdentifier(final String identifier) {
+        return workspaceRepository.findByIdentifier(identifier)
+                .orElseThrow(() -> new BusinessException(ErrorCode.WORKSPACE_NOT_FOUND));
+    }
+
+    private void validateDuplicatedTitle(final Long memberId, final String newTitle) {
         // 해당 회원 소유의 워크스페이스에 이미 해당 타이틀을 사용중인지
-        if (workspaceRepository.existsByOwnerIdAndTitle(ownerId, newTitle)) {
+        if (workspaceRepository.existsByOwnerIdAndTitle(memberId, newTitle)) {
             throw new BusinessException(ErrorCode.DUPLICATE_WORKSPACE_TITLE);
         }
     }

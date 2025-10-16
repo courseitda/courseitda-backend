@@ -16,6 +16,7 @@ import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,6 +39,9 @@ public class Workspace extends Timestamp {
     private Member owner;
 
     @Column(nullable = false)
+    private String identifier;
+
+    @Column(nullable = false)
     private String title;
 
     @OneToMany(mappedBy = "workspace")
@@ -46,18 +50,20 @@ public class Workspace extends Timestamp {
     @Builder
     public Workspace(
             final Member owner,
+            final String identifier,
             final String title,
             final List<Category> categories
     ) {
         validateTitle(title);
 
         this.owner = owner;
+        this.identifier = identifier;
         this.title = title;
         this.categories = categories;
     }
 
     public static Workspace createNew(final Member owner, final String title) {
-        return new Workspace(owner, title, new ArrayList<>());
+        return new Workspace(owner, UUID.randomUUID().toString(), title, new ArrayList<>());
     }
 
     public static String formatTitle(final String unformattedTitle) {

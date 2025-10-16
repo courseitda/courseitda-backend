@@ -34,6 +34,11 @@ public class WorkspaceRepositoryImpl implements WorkspaceRepository {
     }
 
     @Override
+    public Optional<Workspace> findByIdentifier(final String identifier) {
+        return jpaWorkspaceRepository.findByIdentifier(identifier);
+    }
+
+    @Override
     public List<Workspace> findAllByOwnerId(final Long ownerId) {
         return jpaWorkspaceRepository.findAllByOwnerId(ownerId);
     }

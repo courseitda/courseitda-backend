@@ -32,24 +32,24 @@ public class WorkspaceController {
     // 워크스페이스 생성
     @PostMapping
     public ResponseEntity<WorkspaceCreateResponse> createWorkspace(
-            Member member,
-            @Valid @RequestBody WorkspaceCreateRequest request
+            final Member member,
+            @Valid @RequestBody final WorkspaceCreateRequest request
     ) {
         // ✅ 201 Created	워크스페이스 생성 성공
         // ✅ 400 Bad Request	필수 필드 누락, 유효성 검증 실패 -> request dto에서 검증 진행
         // ✅ 401 Unauthorized	로그인하지 않은 사용자의 생성 요청 -> Member 받아오는 과정에서 알아서 처리
 
-        WorkspaceCreateResponse response = workspaceService.createWorkspace(member, request);
-        return ResponseEntity.created(URI.create("/api/workspaces/" + response.id()))
+        final WorkspaceCreateResponse response = workspaceService.createWorkspace(member, request);
+        return ResponseEntity.created(URI.create("/api/workspaces/" + response.identifier()))
                 .body(response);
     }
 
     // 워크스페이스 제목 수정
-    @PatchMapping("/{workspaceId}")
+    @PatchMapping("/{workspaceIdentifier}")
     public ResponseEntity<WorkspaceUpdateResponse> updateWorkspace(
-            MemberAuthInfo memberAuthInfo,
-            @PathVariable Long workspaceId,
-            @Valid @RequestBody WorkspaceUpdateRequest request
+            final MemberAuthInfo memberAuthInfo,
+            @PathVariable final String workspaceIdentifier,
+            @Valid @RequestBody final WorkspaceUpdateRequest request
     ) {
         // ✅ 200 OK	        이름 변경 성공
         // ✅ 400 Bad Request	필수 필드 누락, 유효성 검증 실패 -> request dto에서 검증 진행
@@ -58,15 +58,16 @@ public class WorkspaceController {
         // ✅ 404 Not Found	    워크스페이스 ID가 존재하지 않음 -> findById 예외 처리
         // ✅ 409 Conflict      워크스페이스 삭제 과정에서 충돌이 일어난 경우 -> 라젤 추가) 동일한 워크스페이스 닉네임이 존재하는 경우
 
-        WorkspaceUpdateResponse response = workspaceService.updateWorkspace(memberAuthInfo, workspaceId, request);
+        final WorkspaceUpdateResponse response = workspaceService.updateWorkspace(memberAuthInfo, workspaceIdentifier,
+                request);
         return ResponseEntity.ok(response);
     }
 
     // 워크스페이스 삭제
-    @DeleteMapping("/{workspaceId}")
+    @DeleteMapping("/{workspaceIdentifier}")
     public ResponseEntity<Void> deleteWorkspace(
-            MemberAuthInfo memberAuthInfo,
-            @PathVariable Long workspaceId
+            final MemberAuthInfo memberAuthInfo,
+            @PathVariable final String workspaceIdentifier
     ) {
         // ✅ 204 No Content	워크스페이스 삭제 성공
         // ✅ 401 Unauthorized	토큰 누락 또는 유효하지 않은 토큰 -> MemberAuthInfo 받아오는 과정에서 알아서 처리
@@ -74,7 +75,7 @@ public class WorkspaceController {
         // ✅ 404 Not Found	    워크스페이스 ID가 존재하지 않음 -> findById 예외 처리
         // ❌ 409 Conflict	    무언가 제약 조건 때문에 워크스페이스 삭제가 불가한 상태 -> 공유 기능있으면 들어가야 한다.
 
-        workspaceService.deleteWorkspace(memberAuthInfo, workspaceId);
+        workspaceService.deleteWorkspace(memberAuthInfo, workspaceIdentifier);
         return ResponseEntity.noContent().build();
     }
 }

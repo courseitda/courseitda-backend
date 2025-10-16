@@ -13,5 +13,7 @@ public interface WorkspaceRepository {
 
     Optional<Workspace> findById(Long workspaceId);
 
+    Optional<Workspace> findByIdentifier(String identifier);
+
     List<Workspace> findAllByOwnerId(Long ownerId);
 }

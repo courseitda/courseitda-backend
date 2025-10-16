@@ -18,14 +18,14 @@ public record WorkspacesResponse(
     }
 
     public record WorkspaceResponse(
-            Long id,
+            String identifier,
             String title,
             @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime modifiedAt
     ) {
 
         public static WorkspaceResponse from(final Workspace workspace) {
             return new WorkspaceResponse(
-                    workspace.getId(),
+                    workspace.getIdentifier(),
                     workspace.getTitle(),
                     workspace.getModifiedAt()
             );

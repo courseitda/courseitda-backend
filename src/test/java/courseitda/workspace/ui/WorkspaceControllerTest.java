@@ -57,9 +57,8 @@ class WorkspaceControllerTest {
                 .as(WorkspaceCreateResponse.class);
 
         // then
-        assertThat(response.id()).isNotNull();
+        assertThat(response.identifier()).isNotNull();
         assertThat(response.title()).isEqualTo(title);
-        assertThat(response.ownerId()).isNotNull();
     }
 
     @Test
@@ -90,14 +89,14 @@ class WorkspaceControllerTest {
                 .header(HttpHeaders.AUTHORIZATION, accessToken)
                 .body(updateRequest)
                 .when()
-                .patch("/api/workspaces/" + createResponse.id())
+                .patch("/api/workspaces/" + createResponse.identifier())
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .extract()
                 .as(WorkspaceUpdateResponse.class);
 
         // then
-        assertThat(response.id()).isEqualTo(createResponse.id());
+        assertThat(response.identifier()).isEqualTo(createResponse.identifier());
         assertThat(response.title()).isEqualTo(newTitle);
     }
 
@@ -125,7 +124,7 @@ class WorkspaceControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, accessToken)
                 .when()
-                .delete("/api/workspaces/" + createResponse.id())
+                .delete("/api/workspaces/" + createResponse.identifier())
                 .then()
                 .statusCode(HttpStatus.NO_CONTENT.value());
     }

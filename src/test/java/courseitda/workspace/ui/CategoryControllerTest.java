@@ -50,7 +50,7 @@ class CategoryControllerTest {
     void createCategory_success() {
         // given
         final String accessToken = signUpAndLogin();
-        final Long workspaceId = createWorkspace(accessToken);
+        final String workspaceIdentifier = createWorkspace(accessToken);
 
         final String name = CategoryFixture.anyName();
         final String color = CategoryFixture.anyColor();
@@ -62,7 +62,7 @@ class CategoryControllerTest {
                 .header(HttpHeaders.AUTHORIZATION, accessToken)
                 .body(request)
                 .when()
-                .post("/api/workspaces/" + workspaceId + "/categories")
+                .post("/api/workspaces/" + workspaceIdentifier + "/categories")
                 .then()
                 .statusCode(HttpStatus.CREATED.value())
                 .extract()
@@ -80,10 +80,10 @@ class CategoryControllerTest {
     void updateCategorySequence_success() {
         // given
         final String accessToken = signUpAndLogin();
-        final Long workspaceId = createWorkspace(accessToken);
+        final String workspaceIdentifier = createWorkspace(accessToken);
 
-        final CategoryCreateResponse category1 = createCategory(accessToken, workspaceId);
-        final CategoryCreateResponse category2 = createCategory(accessToken, workspaceId);
+        final CategoryCreateResponse category1 = createCategory(accessToken, workspaceIdentifier);
+        final CategoryCreateResponse category2 = createCategory(accessToken, workspaceIdentifier);
 
         final List<CategorySequenceRequest> sequenceRequests = List.of(
                 new CategorySequenceRequest(category1.id(), 2),
@@ -97,7 +97,7 @@ class CategoryControllerTest {
                 .header(HttpHeaders.AUTHORIZATION, accessToken)
                 .body(request)
                 .when()
-                .post("/api/workspaces/" + workspaceId + "/categories/reorder")
+                .post("/api/workspaces/" + workspaceIdentifier + "/categories/reorder")
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .extract()
@@ -114,8 +114,8 @@ class CategoryControllerTest {
     void updateCategory_success() {
         // given
         final String accessToken = signUpAndLogin();
-        final Long workspaceId = createWorkspace(accessToken);
-        final CategoryCreateResponse category = createCategory(accessToken, workspaceId);
+        final String workspaceIdentifier = createWorkspace(accessToken);
+        final CategoryCreateResponse category = createCategory(accessToken, workspaceIdentifier);
 
         final String newName = CategoryFixture.anyName();
         final String newColor = "#123456";
@@ -127,7 +127,7 @@ class CategoryControllerTest {
                 .header(HttpHeaders.AUTHORIZATION, accessToken)
                 .body(request)
                 .when()
-                .patch("/api/workspaces/" + workspaceId + "/categories/" + category.id())
+                .patch("/api/workspaces/" + workspaceIdentifier + "/categories/" + category.id())
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .extract()
@@ -144,15 +144,15 @@ class CategoryControllerTest {
     void deleteCategory_success() {
         // given
         final String accessToken = signUpAndLogin();
-        final Long workspaceId = createWorkspace(accessToken);
-        final CategoryCreateResponse category = createCategory(accessToken, workspaceId);
+        final String workspaceIdentifier = createWorkspace(accessToken);
+        final CategoryCreateResponse category = createCategory(accessToken, workspaceIdentifier);
 
         // when & then
         given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, accessToken)
                 .when()
-                .delete("/api/workspaces/" + workspaceId + "/categories/" + category.id())
+                .delete("/api/workspaces/" + workspaceIdentifier + "/categories/" + category.id())
                 .then()
                 .statusCode(HttpStatus.NO_CONTENT.value());
     }
@@ -162,15 +162,15 @@ class CategoryControllerTest {
     void readCategory_success() {
         // given
         final String accessToken = signUpAndLogin();
-        final Long workspaceId = createWorkspace(accessToken);
-        final CategoryCreateResponse category = createCategory(accessToken, workspaceId);
+        final String workspaceIdentifier = createWorkspace(accessToken);
+        final CategoryCreateResponse category = createCategory(accessToken, workspaceIdentifier);
 
         // when
         final CategoryResponse response = given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, accessToken)
                 .when()
-                .get("/api/workspaces/" + workspaceId + "/categories/" + category.id())
+                .get("/api/workspaces/" + workspaceIdentifier + "/categories/" + category.id())
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .extract()
@@ -188,18 +188,18 @@ class CategoryControllerTest {
     void readAllCategories_success() {
         // given
         final String accessToken = signUpAndLogin();
-        final Long workspaceId = createWorkspace(accessToken);
+        final String workspaceIdentifier = createWorkspace(accessToken);
 
-        createCategory(accessToken, workspaceId);
-        createCategory(accessToken, workspaceId);
-        createCategory(accessToken, workspaceId);
+        createCategory(accessToken, workspaceIdentifier);
+        createCategory(accessToken, workspaceIdentifier);
+        createCategory(accessToken, workspaceIdentifier);
 
         // when
         final CategoriesResponse response = given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, accessToken)
                 .when()
-                .get("/api/workspaces/" + workspaceId + "/categories")
+                .get("/api/workspaces/" + workspaceIdentifier + "/categories")
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .extract()
@@ -237,7 +237,7 @@ class CategoryControllerTest {
         return loginResponse.tokenType() + " " + loginResponse.accessToken();
     }
 
-    private Long createWorkspace(final String accessToken) {
+    private String createWorkspace(final String accessToken) {
         final String title = WorkspaceFixture.anyTitle();
         final WorkspaceCreateRequest request = new WorkspaceCreateRequest(title);
 
@@ -251,10 +251,10 @@ class CategoryControllerTest {
                 .statusCode(HttpStatus.CREATED.value())
                 .extract()
                 .as(WorkspaceCreateResponse.class)
-                .id();
+                .identifier();
     }
 
-    private CategoryCreateResponse createCategory(final String accessToken, final Long workspaceId) {
+    private CategoryCreateResponse createCategory(final String accessToken, final String workspaceIdentifier) {
         final String name = CategoryFixture.anyName();
         final String color = CategoryFixture.anyColor();
         final CategoryCreateRequest request = new CategoryCreateRequest(name, color);
@@ -264,7 +264,7 @@ class CategoryControllerTest {
                 .header(HttpHeaders.AUTHORIZATION, accessToken)
                 .body(request)
                 .when()
-                .post("/api/workspaces/" + workspaceId + "/categories")
+                .post("/api/workspaces/" + workspaceIdentifier + "/categories")
                 .then()
                 .statusCode(HttpStatus.CREATED.value())
                 .extract()

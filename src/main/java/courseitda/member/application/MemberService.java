@@ -19,6 +19,9 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
     public SignUpResponse create(final SignUpRequest request) {
+        validateDuplicateEmail(request.email());
+        validateDuplicateNickname(request.nickname());
+
         final String encodedPassword = passwordEncoder.encode(request.password());
 
         final Member member = Member.builder()
@@ -35,5 +38,17 @@ public class MemberService {
     public Member findById(final Long id) {
         return memberRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+    }
+
+    private void validateDuplicateEmail(final String email) {
+        if (memberRepository.existsByEmail(email)) {
+            throw new BusinessException(ErrorCode.DUPLICATE_EMAIL);
+        }
+    }
+
+    private void validateDuplicateNickname(final String nickname) {
+        if (memberRepository.existsByNickname(nickname)) {
+            throw new BusinessException(ErrorCode.DUPLICATE_NICKNAME);
+        }
     }
 }

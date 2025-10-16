@@ -231,6 +231,18 @@ public enum ErrorCode {
             "해당 이메일을 가진 회원이 존재하지 않습니다.",
             HttpStatus.NOT_FOUND // 404
     ),
+
+    DUPLICATE_EMAIL(
+            "5007",
+            "이미 사용중인 이메일입니다.",
+            HttpStatus.CONFLICT // 409
+    ),
+
+    DUPLICATE_NICKNAME(
+            "5008",
+            "이미 사용중인 닉네임입니다.",
+            HttpStatus.CONFLICT // 409
+    ),
     ;
 
     private final String code;

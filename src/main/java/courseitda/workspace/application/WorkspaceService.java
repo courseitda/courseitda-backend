@@ -10,6 +10,7 @@ import courseitda.workspace.ui.dto.request.WorkspaceCreateRequest;
 import courseitda.workspace.ui.dto.request.WorkspaceUpdateRequest;
 import courseitda.workspace.ui.dto.response.WorkspaceCreateResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceUpdateResponse;
+import courseitda.workspace.ui.dto.response.WorkspacesResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,6 +56,11 @@ public class WorkspaceService {
         workspace.validateOwnership(memberAuthInfo.id());
 
         workspaceRepository.deleteById(workspaceId);
+    }
+
+    @Transactional(readOnly = true)
+    public WorkspacesResponse readWorkspacesByMemberId(final Long memberId) {
+        return WorkspacesResponse.from(workspaceRepository.findAllByMemberId(memberId));
     }
 
     private Workspace getById(final Long workspaceId) {

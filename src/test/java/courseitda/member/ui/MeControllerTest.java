@@ -67,7 +67,6 @@ class MeControllerTest {
         }
     }
 
-
     @Nested
     @DisplayName("내 드롭다운 정보 조회 성공 시나리오")
     class ReadMemberDropdownSuccessScenarios {
@@ -95,7 +94,6 @@ class MeControllerTest {
         }
     }
 
-
     @Nested
     @DisplayName("내 프로필 정보 조회 성공 시나리오")
     class ReadMemberProfileSuccessScenarios {
@@ -122,7 +120,6 @@ class MeControllerTest {
             assertThat(response.email()).isNotNull();
         }
     }
-
 
     @Nested
     @DisplayName("내 워크스페이스 목록 조회 성공 시나리오")
@@ -172,7 +169,6 @@ class MeControllerTest {
             assertThat(response.workspaces()).isEmpty();
         }
     }
-
 
     private String signUpAndLogin() {
         final String email = MemberFixture.anyEmail();

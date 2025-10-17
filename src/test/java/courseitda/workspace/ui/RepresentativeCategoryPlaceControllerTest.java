@@ -181,7 +181,8 @@ class RepresentativeCategoryPlaceControllerTest {
                     .put("/api/categories/" + categoryId2 + "/representative-place")
                     .then()
                     .statusCode(HttpStatus.FORBIDDEN.value())
-                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.INVALID_REPRESENTATIVE_PLACE_ASSIGNMENT.getCode()));
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.INVALID_REPRESENTATIVE_PLACE_ASSIGNMENT
+                            .getCode()));
         }
     }
 

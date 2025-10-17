@@ -42,18 +42,6 @@ public class MemberService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
-    private void validateDuplicateEmail(final String email) {
-        if (memberRepository.existsByEmail(email)) {
-            throw new BusinessException(ErrorCode.DUPLICATE_EMAIL);
-        }
-    }
-
-    private void validateDuplicateNickname(final String nickname) {
-        if (memberRepository.existsByNickname(nickname)) {
-            throw new BusinessException(ErrorCode.DUPLICATE_NICKNAME);
-        }
-    }
-
     public CheckNicknameDuplicateResponse checkNicknameDuplicate(final String nickname) {
         final boolean isDuplicated = memberRepository.existsByNickname(nickname);
 
@@ -64,5 +52,17 @@ public class MemberService {
         final boolean isDuplicated = memberRepository.existsByEmail(email);
 
         return new CheckEmailDuplicateResponse(isDuplicated);
+    }
+
+    private void validateDuplicateEmail(final String email) {
+        if (memberRepository.existsByEmail(email)) {
+            throw new BusinessException(ErrorCode.DUPLICATE_EMAIL);
+        }
+    }
+
+    private void validateDuplicateNickname(final String nickname) {
+        if (memberRepository.existsByNickname(nickname)) {
+            throw new BusinessException(ErrorCode.DUPLICATE_NICKNAME);
+        }
     }
 }

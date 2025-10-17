@@ -8,12 +8,14 @@ import courseitda.workspace.application.WorkspaceService;
 import courseitda.workspace.ui.dto.request.WorkspaceCreateRequest;
 import courseitda.workspace.ui.dto.request.WorkspaceUpdateRequest;
 import courseitda.workspace.ui.dto.response.WorkspaceCreateResponse;
+import courseitda.workspace.ui.dto.response.WorkspaceReadResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceUpdateResponse;
 import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -79,5 +81,21 @@ public class WorkspaceController {
         workspaceService.deleteWorkspace(memberAuthInfo, workspaceIdentifier);
 
         return ResponseEntity.noContent().build();
+    }
+
+    // 워크스페이스 조회
+    @GetMapping("/{workspaceIdentifier}")
+    public ResponseEntity<WorkspaceReadResponse> readWorkspace(
+            final MemberAuthInfo memberAuthInfo,
+            @PathVariable final String workspaceIdentifier
+    ) {
+        // ✅ 200 OK	        워크스페이스 조회 성공
+        // ✅ 401 Unauthorized	토큰 누락 또는 유효하지 않은 토큰 -> MemberAuthInfo 받아오는 과정에서 알아서 처리
+        // ✅ 403 Forbidden	    유효한 토큰을 갖고 있지만, 해당 워크스페이스의 조회 권한이 없음 -> 워크스페이스 소유자 여부 예외 처리
+        // ✅ 404 Not Found	    워크스페이스 ID가 존재하지 않음 -> findById 예외 처리
+
+        final WorkspaceReadResponse response = workspaceService.readWorkspace(memberAuthInfo, workspaceIdentifier);
+
+        return ResponseEntity.ok(response);
     }
 }

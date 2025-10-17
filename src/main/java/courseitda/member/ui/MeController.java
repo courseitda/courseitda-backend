@@ -19,12 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/me")
+@RequiresRole(authRoles = MEMBER)
 public class MeController {
 
     private final WorkspaceService workspaceService;
 
     @GetMapping("/navigator")
-    @RequiresRole(authRoles = MEMBER)
     public ResponseEntity<MemberReadNavigatorResponse> readMemberNavigator(
             final Member member
     ) {
@@ -35,7 +35,6 @@ public class MeController {
     }
 
     @GetMapping("/dropdown")
-    @RequiresRole(authRoles = MEMBER)
     public ResponseEntity<MemberReadDropdownResponse> readMemberDropdown(
             final Member member
     ) {
@@ -46,7 +45,6 @@ public class MeController {
     }
 
     @GetMapping("/profile")
-    @RequiresRole(authRoles = MEMBER)
     public ResponseEntity<MemberReadProfileResponse> readMemberProfile(
             final Member member
     ) {
@@ -57,7 +55,6 @@ public class MeController {
     }
 
     @GetMapping("/workspaces")
-    @RequiresRole(authRoles = MEMBER)
     // TODO: 페이징 고려 필요
     public ResponseEntity<WorkspacesResponse> readMyWorkspaces(final MemberAuthInfo memberAuthInfo) {
         final var workspacesResponse = workspaceService.readWorkspacesByMemberId(memberAuthInfo.id());

@@ -91,11 +91,9 @@ public class CategoryService {
             final Long categoryId,
             final CategoryUpdateRequest request
     ) {
-        final var workspace = getWorkspaceByIdentifier(workspaceIdentifier);
-        workspace.validateOwnership(memberAuthInfo.id());
-
         final var category = getCategoryById(categoryId);
-        validateCategoryBelongsToWorkspace(workspace, category);
+        category.validateOwnership(memberAuthInfo.id());
+        validateCategoryBelongsToWorkspace(getWorkspaceByIdentifier(workspaceIdentifier), category);
 
         category.updateNameAndColor(request.name(), request.color());
         return CategoryUpdateResponse.from(category);
@@ -107,11 +105,9 @@ public class CategoryService {
             final String workspaceIdentifier,
             final Long categoryId
     ) {
-        final var workspace = getWorkspaceByIdentifier(workspaceIdentifier);
-        workspace.validateOwnership(memberAuthInfo.id());
-
         final var category = getCategoryById(categoryId);
-        validateCategoryBelongsToWorkspace(workspace, category);
+        category.validateOwnership(memberAuthInfo.id());
+        validateCategoryBelongsToWorkspace(getWorkspaceByIdentifier(workspaceIdentifier), category);
 
         categoryRepository.delete(category);
     }
@@ -122,11 +118,9 @@ public class CategoryService {
             final String workspaceIdentifier,
             final Long categoryId
     ) {
-        final var workspace = getWorkspaceByIdentifier(workspaceIdentifier);
-        workspace.validateOwnership(memberAuthInfo.id());
-
         final var category = getCategoryById(categoryId);
-        validateCategoryBelongsToWorkspace(workspace, category);
+        category.validateOwnership(memberAuthInfo.id());
+        validateCategoryBelongsToWorkspace(getWorkspaceByIdentifier(workspaceIdentifier), category);
 
         return CategoryResponse.from(category);
     }

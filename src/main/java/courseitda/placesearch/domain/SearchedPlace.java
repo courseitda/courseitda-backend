@@ -24,25 +24,25 @@ public record SearchedPlace(
 
     private void validateName(final String name) {
         if (name == null || name.isBlank()) {
-            throw new BusinessException(ErrorCode.TEMPORARY_ERROR);
+            throw new BusinessException(ErrorCode.SEARCHED_PLACE_NAME_EMPTY);
         }
     }
 
     private void validateAddressName(final String addressName) {
         if (addressName == null || addressName.isBlank()) {
-            throw new BusinessException(ErrorCode.TEMPORARY_ERROR);
+            throw new BusinessException(ErrorCode.SEARCHED_PLACE_ADDRESS_EMPTY);
         }
     }
 
     private void validateLatitude(final double latitude) {
         if (latitude < -90 || latitude > 90) {
-            throw new BusinessException(ErrorCode.TEMPORARY_ERROR);
+            throw new BusinessException(ErrorCode.INVALID_SEARCHED_PLACE_LATITUDE);
         }
     }
 
     private void validateLongitude(final double longitude) {
         if (longitude < -180 || longitude > 180) {
-            throw new BusinessException(ErrorCode.TEMPORARY_ERROR);
+            throw new BusinessException(ErrorCode.INVALID_SEARCHED_PLACE_LONGITUDE);
         }
     }
 }

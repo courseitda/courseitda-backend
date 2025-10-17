@@ -9,6 +9,7 @@ import courseitda.workspace.domain.WorkspaceRepository;
 import courseitda.workspace.ui.dto.request.WorkspaceCreateRequest;
 import courseitda.workspace.ui.dto.request.WorkspaceUpdateRequest;
 import courseitda.workspace.ui.dto.response.WorkspaceCreateResponse;
+import courseitda.workspace.ui.dto.response.WorkspaceReadResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceUpdateResponse;
 import courseitda.workspace.ui.dto.response.WorkspacesResponse;
 import lombok.RequiredArgsConstructor;
@@ -63,9 +64,12 @@ public class WorkspaceService {
         return WorkspacesResponse.from(workspaceRepository.findAllByOwnerId(memberId));
     }
 
-    private Workspace getById(final Long workspaceId) {
-        return workspaceRepository.findById(workspaceId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.WORKSPACE_NOT_FOUND));
+    @Transactional(readOnly = true)
+    public WorkspaceReadResponse readWorkspace(final MemberAuthInfo memberAuthInfo, final String workspaceIdentifier) {
+        final var workspace = getByIdentifier(workspaceIdentifier);
+        workspace.validateOwnership(memberAuthInfo.id());
+
+        return WorkspaceReadResponse.from(workspace);
     }
 
     private Workspace getByIdentifier(final String identifier) {

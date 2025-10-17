@@ -29,7 +29,7 @@ public class KakaoPlaceSearchErrorHandler implements ResponseErrorHandler {
 
             return statusCode.is4xxClientError() || statusCode.is5xxServerError();
         } catch (final IOException ioException) {
-            throw new BusinessException(ErrorCode.TEMPORARY_ERROR);
+            throw new BusinessException(ErrorCode.KAKAO_PLACE_SEARCH_STATUS_CHECK_ERROR);
         }
     }
 
@@ -43,6 +43,6 @@ public class KakaoPlaceSearchErrorHandler implements ResponseErrorHandler {
                 "카카오 장소 검색 API 오류 발생: {} ",
                 objectMapper.readValue(response.getBody(), KakaoPlaceSearchErrorResponse.class).message()
         );
-        throw new BusinessException(ErrorCode.TEMPORARY_ERROR);
+        throw new BusinessException(ErrorCode.KAKAO_PLACE_SEARCH_ERROR);
     }
 }

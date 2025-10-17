@@ -6,16 +6,19 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 import courseitda.auth.ui.dto.request.LoginRequest;
 import courseitda.auth.ui.dto.response.LoginResponse;
+import courseitda.common.exception.ErrorCode;
 import courseitda.member.domain.MemberFixture;
 import courseitda.member.ui.dto.request.SignUpRequest;
 import courseitda.workspace.domain.WorkspaceFixture;
 import courseitda.workspace.ui.dto.request.WorkspaceCreateRequest;
 import courseitda.workspace.ui.dto.request.WorkspaceUpdateRequest;
 import courseitda.workspace.ui.dto.response.WorkspaceCreateResponse;
+import courseitda.workspace.ui.dto.response.WorkspaceReadResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceUpdateResponse;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -37,97 +40,285 @@ class WorkspaceControllerTest {
         RestAssured.port = port;
     }
 
-    @Test
-    @DisplayName("워크스페이스 생성에 성공한다")
-    void createWorkspace_success() {
-        // given
-        final String accessToken = signUpAndLogin();
-        final String title = WorkspaceFixture.anyTitle();
-        final WorkspaceCreateRequest request = new WorkspaceCreateRequest(title);
+    @Nested
+    @DisplayName("워크스페이스 생성 성공 시나리오")
+    class CreateWorkspaceSuccessScenarios {
 
-        // when
-        final WorkspaceCreateResponse response = given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, accessToken)
-                .body(request)
-                .when()
-                .post("/api/workspaces")
-                .then()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract()
-                .as(WorkspaceCreateResponse.class);
+        @Test
+        @DisplayName("워크스페이스 생성에 성공한다")
+        void createWorkspace_success() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String title = WorkspaceFixture.anyTitle();
+            final WorkspaceCreateRequest request = new WorkspaceCreateRequest(title);
 
-        // then
-        assertThat(response.identifier()).isNotNull();
-        assertThat(response.title()).isEqualTo(title);
+            // when
+            final WorkspaceCreateResponse response = given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .body(request)
+                    .when()
+                    .post("/api/workspaces")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value())
+                    .extract()
+                    .as(WorkspaceCreateResponse.class);
+
+            // then
+            assertThat(response.identifier()).isNotNull();
+            assertThat(response.title()).isEqualTo(title);
+        }
     }
 
-    @Test
-    @DisplayName("워크스페이스 수정에 성공한다")
-    void updateWorkspace_success() {
-        // given
-        final String accessToken = signUpAndLogin();
-        final String originalTitle = WorkspaceFixture.anyTitle();
-        final WorkspaceCreateRequest createRequest = new WorkspaceCreateRequest(originalTitle);
+    @Nested
+    @DisplayName("워크스페이스 생성 실패 시나리오")
+    class CreateWorkspaceFailureScenarios {
 
-        final WorkspaceCreateResponse createResponse = given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, accessToken)
-                .body(createRequest)
-                .when()
-                .post("/api/workspaces")
-                .then()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract()
-                .as(WorkspaceCreateResponse.class);
+        @Test
+        @DisplayName("중복된 워크스페이스 제목으로 생성 시 실패한다")
+        void createWorkspace_fail_duplicateTitle() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String title = WorkspaceFixture.anyTitle();
+            final WorkspaceCreateRequest request = new WorkspaceCreateRequest(title);
 
-        final String newTitle = WorkspaceFixture.anyTitle();
-        final WorkspaceUpdateRequest updateRequest = new WorkspaceUpdateRequest(newTitle);
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .body(request)
+                    .when()
+                    .post("/api/workspaces")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value());
 
-        // when
-        final WorkspaceUpdateResponse response = given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, accessToken)
-                .body(updateRequest)
-                .when()
-                .patch("/api/workspaces/" + createResponse.identifier())
-                .then()
-                .statusCode(HttpStatus.OK.value())
-                .extract()
-                .as(WorkspaceUpdateResponse.class);
-
-        // then
-        assertThat(response.identifier()).isEqualTo(createResponse.identifier());
-        assertThat(response.title()).isEqualTo(newTitle);
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .body(request)
+                    .when()
+                    .post("/api/workspaces")
+                    .then()
+                    .statusCode(HttpStatus.CONFLICT.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.DUPLICATE_WORKSPACE_TITLE.getCode()));
+        }
     }
 
-    @Test
-    @DisplayName("워크스페이스 삭제에 성공한다")
-    void deleteWorkspace_success() {
-        // given
-        final String accessToken = signUpAndLogin();
-        final String title = WorkspaceFixture.anyTitle();
-        final WorkspaceCreateRequest createRequest = new WorkspaceCreateRequest(title);
+    @Nested
+    @DisplayName("워크스페이스 조회 성공 시나리오")
+    class ReadWorkspaceSuccessScenarios {
 
-        final WorkspaceCreateResponse createResponse = given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, accessToken)
-                .body(createRequest)
-                .when()
-                .post("/api/workspaces")
-                .then()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract()
-                .as(WorkspaceCreateResponse.class);
+        @Test
+        @DisplayName("워크스페이스 조회에 성공한다")
+        void readWorkspace_success() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(accessToken);
 
-        // when & then
-        given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, accessToken)
-                .when()
-                .delete("/api/workspaces/" + createResponse.identifier())
-                .then()
-                .statusCode(HttpStatus.NO_CONTENT.value());
+            // when
+            final WorkspaceReadResponse response = given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .when()
+                    .get("/api/workspaces/" + workspaceIdentifier)
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .as(WorkspaceReadResponse.class);
+
+            // then
+            assertThat(response.identifier()).isEqualTo(workspaceIdentifier);
+            assertThat(response.title()).isNotNull();
+        }
+    }
+
+    @Nested
+    @DisplayName("워크스페이스 조회 실패 시나리오")
+    class ReadWorkspaceFailureScenarios {
+
+        @Test
+        @DisplayName("존재하지 않는 워크스페이스 조회 시 실패한다")
+        void readWorkspace_fail_workspaceNotFound() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String nonExistentIdentifier = "non-existent-identifier";
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .when()
+                    .get("/api/workspaces/" + nonExistentIdentifier)
+                    .then()
+                    .statusCode(HttpStatus.NOT_FOUND.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.WORKSPACE_NOT_FOUND.getCode()));
+        }
+
+        @Test
+        @DisplayName("다른 사용자의 워크스페이스 조회 시 실패한다")
+        void readWorkspace_fail_workspaceModifyForbidden() {
+            // given
+            final String owner = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(owner);
+
+            final String otherUser = signUpAndLogin();
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, otherUser)
+                    .when()
+                    .get("/api/workspaces/" + workspaceIdentifier)
+                    .then()
+                    .statusCode(HttpStatus.FORBIDDEN.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.WORKSPACE_MODIFY_FORBIDDEN.getCode()));
+        }
+    }
+
+    @Nested
+    @DisplayName("워크스페이스 수정 성공 시나리오")
+    class UpdateWorkspaceSuccessScenarios {
+
+        @Test
+        @DisplayName("워크스페이스 수정에 성공한다")
+        void updateWorkspace_success() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(accessToken);
+
+            final String newTitle = WorkspaceFixture.anyTitle();
+            final WorkspaceUpdateRequest updateRequest = new WorkspaceUpdateRequest(newTitle);
+
+            // when
+            final WorkspaceUpdateResponse response = given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .body(updateRequest)
+                    .when()
+                    .patch("/api/workspaces/" + workspaceIdentifier)
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .as(WorkspaceUpdateResponse.class);
+
+            // then
+            assertThat(response.identifier()).isEqualTo(workspaceIdentifier);
+            assertThat(response.title()).isEqualTo(newTitle);
+        }
+    }
+
+    @Nested
+    @DisplayName("워크스페이스 수정 실패 시나리오")
+    class UpdateWorkspaceFailureScenarios {
+
+        @Test
+        @DisplayName("존재하지 않는 워크스페이스 수정 시 실패한다")
+        void updateWorkspace_fail_workspaceNotFound() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String nonExistentIdentifier = "non-existent-identifier";
+            final String newTitle = WorkspaceFixture.anyTitle();
+            final WorkspaceUpdateRequest updateRequest = new WorkspaceUpdateRequest(newTitle);
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .body(updateRequest)
+                    .when()
+                    .patch("/api/workspaces/" + nonExistentIdentifier)
+                    .then()
+                    .statusCode(HttpStatus.NOT_FOUND.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.WORKSPACE_NOT_FOUND.getCode()));
+        }
+
+        @Test
+        @DisplayName("다른 사용자의 워크스페이스 수정 시 실패한다")
+        void updateWorkspace_fail_workspaceModifyForbidden() {
+            // given
+            final String owner = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(owner);
+
+            final String otherUser = signUpAndLogin();
+            final String newTitle = WorkspaceFixture.anyTitle();
+            final WorkspaceUpdateRequest updateRequest = new WorkspaceUpdateRequest(newTitle);
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, otherUser)
+                    .body(updateRequest)
+                    .when()
+                    .patch("/api/workspaces/" + workspaceIdentifier)
+                    .then()
+                    .statusCode(HttpStatus.FORBIDDEN.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.WORKSPACE_MODIFY_FORBIDDEN.getCode()));
+        }
+    }
+
+    @Nested
+    @DisplayName("워크스페이스 삭제 성공 시나리오")
+    class DeleteWorkspaceSuccessScenarios {
+
+        @Test
+        @DisplayName("워크스페이스 삭제에 성공한다")
+        void deleteWorkspace_success() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(accessToken);
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .when()
+                    .delete("/api/workspaces/" + workspaceIdentifier)
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
+        }
+    }
+
+    @Nested
+    @DisplayName("워크스페이스 삭제 실패 시나리오")
+    class DeleteWorkspaceFailureScenarios {
+
+        @Test
+        @DisplayName("존재하지 않는 워크스페이스 삭제 시 실패한다")
+        void deleteWorkspace_fail_workspaceNotFound() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String nonExistentIdentifier = "non-existent-identifier";
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .when()
+                    .delete("/api/workspaces/" + nonExistentIdentifier)
+                    .then()
+                    .statusCode(HttpStatus.NOT_FOUND.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.WORKSPACE_NOT_FOUND.getCode()));
+        }
+
+        @Test
+        @DisplayName("다른 사용자의 워크스페이스 삭제 시 실패한다")
+        void deleteWorkspace_fail_workspaceModifyForbidden() {
+            // given
+            final String owner = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(owner);
+
+            final String otherUser = signUpAndLogin();
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, otherUser)
+                    .when()
+                    .delete("/api/workspaces/" + workspaceIdentifier)
+                    .then()
+                    .statusCode(HttpStatus.FORBIDDEN.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.WORKSPACE_MODIFY_FORBIDDEN.getCode()));
+        }
     }
 
     private String signUpAndLogin() {
@@ -156,5 +347,22 @@ class WorkspaceControllerTest {
                 .as(LoginResponse.class);
 
         return loginResponse.tokenType() + " " + loginResponse.accessToken();
+    }
+
+    private String createWorkspace(final String accessToken) {
+        final String title = WorkspaceFixture.anyTitle();
+        final WorkspaceCreateRequest request = new WorkspaceCreateRequest(title);
+
+        return given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .body(request)
+                .when()
+                .post("/api/workspaces")
+                .then()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract()
+                .as(WorkspaceCreateResponse.class)
+                .identifier();
     }
 }

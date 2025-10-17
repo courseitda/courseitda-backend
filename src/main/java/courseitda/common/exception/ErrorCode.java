@@ -16,6 +16,7 @@ public enum ErrorCode {
      * 3000 Series: Category Errors
      * 4000 Series: Category Place Errors
      * 5000 Series: Member Errors
+     * 6000 Series: Place Search Errors
      * */
 
     // TEMPORARY_ERROR - 0000
@@ -242,6 +243,62 @@ public enum ErrorCode {
             "5008",
             "이미 사용중인 닉네임입니다.",
             HttpStatus.CONFLICT // 409
+    ),
+
+    //-----------------------------------------------------------------------------------
+    // 6000 Series: Place Search Errors
+    PLACE_SEARCH_KEYWORD_EMPTY(
+            "6001",
+            "검색어는 null 또는 공백일 수 없습니다.",
+            HttpStatus.BAD_REQUEST // 400
+    ),
+
+    INVALID_PLACE_SEARCH_SIZE(
+            "6002",
+            "검색 결과 개수는 1에서 15 사이여야 합니다.",
+            HttpStatus.BAD_REQUEST // 400
+    ),
+
+    SEARCHED_PLACE_NAME_EMPTY(
+            "6003",
+            "검색된 장소의 이름은 null 또는 공백일 수 없습니다.",
+            HttpStatus.BAD_GATEWAY // 502
+    ),
+
+    SEARCHED_PLACE_ADDRESS_EMPTY(
+            "6004",
+            "검색된 장소의 주소는 null 또는 공백일 수 없습니다.",
+            HttpStatus.BAD_GATEWAY // 502
+    ),
+
+    INVALID_SEARCHED_PLACE_LATITUDE(
+            "6005",
+            "검색된 장소의 위도는 -90에서 90 사이여야 합니다.",
+            HttpStatus.BAD_GATEWAY // 502
+    ),
+
+    INVALID_SEARCHED_PLACE_LONGITUDE(
+            "6006",
+            "검색된 장소의 경도는 -180에서 180 사이여야 합니다.",
+            HttpStatus.BAD_GATEWAY // 502
+    ),
+
+    KAKAO_PLACE_SEARCH_RESPONSE_NULL(
+            "6007",
+            "카카오 장소 검색 API 응답이 null입니다.",
+            HttpStatus.BAD_GATEWAY // 502
+    ),
+
+    KAKAO_PLACE_SEARCH_STATUS_CHECK_ERROR(
+            "6008",
+            "카카오 장소 검색 API 응답 상태 확인 중 오류가 발생했습니다.",
+            HttpStatus.BAD_GATEWAY // 502
+    ),
+
+    KAKAO_PLACE_SEARCH_ERROR(
+            "6009",
+            "카카오 장소 검색 API 호출 중 오류가 발생했습니다.",
+            HttpStatus.BAD_GATEWAY // 502
     ),
     ;
 

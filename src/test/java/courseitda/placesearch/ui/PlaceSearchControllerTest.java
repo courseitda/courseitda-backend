@@ -8,6 +8,7 @@ import static org.mockito.BDDMockito.given;
 
 import courseitda.auth.ui.dto.request.LoginRequest;
 import courseitda.auth.ui.dto.response.LoginResponse;
+import courseitda.common.exception.ErrorCode;
 import courseitda.member.domain.MemberFixture;
 import courseitda.member.ui.dto.request.SignUpRequest;
 import courseitda.placesearch.domain.PlaceSearcher;
@@ -128,7 +129,8 @@ class PlaceSearchControllerTest {
                     .when()
                     .get("/api/places/search")
                     .then()
-                    .statusCode(HttpStatus.BAD_REQUEST.value());
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.PLACE_SEARCH_KEYWORD_EMPTY.getCode()));
         }
     }
 

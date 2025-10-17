@@ -314,7 +314,7 @@ class CategoryControllerTest {
                     .patch("/api/workspaces/" + workspaceIdentifier + "/categories/" + category.id())
                     .then()
                     .statusCode(HttpStatus.FORBIDDEN.value())
-                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.CATEGORY_MODIFY_FORBIDDEN.getCode()));
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.WORKSPACE_MODIFY_FORBIDDEN.getCode()));
         }
 
         @Test
@@ -407,7 +407,7 @@ class CategoryControllerTest {
                     .delete("/api/workspaces/" + workspaceIdentifier + "/categories/" + category.id())
                     .then()
                     .statusCode(HttpStatus.FORBIDDEN.value())
-                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.CATEGORY_MODIFY_FORBIDDEN.getCode()));
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.WORKSPACE_MODIFY_FORBIDDEN.getCode()));
         }
 
         @Test

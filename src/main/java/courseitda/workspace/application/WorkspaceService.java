@@ -4,10 +4,10 @@ import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.common.exception.BusinessException;
 import courseitda.common.exception.ErrorCode;
 import courseitda.member.domain.Member;
+import courseitda.workspace.application.dto.request.WorkspaceCreateCommand;
+import courseitda.workspace.application.dto.request.WorkspaceUpdateCommand;
 import courseitda.workspace.domain.Workspace;
 import courseitda.workspace.domain.WorkspaceRepository;
-import courseitda.workspace.ui.dto.request.WorkspaceCreateRequest;
-import courseitda.workspace.ui.dto.request.WorkspaceUpdateRequest;
 import courseitda.workspace.ui.dto.response.WorkspaceCreateResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceReadResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceUpdateResponse;
@@ -23,10 +23,10 @@ public class WorkspaceService {
     private final WorkspaceRepository workspaceRepository;
 
     @Transactional
-    public WorkspaceCreateResponse createWorkspace(final Member member, final WorkspaceCreateRequest request) {
-        validateDuplicatedTitle(member.getId(), request.title());
+    public WorkspaceCreateResponse createWorkspace(final Member member, final WorkspaceCreateCommand command) {
+        validateDuplicatedTitle(member.getId(), command.title());
 
-        final var workspace = Workspace.createNew(member, request.title());
+        final var workspace = Workspace.createNew(member, command.title());
         final var savedWorkspace = workspaceRepository.save(workspace);
 
         return WorkspaceCreateResponse.from(savedWorkspace);
@@ -36,10 +36,10 @@ public class WorkspaceService {
     public WorkspaceUpdateResponse updateWorkspace(
             final MemberAuthInfo memberAuthInfo,
             final String workspaceIdentifier,
-            final WorkspaceUpdateRequest request
+            final WorkspaceUpdateCommand command
     ) {
         final var workspace = getByIdentifier(workspaceIdentifier);
-        final var newTitle = Workspace.formatTitle(request.title());
+        final var newTitle = Workspace.formatTitle(command.title());
 
         workspace.validateOwnership(memberAuthInfo.id());
         // 제목이 변경되는 경우에만 중복 검증

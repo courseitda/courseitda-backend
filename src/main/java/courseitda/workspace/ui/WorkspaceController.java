@@ -5,6 +5,8 @@ import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.auth.domain.RequiresRole;
 import courseitda.member.domain.Member;
 import courseitda.workspace.application.WorkspaceService;
+import courseitda.workspace.application.dto.request.WorkspaceCreateCommand;
+import courseitda.workspace.application.dto.request.WorkspaceUpdateCommand;
 import courseitda.workspace.ui.dto.request.WorkspaceCreateRequest;
 import courseitda.workspace.ui.dto.request.WorkspaceUpdateRequest;
 import courseitda.workspace.ui.dto.response.WorkspaceCreateResponse;
@@ -41,7 +43,10 @@ public class WorkspaceController {
         // ✅ 400 Bad Request	필수 필드 누락, 유효성 검증 실패 -> request dto에서 검증 진행
         // ✅ 401 Unauthorized	로그인하지 않은 사용자의 생성 요청 -> Member 받아오는 과정에서 알아서 처리
 
-        final WorkspaceCreateResponse response = workspaceService.createWorkspace(member, request);
+        final WorkspaceCreateResponse response = workspaceService.createWorkspace(
+                member,
+                WorkspaceCreateCommand.from(request)
+        );
         return ResponseEntity.created(URI.create("/api/workspaces/" + response.identifier()))
                 .body(response);
     }
@@ -60,8 +65,11 @@ public class WorkspaceController {
         // ✅ 404 Not Found	    워크스페이스 ID가 존재하지 않음 -> findById 예외 처리
         // ✅ 409 Conflict      워크스페이스 삭제 과정에서 충돌이 일어난 경우 -> 라젤 추가) 동일한 워크스페이스 닉네임이 존재하는 경우
 
-        final WorkspaceUpdateResponse response = workspaceService.updateWorkspace(memberAuthInfo, workspaceIdentifier,
-                request);
+        final WorkspaceUpdateResponse response = workspaceService.updateWorkspace(
+                memberAuthInfo,
+                workspaceIdentifier,
+                WorkspaceUpdateCommand.from(request)
+        );
 
         return ResponseEntity.ok(response);
     }

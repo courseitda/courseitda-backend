@@ -3,11 +3,11 @@ package courseitda.workspace.application;
 import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.common.exception.BusinessException;
 import courseitda.common.exception.ErrorCode;
+import courseitda.workspace.application.dto.request.RepresentativeCategoryPlaceUpdateCommand;
 import courseitda.workspace.domain.Category;
 import courseitda.workspace.domain.CategoryPlace;
 import courseitda.workspace.domain.CategoryPlaceRepository;
 import courseitda.workspace.domain.CategoryRepository;
-import courseitda.workspace.ui.dto.request.RepresentativeCategoryPlaceUpdateRequest;
 import courseitda.workspace.ui.dto.response.RepresentativeCategoryPlaceUpdateResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,12 +24,12 @@ public class RepresentativeCategoryPlaceService {
     public RepresentativeCategoryPlaceUpdateResponse updateRepresentativeCategoryPlace(
             final MemberAuthInfo memberAuthInfo,
             final Long categoryId,
-            final RepresentativeCategoryPlaceUpdateRequest request
+            final RepresentativeCategoryPlaceUpdateCommand command
     ) {
         final var category = getCategoryById(categoryId);
         category.validateOwnership(memberAuthInfo.id());
 
-        final var candidatePlace = getCategoryPlaceById(request.categoryPlaceId());
+        final var candidatePlace = getCategoryPlaceById(command.categoryPlaceId());
 
         category.updateRepresentativePlaceTo(candidatePlace);
 

@@ -110,6 +110,28 @@ class PlaceSearchControllerTest {
         }
     }
 
+    @Nested
+    @DisplayName("장소 검색 실패 시나리오")
+    class SearchPlacesFailureScenarios {
+
+        @Test
+        @DisplayName("검색어가 null이거나 공백인 경우 장소 검색에 실패한다")
+        void searchPlaces_fail_emptyKeyword() {
+            // given
+            final String accessToken = signUpAndLogin();
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .queryParam("keyword", "   ")
+                    .when()
+                    .get("/api/places/search")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
+        }
+    }
+
     private String signUpAndLogin() {
         final String nickname = MemberFixture.anyNickname();
         final String email = MemberFixture.anyEmail();

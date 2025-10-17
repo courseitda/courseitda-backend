@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import courseitda.auth.ui.dto.request.LoginRequest;
 import courseitda.auth.ui.dto.response.LoginResponse;
+import courseitda.common.exception.ErrorCode;
 import courseitda.member.domain.MemberFixture;
 import courseitda.member.ui.dto.request.SignUpRequest;
 import courseitda.place.domain.PlaceFixture;
@@ -20,6 +21,7 @@ import courseitda.workspace.ui.dto.response.WorkspaceCreateResponse;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -42,84 +44,289 @@ class CategoryPlaceControllerTest {
         RestAssured.port = port;
     }
 
-    @Test
-    @DisplayName("카테고리 장소 생성에 성공한다")
-    void createCategoryPlace_success() {
-        // given
-        final String accessToken = signUpAndLogin();
-        final String workspaceIdentifier = createWorkspace(accessToken);
-        final Long categoryId = createCategory(accessToken, workspaceIdentifier).id();
+    @Nested
+    @DisplayName("카테고리 장소 생성 성공 시나리오")
+    class CreateCategoryPlaceSuccessScenarios {
 
-        final String name = PlaceFixture.anyName();
-        final String roadAddressName = PlaceFixture.anyRoadAddressName();
-        final String addressName = PlaceFixture.anyAddressName();
-        final double lat = PlaceFixture.anyLatitude();
-        final double lng = PlaceFixture.anyLongitude();
+        @Test
+        @DisplayName("카테고리 장소 생성에 성공한다")
+        void createCategoryPlace_success() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(accessToken);
+            final Long categoryId = createCategory(accessToken, workspaceIdentifier).id();
 
-        final CategoryPlaceCreateRequest request = new CategoryPlaceCreateRequest(
-                name, roadAddressName, addressName, lat, lng
-        );
+            final String name = PlaceFixture.anyName();
+            final String roadAddressName = PlaceFixture.anyRoadAddressName();
+            final String addressName = PlaceFixture.anyAddressName();
+            final double lat = PlaceFixture.anyLatitude();
+            final double lng = PlaceFixture.anyLongitude();
 
-        // when
-        final CategoryPlaceCreateResponse response = given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, accessToken)
-                .body(request)
-                .when()
-                .post("/api/categories/" + categoryId + "/category-places")
-                .then()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract()
-                .as(CategoryPlaceCreateResponse.class);
+            final CategoryPlaceCreateRequest request = new CategoryPlaceCreateRequest(
+                    name, roadAddressName, addressName, lat, lng
+            );
 
-        // then
-        assertThat(response.id()).isNotNull();
-        assertThat(response.placeId()).isNotNull();
+            // when
+            final CategoryPlaceCreateResponse response = given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .body(request)
+                    .when()
+                    .post("/api/categories/" + categoryId + "/category-places")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value())
+                    .extract()
+                    .as(CategoryPlaceCreateResponse.class);
+
+            // then
+            assertThat(response.id()).isNotNull();
+            assertThat(response.placeId()).isNotNull();
+        }
     }
 
-    @Test
-    @DisplayName("카테고리 장소 목록 조회에 성공한다")
-    void readCategoryPlaces_success() {
-        // given
-        final String accessToken = signUpAndLogin();
-        final String workspaceIdentifier = createWorkspace(accessToken);
-        final Long categoryId = createCategory(accessToken, workspaceIdentifier).id();
+    @Nested
+    @DisplayName("카테고리 장소 생성 실패 시나리오")
+    class CreateCategoryPlaceFailureScenarios {
 
-        createCategoryPlace(accessToken, categoryId);
-        createCategoryPlace(accessToken, categoryId);
+        @Test
+        @DisplayName("존재하지 않는 카테고리에 장소 생성 시 실패한다")
+        void createCategoryPlace_fail_categoryNotFound() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final Long nonExistentCategoryId = 999999L;
 
-        // when
-        final CategoryPlacesResponse response = given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, accessToken)
-                .when()
-                .get("/api/categories/" + categoryId + "/category-places")
-                .then()
-                .statusCode(HttpStatus.OK.value())
-                .extract()
-                .as(CategoryPlacesResponse.class);
+            final CategoryPlaceCreateRequest request = new CategoryPlaceCreateRequest(
+                    PlaceFixture.anyName(), PlaceFixture.anyRoadAddressName(),
+                    PlaceFixture.anyAddressName(), PlaceFixture.anyLatitude(), PlaceFixture.anyLongitude()
+            );
 
-        // then
-        assertThat(response.categoryPlaceResponses()).hasSize(2);
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .body(request)
+                    .when()
+                    .post("/api/categories/" + nonExistentCategoryId + "/category-places")
+                    .then()
+                    .statusCode(HttpStatus.NOT_FOUND.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.CATEGORY_NOT_FOUND.getCode()));
+        }
+
+        @Test
+        @DisplayName("다른 사용자의 카테고리에 장소 생성 시 실패한다")
+        void createCategoryPlace_fail_categoryModifyForbidden() {
+            // given
+            final String owner = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(owner);
+            final Long categoryId = createCategory(owner, workspaceIdentifier).id();
+
+            final String otherUser = signUpAndLogin();
+            final CategoryPlaceCreateRequest request = new CategoryPlaceCreateRequest(
+                    PlaceFixture.anyName(), PlaceFixture.anyRoadAddressName(),
+                    PlaceFixture.anyAddressName(), PlaceFixture.anyLatitude(), PlaceFixture.anyLongitude()
+            );
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, otherUser)
+                    .body(request)
+                    .when()
+                    .post("/api/categories/" + categoryId + "/category-places")
+                    .then()
+                    .statusCode(HttpStatus.FORBIDDEN.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.CATEGORY_MODIFY_FORBIDDEN.getCode()));
+        }
     }
 
-    @Test
-    @DisplayName("카테고리 장소 삭제에 성공한다")
-    void deleteCategoryPlace_success() {
-        // given
-        final String accessToken = signUpAndLogin();
-        final String workspaceIdentifier = createWorkspace(accessToken);
-        final Long categoryId = createCategory(accessToken, workspaceIdentifier).id();
-        final Long categoryPlaceId = createCategoryPlace(accessToken, categoryId).id();
+    @Nested
+    @DisplayName("카테고리 장소 목록 조회 성공 시나리오")
+    class ReadCategoryPlacesSuccessScenarios {
 
-        // when & then
-        given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, accessToken)
-                .when()
-                .delete("/api/categories/" + categoryId + "/category-places/" + categoryPlaceId)
-                .then()
-                .statusCode(HttpStatus.NO_CONTENT.value());
+        @Test
+        @DisplayName("카테고리 장소 목록 조회에 성공한다")
+        void readCategoryPlaces_success() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(accessToken);
+            final Long categoryId = createCategory(accessToken, workspaceIdentifier).id();
+
+            createCategoryPlace(accessToken, categoryId);
+            createCategoryPlace(accessToken, categoryId);
+
+            // when
+            final CategoryPlacesResponse response = given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .when()
+                    .get("/api/categories/" + categoryId + "/category-places")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .as(CategoryPlacesResponse.class);
+
+            // then
+            assertThat(response.categoryPlaceResponses()).hasSize(2);
+        }
+
+        @Test
+        @DisplayName("카테고리 장소가 없는 경우 빈 목록이 반환된다")
+        void readCategoryPlaces_success_emptyList() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(accessToken);
+            final Long categoryId = createCategory(accessToken, workspaceIdentifier).id();
+
+            // when
+            final CategoryPlacesResponse response = given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .when()
+                    .get("/api/categories/" + categoryId + "/category-places")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .as(CategoryPlacesResponse.class);
+
+            // then
+            assertThat(response.categoryPlaceResponses()).isEmpty();
+        }
+    }
+
+    @Nested
+    @DisplayName("카테고리 장소 목록 조회 실패 시나리오")
+    class ReadCategoryPlacesFailureScenarios {
+
+        @Test
+        @DisplayName("존재하지 않는 카테고리의 장소 목록 조회 시 실패한다")
+        void readCategoryPlaces_fail_categoryNotFound() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final Long nonExistentCategoryId = 999999L;
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .when()
+                    .get("/api/categories/" + nonExistentCategoryId + "/category-places")
+                    .then()
+                    .statusCode(HttpStatus.NOT_FOUND.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.CATEGORY_NOT_FOUND.getCode()));
+        }
+
+        @Test
+        @DisplayName("다른 사용자의 카테고리 장소 목록 조회 시 실패한다")
+        void readCategoryPlaces_fail_categoryModifyForbidden() {
+            // given
+            final String owner = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(owner);
+            final Long categoryId = createCategory(owner, workspaceIdentifier).id();
+
+            final String otherUser = signUpAndLogin();
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, otherUser)
+                    .when()
+                    .get("/api/categories/" + categoryId + "/category-places")
+                    .then()
+                    .statusCode(HttpStatus.FORBIDDEN.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.CATEGORY_MODIFY_FORBIDDEN.getCode()));
+        }
+    }
+
+    @Nested
+    @DisplayName("카테고리 장소 삭제 성공 시나리오")
+    class DeleteCategoryPlaceSuccessScenarios {
+
+        @Test
+        @DisplayName("카테고리 장소 삭제에 성공한다")
+        void deleteCategoryPlace_success() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(accessToken);
+            final Long categoryId = createCategory(accessToken, workspaceIdentifier).id();
+            final Long categoryPlaceId = createCategoryPlace(accessToken, categoryId).id();
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .when()
+                    .delete("/api/categories/" + categoryId + "/category-places/" + categoryPlaceId)
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
+        }
+    }
+
+    @Nested
+    @DisplayName("카테고리 장소 삭제 실패 시나리오")
+    class DeleteCategoryPlaceFailureScenarios {
+
+        @Test
+        @DisplayName("존재하지 않는 카테고리 장소 삭제 시 실패한다")
+        void deleteCategoryPlace_fail_categoryPlaceNotFound() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(accessToken);
+            final Long categoryId = createCategory(accessToken, workspaceIdentifier).id();
+            final Long nonExistentCategoryPlaceId = 999999L;
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .when()
+                    .delete("/api/categories/" + categoryId + "/category-places/" + nonExistentCategoryPlaceId)
+                    .then()
+                    .statusCode(HttpStatus.NOT_FOUND.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.CATEGORY_PLACE_NOT_FOUND.getCode()));
+        }
+
+        @Test
+        @DisplayName("다른 사용자의 카테고리 장소 삭제 시 실패한다")
+        void deleteCategoryPlace_fail_categoryModifyForbidden() {
+            // given
+            final String owner = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(owner);
+            final Long categoryId = createCategory(owner, workspaceIdentifier).id();
+            final Long categoryPlaceId = createCategoryPlace(owner, categoryId).id();
+
+            final String otherUser = signUpAndLogin();
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, otherUser)
+                    .when()
+                    .delete("/api/categories/" + categoryId + "/category-places/" + categoryPlaceId)
+                    .then()
+                    .statusCode(HttpStatus.FORBIDDEN.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.CATEGORY_MODIFY_FORBIDDEN.getCode()));
+        }
+
+        @Test
+        @DisplayName("다른 카테고리의 장소 삭제 시 실패한다")
+        void deleteCategoryPlace_fail_placeNotBelongToCategory() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(accessToken);
+            final Long categoryId1 = createCategory(accessToken, workspaceIdentifier).id();
+            final Long categoryId2 = createCategory(accessToken, workspaceIdentifier).id();
+            final Long categoryPlaceId = createCategoryPlace(accessToken, categoryId1).id();
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .when()
+                    .delete("/api/categories/" + categoryId2 + "/category-places/" + categoryPlaceId)
+                    .then()
+                    .statusCode(HttpStatus.FORBIDDEN.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.PLACE_NOT_BELONG_TO_CATEGORY.getCode()));
+        }
     }
 
     private String signUpAndLogin() {

@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import courseitda.auth.ui.dto.request.LoginRequest;
 import courseitda.auth.ui.dto.response.LoginResponse;
+import courseitda.common.exception.ErrorCode;
 import courseitda.member.domain.MemberFixture;
 import courseitda.member.ui.dto.request.SignUpRequest;
 import courseitda.place.domain.PlaceFixture;
@@ -21,6 +22,7 @@ import courseitda.workspace.ui.dto.response.WorkspaceCreateResponse;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -43,65 +45,239 @@ class RepresentativeCategoryPlaceControllerTest {
         RestAssured.port = port;
     }
 
-    @Test
-    @DisplayName("대표 카테고리 장소 업데이트에 성공한다")
-    void updateRepresentativeCategoryPlace_success() {
-        // given
-        final String accessToken = signUpAndLogin();
-        final String workspaceIdentifier = createWorkspace(accessToken);
-        final Long categoryId = createCategory(accessToken, workspaceIdentifier).id();
-        final Long categoryPlaceId = createCategoryPlace(accessToken, categoryId).id();
+    @Nested
+    @DisplayName("대표 카테고리 장소 업데이트 성공 시나리오")
+    class UpdateRepresentativeCategoryPlaceSuccessScenarios {
 
-        final RepresentativeCategoryPlaceUpdateRequest request = new RepresentativeCategoryPlaceUpdateRequest(
-                categoryPlaceId
-        );
+        @Test
+        @DisplayName("대표 카테고리 장소 업데이트에 성공한다")
+        void updateRepresentativeCategoryPlace_success() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(accessToken);
+            final Long categoryId = createCategory(accessToken, workspaceIdentifier).id();
+            final Long categoryPlaceId = createCategoryPlace(accessToken, categoryId).id();
 
-        // when
-        final RepresentativeCategoryPlaceUpdateResponse response = given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, accessToken)
-                .body(request)
-                .when()
-                .put("/api/categories/" + categoryId + "/representative-place")
-                .then()
-                .statusCode(HttpStatus.OK.value())
-                .extract()
-                .as(RepresentativeCategoryPlaceUpdateResponse.class);
+            final RepresentativeCategoryPlaceUpdateRequest request = new RepresentativeCategoryPlaceUpdateRequest(
+                    categoryPlaceId
+            );
 
-        // then
-        assertThat(response.id()).isEqualTo(categoryPlaceId);
+            // when
+            final RepresentativeCategoryPlaceUpdateResponse response = given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .body(request)
+                    .when()
+                    .put("/api/categories/" + categoryId + "/representative-place")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .as(RepresentativeCategoryPlaceUpdateResponse.class);
+
+            // then
+            assertThat(response.id()).isEqualTo(categoryPlaceId);
+        }
     }
 
-    @Test
-    @DisplayName("대표 카테고리 장소 삭제에 성공한다")
-    void deleteRepresentativeCategoryPlace_success() {
-        // given
-        final String accessToken = signUpAndLogin();
-        final String workspaceIdentifier = createWorkspace(accessToken);
-        final Long categoryId = createCategory(accessToken, workspaceIdentifier).id();
-        final Long categoryPlaceId = createCategoryPlace(accessToken, categoryId).id();
+    @Nested
+    @DisplayName("대표 카테고리 장소 업데이트 실패 시나리오")
+    class UpdateRepresentativeCategoryPlaceFailureScenarios {
 
-        final RepresentativeCategoryPlaceUpdateRequest updateRequest = new RepresentativeCategoryPlaceUpdateRequest(
-                categoryPlaceId
-        );
+        @Test
+        @DisplayName("존재하지 않는 카테고리의 대표 장소 업데이트 시 실패한다")
+        void updateRepresentativeCategoryPlace_fail_categoryNotFound() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final Long nonExistentCategoryId = 999999L;
+            final Long categoryPlaceId = 1L;
 
-        given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, accessToken)
-                .body(updateRequest)
-                .when()
-                .put("/api/categories/" + categoryId + "/representative-place")
-                .then()
-                .statusCode(HttpStatus.OK.value());
+            final RepresentativeCategoryPlaceUpdateRequest request = new RepresentativeCategoryPlaceUpdateRequest(
+                    categoryPlaceId
+            );
 
-        // when & then
-        given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, accessToken)
-                .when()
-                .delete("/api/categories/" + categoryId + "/representative-place")
-                .then()
-                .statusCode(HttpStatus.NO_CONTENT.value());
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .body(request)
+                    .when()
+                    .put("/api/categories/" + nonExistentCategoryId + "/representative-place")
+                    .then()
+                    .statusCode(HttpStatus.NOT_FOUND.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.CATEGORY_NOT_FOUND.getCode()));
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 카테고리 장소를 대표로 지정 시 실패한다")
+        void updateRepresentativeCategoryPlace_fail_categoryPlaceNotFound() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(accessToken);
+            final Long categoryId = createCategory(accessToken, workspaceIdentifier).id();
+            final Long nonExistentCategoryPlaceId = 999999L;
+
+            final RepresentativeCategoryPlaceUpdateRequest request = new RepresentativeCategoryPlaceUpdateRequest(
+                    nonExistentCategoryPlaceId
+            );
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .body(request)
+                    .when()
+                    .put("/api/categories/" + categoryId + "/representative-place")
+                    .then()
+                    .statusCode(HttpStatus.NOT_FOUND.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.CATEGORY_PLACE_NOT_FOUND.getCode()));
+        }
+
+        @Test
+        @DisplayName("다른 사용자의 카테고리 대표 장소 업데이트 시 실패한다")
+        void updateRepresentativeCategoryPlace_fail_categoryModifyForbidden() {
+            // given
+            final String owner = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(owner);
+            final Long categoryId = createCategory(owner, workspaceIdentifier).id();
+            final Long categoryPlaceId = createCategoryPlace(owner, categoryId).id();
+
+            final String otherUser = signUpAndLogin();
+            final RepresentativeCategoryPlaceUpdateRequest request = new RepresentativeCategoryPlaceUpdateRequest(
+                    categoryPlaceId
+            );
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, otherUser)
+                    .body(request)
+                    .when()
+                    .put("/api/categories/" + categoryId + "/representative-place")
+                    .then()
+                    .statusCode(HttpStatus.FORBIDDEN.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.CATEGORY_MODIFY_FORBIDDEN.getCode()));
+        }
+
+        @Test
+        @DisplayName("다른 카테고리의 장소를 대표로 지정 시 실패한다")
+        void updateRepresentativeCategoryPlace_fail_invalidRepresentativePlaceAssignment() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(accessToken);
+            final Long categoryId1 = createCategory(accessToken, workspaceIdentifier).id();
+            final Long categoryId2 = createCategory(accessToken, workspaceIdentifier).id();
+            final Long categoryPlaceId = createCategoryPlace(accessToken, categoryId1).id();
+
+            final RepresentativeCategoryPlaceUpdateRequest request = new RepresentativeCategoryPlaceUpdateRequest(
+                    categoryPlaceId
+            );
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .body(request)
+                    .when()
+                    .put("/api/categories/" + categoryId2 + "/representative-place")
+                    .then()
+                    .statusCode(HttpStatus.FORBIDDEN.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.INVALID_REPRESENTATIVE_PLACE_ASSIGNMENT.getCode()));
+        }
+    }
+
+    @Nested
+    @DisplayName("대표 카테고리 장소 삭제 성공 시나리오")
+    class DeleteRepresentativeCategoryPlaceSuccessScenarios {
+
+        @Test
+        @DisplayName("대표 카테고리 장소 삭제에 성공한다")
+        void deleteRepresentativeCategoryPlace_success() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(accessToken);
+            final Long categoryId = createCategory(accessToken, workspaceIdentifier).id();
+            final Long categoryPlaceId = createCategoryPlace(accessToken, categoryId).id();
+
+            final RepresentativeCategoryPlaceUpdateRequest updateRequest = new RepresentativeCategoryPlaceUpdateRequest(
+                    categoryPlaceId
+            );
+
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .body(updateRequest)
+                    .when()
+                    .put("/api/categories/" + categoryId + "/representative-place")
+                    .then()
+                    .statusCode(HttpStatus.OK.value());
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .when()
+                    .delete("/api/categories/" + categoryId + "/representative-place")
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
+        }
+    }
+
+    @Nested
+    @DisplayName("대표 카테고리 장소 삭제 실패 시나리오")
+    class DeleteRepresentativeCategoryPlaceFailureScenarios {
+
+        @Test
+        @DisplayName("존재하지 않는 카테고리의 대표 장소 삭제 시 실패한다")
+        void deleteRepresentativeCategoryPlace_fail_categoryNotFound() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final Long nonExistentCategoryId = 999999L;
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .when()
+                    .delete("/api/categories/" + nonExistentCategoryId + "/representative-place")
+                    .then()
+                    .statusCode(HttpStatus.NOT_FOUND.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.CATEGORY_NOT_FOUND.getCode()));
+        }
+
+        @Test
+        @DisplayName("다른 사용자의 카테고리 대표 장소 삭제 시 실패한다")
+        void deleteRepresentativeCategoryPlace_fail_categoryModifyForbidden() {
+            // given
+            final String owner = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(owner);
+            final Long categoryId = createCategory(owner, workspaceIdentifier).id();
+            final Long categoryPlaceId = createCategoryPlace(owner, categoryId).id();
+
+            final RepresentativeCategoryPlaceUpdateRequest updateRequest = new RepresentativeCategoryPlaceUpdateRequest(
+                    categoryPlaceId
+            );
+
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, owner)
+                    .body(updateRequest)
+                    .when()
+                    .put("/api/categories/" + categoryId + "/representative-place")
+                    .then()
+                    .statusCode(HttpStatus.OK.value());
+
+            final String otherUser = signUpAndLogin();
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, otherUser)
+                    .when()
+                    .delete("/api/categories/" + categoryId + "/representative-place")
+                    .then()
+                    .statusCode(HttpStatus.FORBIDDEN.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.CATEGORY_MODIFY_FORBIDDEN.getCode()));
+        }
     }
 
     private String signUpAndLogin() {

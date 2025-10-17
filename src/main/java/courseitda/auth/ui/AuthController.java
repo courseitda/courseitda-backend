@@ -1,7 +1,6 @@
 package courseitda.auth.ui;
 
 import courseitda.auth.application.AuthService;
-import courseitda.auth.application.dto.request.LoginCommand;
 import courseitda.auth.ui.dto.request.LoginRequest;
 import courseitda.auth.ui.dto.response.LoginResponse;
 import jakarta.validation.Valid;
@@ -21,7 +20,7 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(
             @RequestBody @Valid final LoginRequest request
     ) {
-        final String authToken = authService.login(LoginCommand.from(request));
+        final String authToken = authService.login(request.toCommand());
         final LoginResponse loginResponse = new LoginResponse("Bearer", authToken);
 
         return ResponseEntity.ok(loginResponse);

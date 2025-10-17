@@ -1,7 +1,6 @@
 package courseitda.member.ui;
 
 import courseitda.member.application.MemberService;
-import courseitda.member.application.dto.request.SignUpCommand;
 import courseitda.member.ui.dto.request.SignUpRequest;
 import courseitda.member.ui.dto.response.SignUpResponse;
 import jakarta.validation.Valid;
@@ -24,7 +23,7 @@ public class MemberController {
     public ResponseEntity<SignUpResponse> signup(
             @RequestBody @Valid final SignUpRequest request
     ) {
-        final var signUpResponse = memberService.create(SignUpCommand.from(request));
+        final var signUpResponse = memberService.create(request.toCommand());
 
         return ResponseEntity.created(URI.create("/api/members/" + signUpResponse.id()))
                 .body(signUpResponse);

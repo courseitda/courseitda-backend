@@ -4,9 +4,6 @@ import courseitda.auth.domain.AuthRole;
 import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.auth.domain.RequiresRole;
 import courseitda.workspace.application.CategoryService;
-import courseitda.workspace.application.dto.request.CategoryCreateCommand;
-import courseitda.workspace.application.dto.request.CategoryReorderCommand;
-import courseitda.workspace.application.dto.request.CategoryUpdateCommand;
 import courseitda.workspace.ui.dto.request.CategoryCreateRequest;
 import courseitda.workspace.ui.dto.request.CategoryReorderRequest;
 import courseitda.workspace.ui.dto.request.CategoryUpdateRequest;
@@ -46,7 +43,7 @@ public class CategoryController {
         final CategoryCreateResponse response = categoryService.createCategory(
                 memberAuthInfo,
                 workspaceIdentifier,
-                CategoryCreateCommand.from(request)
+                request.toCommand()
         );
         return ResponseEntity.created(
                 URI.create("/api/workspaces/"
@@ -66,7 +63,7 @@ public class CategoryController {
         final CategoryReorderResponse response = categoryService.updateCategorySequence(
                 memberAuthInfo,
                 workspaceIdentifier,
-                CategoryReorderCommand.from(request)
+                request.toCommand()
         );
         return ResponseEntity.ok(response);
     }
@@ -83,7 +80,7 @@ public class CategoryController {
                 memberAuthInfo,
                 workspaceIdentifier,
                 categoryId,
-                CategoryUpdateCommand.from(request)
+                request.toCommand()
         );
 
         return ResponseEntity.ok(response);

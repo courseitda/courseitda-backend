@@ -5,8 +5,6 @@ import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.auth.domain.RequiresRole;
 import courseitda.member.domain.Member;
 import courseitda.workspace.application.WorkspaceService;
-import courseitda.workspace.application.dto.request.WorkspaceCreateCommand;
-import courseitda.workspace.application.dto.request.WorkspaceUpdateCommand;
 import courseitda.workspace.ui.dto.request.WorkspaceCreateRequest;
 import courseitda.workspace.ui.dto.request.WorkspaceUpdateRequest;
 import courseitda.workspace.ui.dto.response.WorkspaceCreateResponse;
@@ -45,7 +43,7 @@ public class WorkspaceController {
 
         final WorkspaceCreateResponse response = workspaceService.createWorkspace(
                 member,
-                WorkspaceCreateCommand.from(request)
+                request.toCommand()
         );
         return ResponseEntity.created(URI.create("/api/workspaces/" + response.identifier()))
                 .body(response);
@@ -68,7 +66,7 @@ public class WorkspaceController {
         final WorkspaceUpdateResponse response = workspaceService.updateWorkspace(
                 memberAuthInfo,
                 workspaceIdentifier,
-                WorkspaceUpdateCommand.from(request)
+                request.toCommand()
         );
 
         return ResponseEntity.ok(response);

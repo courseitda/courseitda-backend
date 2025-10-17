@@ -4,7 +4,6 @@ import courseitda.auth.domain.AuthRole;
 import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.auth.domain.RequiresRole;
 import courseitda.workspace.application.RepresentativeCategoryPlaceService;
-import courseitda.workspace.application.dto.request.RepresentativeCategoryPlaceUpdateCommand;
 import courseitda.workspace.ui.dto.request.RepresentativeCategoryPlaceUpdateRequest;
 import courseitda.workspace.ui.dto.response.RepresentativeCategoryPlaceUpdateResponse;
 import jakarta.validation.Valid;
@@ -36,7 +35,7 @@ public class RepresentativeCategoryPlaceController {
                 .updateRepresentativeCategoryPlace(
                         memberAuthInfo,
                         categoryId,
-                        RepresentativeCategoryPlaceUpdateCommand.from(request)
+                        request.toCommand()
                 );
 
         return ResponseEntity.ok(response);

@@ -7,6 +7,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import courseitda.common.exception.ErrorCode;
 import courseitda.member.domain.MemberFixture;
 import courseitda.member.ui.dto.request.SignUpRequest;
+import courseitda.member.ui.dto.response.CheckEmailDuplicateResponse;
+import courseitda.member.ui.dto.response.CheckNicknameDuplicateResponse;
 import courseitda.member.ui.dto.response.SignUpResponse;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
@@ -127,6 +129,200 @@ class MemberControllerTest {
                     .then()
                     .statusCode(HttpStatus.CONFLICT.value())
                     .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.DUPLICATE_NICKNAME.getCode()));
+        }
+    }
+
+    @Nested
+    @DisplayName("닉네임 중복 검증 성공 시나리오")
+    class CheckNicknameDuplicateSuccessScenarios {
+
+        @Test
+        @DisplayName("중복되지 않은 닉네임을 검증한다")
+        void checkNicknameDuplicate_success_notDuplicated() {
+            // given
+            final String nickname = MemberFixture.anyNickname();
+
+            // when
+            final CheckNicknameDuplicateResponse response = given()
+                    .queryParam("nickname", nickname)
+                    .when()
+                    .get("/api/members/check-nickname-duplicate")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .as(CheckNicknameDuplicateResponse.class);
+
+            // then
+            assertThat(response.isDuplicated()).isFalse();
+        }
+
+        @Test
+        @DisplayName("중복된 닉네임을 검증한다")
+        void checkNicknameDuplicate_success_duplicated() {
+            // given
+            final String nickname = MemberFixture.anyNickname();
+            final String email = MemberFixture.anyEmail();
+            final String password = MemberFixture.anyPassword();
+            final SignUpRequest request = new SignUpRequest(nickname, email, password);
+
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(request)
+                    .when()
+                    .post("/api/members")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value());
+
+            // when
+            final CheckNicknameDuplicateResponse response = given()
+                    .queryParam("nickname", nickname)
+                    .when()
+                    .get("/api/members/check-nickname-duplicate")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .as(CheckNicknameDuplicateResponse.class);
+
+            // then
+            assertThat(response.isDuplicated()).isTrue();
+        }
+    }
+
+    @Nested
+    @DisplayName("닉네임 중복 검증 실패 시나리오")
+    class CheckNicknameDuplicateFailureScenarios {
+
+        @Test
+        @DisplayName("닉네임이 null인 경우 검증에 실패한다")
+        void checkNicknameDuplicate_fail_nullNickname() {
+            // when & then
+            given()
+                    .when()
+                    .get("/api/members/check-nickname-duplicate")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.MEMBER_NICKNAME_EMPTY.getCode()));
+        }
+
+        @Test
+        @DisplayName("닉네임이 빈 문자열인 경우 검증에 실패한다")
+        void checkNicknameDuplicate_fail_emptyNickname() {
+            // given
+            final String emptyNickname = "";
+
+            // when & then
+            given()
+                    .queryParam("nickname", emptyNickname)
+                    .when()
+                    .get("/api/members/check-nickname-duplicate")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.MEMBER_NICKNAME_EMPTY.getCode()));
+        }
+    }
+
+    @Nested
+    @DisplayName("이메일 중복 검증 성공 시나리오")
+    class CheckEmailDuplicateSuccessScenarios {
+
+        @Test
+        @DisplayName("중복되지 않은 이메일을 검증한다")
+        void checkEmailDuplicate_success_notDuplicated() {
+            // given
+            final String email = MemberFixture.anyEmail();
+
+            // when
+            final CheckEmailDuplicateResponse response = given()
+                    .queryParam("email", email)
+                    .when()
+                    .get("/api/members/check-email-duplicate")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .as(CheckEmailDuplicateResponse.class);
+
+            // then
+            assertThat(response.isDuplicated()).isFalse();
+        }
+
+        @Test
+        @DisplayName("중복된 이메일을 검증한다")
+        void checkEmailDuplicate_success_duplicated() {
+            // given
+            final String nickname = MemberFixture.anyNickname();
+            final String email = MemberFixture.anyEmail();
+            final String password = MemberFixture.anyPassword();
+            final SignUpRequest request = new SignUpRequest(nickname, email, password);
+
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(request)
+                    .when()
+                    .post("/api/members")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value());
+
+            // when
+            final CheckEmailDuplicateResponse response = given()
+                    .queryParam("email", email)
+                    .when()
+                    .get("/api/members/check-email-duplicate")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .as(CheckEmailDuplicateResponse.class);
+
+            // then
+            assertThat(response.isDuplicated()).isTrue();
+        }
+    }
+
+    @Nested
+    @DisplayName("이메일 중복 검증 실패 시나리오")
+    class CheckEmailDuplicateFailureScenarios {
+
+        @Test
+        @DisplayName("이메일이 null인 경우 검증에 실패한다")
+        void checkEmailDuplicate_fail_nullEmail() {
+            // when & then
+            given()
+                    .when()
+                    .get("/api/members/check-email-duplicate")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.MEMBER_EMAIL_EMPTY.getCode()));
+        }
+
+        @Test
+        @DisplayName("이메일이 빈 문자열인 경우 검증에 실패한다")
+        void checkEmailDuplicate_fail_emptyEmail() {
+            // given
+            final String emptyEmail = "";
+
+            // when & then
+            given()
+                    .queryParam("email", emptyEmail)
+                    .when()
+                    .get("/api/members/check-email-duplicate")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.MEMBER_EMAIL_EMPTY.getCode()));
+        }
+
+        @Test
+        @DisplayName("이메일 형식이 잘못된 경우 검증에 실패한다")
+        void checkEmailDuplicate_fail_invalidEmailFormat() {
+            // given
+            final String invalidEmail = "invalid-email";
+
+            // when & then
+            given()
+                    .queryParam("email", invalidEmail)
+                    .when()
+                    .get("/api/members/check-email-duplicate")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.INVALID_EMAIL_FORMAT.getCode()));
         }
     }
 }

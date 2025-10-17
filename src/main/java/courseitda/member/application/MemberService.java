@@ -6,6 +6,8 @@ import courseitda.common.exception.ErrorCode;
 import courseitda.member.domain.Member;
 import courseitda.member.domain.MemberRepository;
 import courseitda.member.ui.dto.request.SignUpRequest;
+import courseitda.member.ui.dto.response.CheckEmailDuplicateResponse;
+import courseitda.member.ui.dto.response.CheckNicknameDuplicateResponse;
 import courseitda.member.ui.dto.response.SignUpResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -50,5 +52,17 @@ public class MemberService {
         if (memberRepository.existsByNickname(nickname)) {
             throw new BusinessException(ErrorCode.DUPLICATE_NICKNAME);
         }
+    }
+
+    public CheckNicknameDuplicateResponse checkNicknameDuplicate(final String nickname) {
+        final boolean isDuplicated = memberRepository.existsByNickname(nickname);
+
+        return new CheckNicknameDuplicateResponse(isDuplicated);
+    }
+
+    public CheckEmailDuplicateResponse isEmailDuplicate(final String email) {
+        final boolean isDuplicated = memberRepository.existsByEmail(email);
+
+        return new CheckEmailDuplicateResponse(isDuplicated);
     }
 }

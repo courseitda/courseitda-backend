@@ -4,6 +4,7 @@ import courseitda.auth.domain.AuthRole;
 import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.auth.domain.RequiresRole;
 import courseitda.workspace.application.CategoryPlaceService;
+import courseitda.workspace.application.dto.request.CategoryPlaceCreateCommand;
 import courseitda.workspace.ui.dto.request.CategoryPlaceCreateRequest;
 import courseitda.workspace.ui.dto.response.CategoryPlaceCreateResponse;
 import courseitda.workspace.ui.dto.response.CategoryPlacesResponse;
@@ -36,9 +37,11 @@ public class CategoryPlaceController {
     ) {
 
         // ✅ 201 Created	카테고리 장소 생성 성공
-        final CategoryPlaceCreateResponse response = categoryPlaceService.createCategoryPlace(memberAuthInfo,
+        final CategoryPlaceCreateResponse response = categoryPlaceService.createCategoryPlace(
+                memberAuthInfo,
                 categoryId,
-                request);
+                CategoryPlaceCreateCommand.from(request)
+        );
 
         return ResponseEntity.created(URI.create("/api/categories/" + categoryId + "/category-places/" + response.id()))
                 .body(response);

@@ -26,7 +26,7 @@ public class KakaoPlaceSearcher implements PlaceSearcher {
         );
 
         if (kakaoPlaceSearchResponse == null) {
-            throw new BusinessException(ErrorCode.TEMPORARY_ERROR);
+            throw new BusinessException(ErrorCode.KAKAO_PLACE_SEARCH_RESPONSE_NULL);
         }
 
         return kakaoPlaceSearchResponse.documents()

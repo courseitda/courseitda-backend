@@ -3,14 +3,13 @@ package courseitda.workspace.application;
 import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.common.exception.BusinessException;
 import courseitda.common.exception.ErrorCode;
+import courseitda.workspace.application.dto.request.CategoryCreateCommand;
+import courseitda.workspace.application.dto.request.CategoryReorderCommand;
+import courseitda.workspace.application.dto.request.CategoryUpdateCommand;
 import courseitda.workspace.domain.Category;
 import courseitda.workspace.domain.CategoryRepository;
 import courseitda.workspace.domain.Workspace;
 import courseitda.workspace.domain.WorkspaceRepository;
-import courseitda.workspace.ui.dto.request.CategoryCreateRequest;
-import courseitda.workspace.ui.dto.request.CategoryReorderRequest;
-import courseitda.workspace.ui.dto.request.CategorySequenceRequest;
-import courseitda.workspace.ui.dto.request.CategoryUpdateRequest;
 import courseitda.workspace.ui.dto.response.CategoriesResponse;
 import courseitda.workspace.ui.dto.response.CategoryCreateResponse;
 import courseitda.workspace.ui.dto.response.CategoryReorderResponse;
@@ -34,14 +33,14 @@ public class CategoryService {
     public CategoryCreateResponse createCategory(
             final MemberAuthInfo memberAuthInfo,
             final String workspaceIdentifier,
-            final CategoryCreateRequest request
+            final CategoryCreateCommand command
     ) {
         final var workspace = getWorkspaceByIdentifier(workspaceIdentifier);
         workspace.validateOwnership(memberAuthInfo.id());
 
         // N+1 문제 해결: workspace.getCategories().size() 대신 직접 count 쿼리 사용
         final var nextSequence = categoryRepository.countByWorkspaceId(workspace.getId()) + 1;
-        final var category = Category.createNew(workspace, request.name(), request.color(), nextSequence);
+        final var category = Category.createNew(workspace, command.name(), command.color(), nextSequence);
         final var savedCategory = categoryRepository.save(category);
 
         return CategoryCreateResponse.from(savedCategory);
@@ -51,13 +50,13 @@ public class CategoryService {
     public CategoryReorderResponse updateCategorySequence(
             final MemberAuthInfo memberAuthInfo,
             final String workspaceIdentifier,
-            final CategoryReorderRequest request
+            final CategoryReorderCommand command
     ) {
         final var workspace = getWorkspaceByIdentifier(workspaceIdentifier);
         workspace.validateOwnership(memberAuthInfo.id());
 
-        final var categoryIds = request.categorySequenceRequests().stream()
-                .map(CategorySequenceRequest::id)
+        final var categoryIds = command.categorySequenceRequests().stream()
+                .map(CategoryReorderCommand.CategorySequenceCommand::id)
                 .toList();
 
         final var categories = categoryRepository.findAllById(categoryIds);
@@ -69,9 +68,9 @@ public class CategoryService {
         validateNoDuplicateCategoryIds(categoryIds);
 
         // 중복된 sequence 값 검증
-        validateNoDuplicateSequences(request);
+        validateNoDuplicateSequences(command);
 
-        for (final var sequenceRequest : request.categorySequenceRequests()) {
+        for (final var sequenceRequest : command.categorySequenceRequests()) {
             final var category = categories.stream()
                     .filter(c -> c.getId().equals(sequenceRequest.id()))
                     .findFirst()
@@ -89,13 +88,13 @@ public class CategoryService {
             final MemberAuthInfo memberAuthInfo,
             final String workspaceIdentifier,
             final Long categoryId,
-            final CategoryUpdateRequest request
+            final CategoryUpdateCommand command
     ) {
         final var category = getCategoryById(categoryId);
         category.validateOwnership(memberAuthInfo.id());
         validateCategoryBelongsToWorkspace(getWorkspaceByIdentifier(workspaceIdentifier), category);
 
-        category.updateNameAndColor(request.name(), request.color());
+        category.updateNameAndColor(command.name(), command.color());
         return CategoryUpdateResponse.from(category);
     }
 
@@ -154,9 +153,9 @@ public class CategoryService {
         }
     }
 
-    private void validateNoDuplicateSequences(final CategoryReorderRequest request) {
+    private void validateNoDuplicateSequences(final CategoryReorderCommand command) {
         final Set<Integer> sequences = new HashSet<>();
-        for (final var sequenceRequest : request.categorySequenceRequests()) {
+        for (final var sequenceRequest : command.categorySequenceRequests()) {
             if (!sequences.add(sequenceRequest.sequence())) {
                 throw new BusinessException(ErrorCode.DUPLICATE_CATEGORY_ORDER_IN_REQUEST);
             }

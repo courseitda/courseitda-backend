@@ -13,6 +13,7 @@ import courseitda.workspace.domain.WorkspaceFixture;
 import courseitda.workspace.ui.dto.request.WorkspaceCreateRequest;
 import courseitda.workspace.ui.dto.request.WorkspaceUpdateRequest;
 import courseitda.workspace.ui.dto.response.WorkspaceCreateResponse;
+import courseitda.workspace.ui.dto.response.WorkspaceReadResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceUpdateResponse;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
@@ -100,6 +101,77 @@ class WorkspaceControllerTest {
                     .then()
                     .statusCode(HttpStatus.CONFLICT.value())
                     .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.DUPLICATE_WORKSPACE_TITLE.getCode()));
+        }
+    }
+
+    @Nested
+    @DisplayName("워크스페이스 조회 성공 시나리오")
+    class ReadWorkspaceSuccessScenarios {
+
+        @Test
+        @DisplayName("워크스페이스 조회에 성공한다")
+        void readWorkspace_success() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(accessToken);
+
+            // when
+            final WorkspaceReadResponse response = given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .when()
+                    .get("/api/workspaces/" + workspaceIdentifier)
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .as(WorkspaceReadResponse.class);
+
+            // then
+            assertThat(response.identifier()).isEqualTo(workspaceIdentifier);
+            assertThat(response.title()).isNotNull();
+        }
+    }
+
+    @Nested
+    @DisplayName("워크스페이스 조회 실패 시나리오")
+    class ReadWorkspaceFailureScenarios {
+
+        @Test
+        @DisplayName("존재하지 않는 워크스페이스 조회 시 실패한다")
+        void readWorkspace_fail_workspaceNotFound() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String nonExistentIdentifier = "non-existent-identifier";
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .when()
+                    .get("/api/workspaces/" + nonExistentIdentifier)
+                    .then()
+                    .statusCode(HttpStatus.NOT_FOUND.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.WORKSPACE_NOT_FOUND.getCode()));
+        }
+
+        @Test
+        @DisplayName("다른 사용자의 워크스페이스 조회 시 실패한다")
+        void readWorkspace_fail_workspaceModifyForbidden() {
+            // given
+            final String owner = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(owner);
+
+            final String otherUser = signUpAndLogin();
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, otherUser)
+                    .when()
+                    .get("/api/workspaces/" + workspaceIdentifier)
+                    .then()
+                    .statusCode(HttpStatus.FORBIDDEN.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.WORKSPACE_MODIFY_FORBIDDEN.getCode()));
         }
     }
 

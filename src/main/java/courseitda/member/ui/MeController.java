@@ -57,8 +57,8 @@ public class MeController {
     @GetMapping("/workspaces")
     // TODO: 페이징 고려 필요
     public ResponseEntity<WorkspacesResponse> readMyWorkspaces(final MemberAuthInfo memberAuthInfo) {
-        final var workspacesResponse = workspaceService.readWorkspacesByMemberId(memberAuthInfo.id());
+        final var response = workspaceService.readWorkspacesByMemberId(memberAuthInfo.id());
 
-        return ResponseEntity.ok(workspacesResponse);
+        return ResponseEntity.ok(WorkspacesResponse.from(response));
     }
 }

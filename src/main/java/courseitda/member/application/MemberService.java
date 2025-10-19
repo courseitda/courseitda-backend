@@ -4,9 +4,9 @@ import courseitda.auth.domain.AuthRole;
 import courseitda.common.exception.BusinessException;
 import courseitda.common.exception.ErrorCode;
 import courseitda.member.application.dto.request.SignUpCommand;
+import courseitda.member.application.dto.response.CreateMemberResponse;
 import courseitda.member.domain.Member;
 import courseitda.member.domain.MemberRepository;
-import courseitda.member.ui.dto.response.SignUpResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public SignUpResponse create(final SignUpCommand command) {
+    public CreateMemberResponse create(final SignUpCommand command) {
         validateDuplicateEmail(command.email());
         validateDuplicateNickname(command.nickname());
 
@@ -32,7 +32,7 @@ public class MemberService {
                 .build();
         final Member createdMember = memberRepository.save(member);
 
-        return SignUpResponse.from(createdMember);
+        return CreateMemberResponse.from(createdMember);
     }
 
     public Member findById(final Long id) {

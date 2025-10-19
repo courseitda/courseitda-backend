@@ -1,28 +1,16 @@
 package courseitda.workspace.ui.dto.response;
 
-import courseitda.workspace.domain.CategoryPlace;
+import courseitda.workspace.application.dto.response.ReadCategoryPlacesResponse;
 import java.util.List;
-import java.util.Objects;
 
 public record CategoryPlacesResponse(
         List<CategoryPlaceResponse> categoryPlaceResponses
 ) {
 
-    public static CategoryPlacesResponse of(
-            final List<CategoryPlace> categoryPlaces,
-            final CategoryPlace representativePlace
-    ) {
+    public static CategoryPlacesResponse from(final ReadCategoryPlacesResponse response) {
         return new CategoryPlacesResponse(
-                categoryPlaces.stream()
-                        .map(categoryPlace -> {
-                            final boolean isRepresentative = representativePlace != null &&
-                                    Objects.equals(categoryPlace.getId(), representativePlace.getId());
-
-                            return CategoryPlaceResponse.of(
-                                    categoryPlace,
-                                    isRepresentative
-                            );
-                        })
+                response.categoryPlaceResponses().stream()
+                        .map(CategoryPlaceResponse::from)
                         .toList()
         );
     }
@@ -34,16 +22,12 @@ public record CategoryPlacesResponse(
             boolean isRepresentative
     ) {
 
-        public static CategoryPlaceResponse of(
-                final CategoryPlace categoryPlace,
-                final boolean isRepresentative
-        ) {
+        public static CategoryPlaceResponse from(final ReadCategoryPlacesResponse.CategoryPlaceResponse response) {
             return new CategoryPlaceResponse(
-                    categoryPlace.getId(),
-                    categoryPlace.getPlace().getName(),
-                    categoryPlace.getPlace().getAddressName(),
-                    isRepresentative
-            // todo: 도로명 주소가 있으면 도로명 주소, 없으면 지번 주소
+                    response.id(),
+                    response.name(),
+                    response.address(),
+                    response.isRepresentative()
             );
         }
     }

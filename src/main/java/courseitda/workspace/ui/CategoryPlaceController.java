@@ -36,14 +36,15 @@ public class CategoryPlaceController {
     ) {
 
         // ✅ 201 Created	카테고리 장소 생성 성공
-        final CategoryPlaceCreateResponse response = categoryPlaceService.createCategoryPlace(
+        final var response = categoryPlaceService.createCategoryPlace(
                 memberAuthInfo,
                 categoryId,
                 request.toCommand()
         );
+        final var uiResponse = CategoryPlaceCreateResponse.from(response);
 
-        return ResponseEntity.created(URI.create("/api/categories/" + categoryId + "/category-places/" + response.id()))
-                .body(response);
+        return ResponseEntity.created(URI.create("/api/categories/" + categoryId + "/category-places/" + uiResponse.id()))
+                .body(uiResponse);
     }
 
     // 카테고리 장소 삭제
@@ -69,8 +70,8 @@ public class CategoryPlaceController {
     ) {
 
         // ✅ 200 OK	카테고리 장소 목록 조회 성공
-        final CategoryPlacesResponse response = categoryPlaceService.findCategoryPlaces(memberAuthInfo, categoryId);
+        final var response = categoryPlaceService.findCategoryPlaces(memberAuthInfo, categoryId);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(CategoryPlacesResponse.from(response));
     }
 }

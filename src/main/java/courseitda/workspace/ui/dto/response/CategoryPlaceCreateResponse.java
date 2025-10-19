@@ -1,16 +1,16 @@
 package courseitda.workspace.ui.dto.response;
 
-import courseitda.workspace.domain.CategoryPlace;
+import courseitda.workspace.application.dto.response.CreateCategoryPlaceResponse;
 
 public record CategoryPlaceCreateResponse(
         Long id,
         Long placeId
 ) {
 
-    public static CategoryPlaceCreateResponse from(final CategoryPlace categoryPlace) {
+    public static CategoryPlaceCreateResponse from(final CreateCategoryPlaceResponse response) {
         return new CategoryPlaceCreateResponse(
-                categoryPlace.getId(),
-                categoryPlace.getPlace().getId()
+                response.id(),
+                response.placeId()
         );
     }
 }

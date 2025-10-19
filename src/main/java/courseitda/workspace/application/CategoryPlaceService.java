@@ -6,12 +6,12 @@ import courseitda.common.exception.ErrorCode;
 import courseitda.place.domain.Place;
 import courseitda.place.domain.PlaceRepository;
 import courseitda.workspace.application.dto.request.CategoryPlaceCreateCommand;
+import courseitda.workspace.application.dto.response.CreateCategoryPlaceResponse;
+import courseitda.workspace.application.dto.response.ReadCategoryPlacesResponse;
 import courseitda.workspace.domain.Category;
 import courseitda.workspace.domain.CategoryPlace;
 import courseitda.workspace.domain.CategoryPlaceRepository;
 import courseitda.workspace.domain.CategoryRepository;
-import courseitda.workspace.ui.dto.response.CategoryPlaceCreateResponse;
-import courseitda.workspace.ui.dto.response.CategoryPlacesResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +25,7 @@ public class CategoryPlaceService {
     private final PlaceRepository placeRepository;
 
     @Transactional
-    public CategoryPlaceCreateResponse createCategoryPlace(
+    public CreateCategoryPlaceResponse createCategoryPlace(
             final MemberAuthInfo memberAuthInfo,
             final Long categoryId,
             final CategoryPlaceCreateCommand command
@@ -38,7 +38,7 @@ public class CategoryPlaceService {
         final var categoryPlace = CategoryPlace.createNew(category, place);
         final var savedCategoryPlace = categoryPlaceRepository.save(categoryPlace);
 
-        return CategoryPlaceCreateResponse.from(savedCategoryPlace);
+        return CreateCategoryPlaceResponse.from(savedCategoryPlace);
     }
 
     @Transactional
@@ -63,14 +63,14 @@ public class CategoryPlaceService {
     }
 
     @Transactional(readOnly = true)
-    public CategoryPlacesResponse findCategoryPlaces(final MemberAuthInfo memberAuthInfo, final Long categoryId) {
+    public ReadCategoryPlacesResponse findCategoryPlaces(final MemberAuthInfo memberAuthInfo, final Long categoryId) {
         final var category = getCategoryById(categoryId);
         category.validateOwnership(memberAuthInfo.id());
 
         final var categoryPlaces = category.getCategoryPlaces();
         final var representativePlace = category.getRepresentativePlace();
 
-        return CategoryPlacesResponse.of(categoryPlaces, representativePlace);
+        return ReadCategoryPlacesResponse.of(categoryPlaces, representativePlace);
     }
 
     private Category getCategoryById(final Long categoryId) {

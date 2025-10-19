@@ -40,7 +40,7 @@ public class CategoryController {
             @PathVariable final String workspaceIdentifier,
             @Valid @RequestBody final CategoryCreateRequest request
     ) {
-        final CategoryCreateResponse response = categoryService.createCategory(
+        final var response = categoryService.createCategory(
                 memberAuthInfo,
                 workspaceIdentifier,
                 request.toCommand()
@@ -50,7 +50,7 @@ public class CategoryController {
                         + workspaceIdentifier + "/categories/"
                         + response.id()
                 )
-        ).body(response);
+        ).body(CategoryCreateResponse.from(response));
     }
 
     // 카테고리 순서 변경
@@ -60,12 +60,12 @@ public class CategoryController {
             @PathVariable final String workspaceIdentifier,
             @Valid @RequestBody final CategoryReorderRequest request
     ) {
-        final CategoryReorderResponse response = categoryService.updateCategorySequence(
+        final var response = categoryService.updateCategorySequence(
                 memberAuthInfo,
                 workspaceIdentifier,
                 request.toCommand()
         );
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(CategoryReorderResponse.from(response));
     }
 
     // 카테고리 (이름/색상) 수정
@@ -76,14 +76,14 @@ public class CategoryController {
             @PathVariable final Long categoryId,
             @Valid @RequestBody final CategoryUpdateRequest request
     ) {
-        final CategoryUpdateResponse response = categoryService.updateCategory(
+        final var response = categoryService.updateCategory(
                 memberAuthInfo,
                 workspaceIdentifier,
                 categoryId,
                 request.toCommand()
         );
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(CategoryUpdateResponse.from(response));
     }
 
     // 카테고리 삭제
@@ -105,9 +105,9 @@ public class CategoryController {
             @PathVariable final String workspaceIdentifier,
             @PathVariable final Long categoryId
     ) {
-        final CategoryResponse response = categoryService.findCategory(memberAuthInfo, workspaceIdentifier, categoryId);
+        final var response = categoryService.findCategory(memberAuthInfo, workspaceIdentifier, categoryId);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(CategoryResponse.from(response));
     }
 
     // 카테고리 목록 전체 조회 - 워크스페이스 상세 페이지
@@ -116,8 +116,8 @@ public class CategoryController {
             final MemberAuthInfo memberAuthInfo,
             @PathVariable final String workspaceIdentifier
     ) {
-        final CategoriesResponse response = categoryService.findAllCategories(memberAuthInfo, workspaceIdentifier);
+        final var response = categoryService.findAllCategories(memberAuthInfo, workspaceIdentifier);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(CategoriesResponse.from(response));
     }
 }

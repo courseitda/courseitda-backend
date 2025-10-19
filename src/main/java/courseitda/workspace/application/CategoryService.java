@@ -6,15 +6,15 @@ import courseitda.common.exception.ErrorCode;
 import courseitda.workspace.application.dto.request.CategoryCreateCommand;
 import courseitda.workspace.application.dto.request.CategoryReorderCommand;
 import courseitda.workspace.application.dto.request.CategoryUpdateCommand;
+import courseitda.workspace.application.dto.response.CreateCategoryResponse;
+import courseitda.workspace.application.dto.response.ReadCategoriesResponse;
+import courseitda.workspace.application.dto.response.ReadCategoryResponse;
+import courseitda.workspace.application.dto.response.ReorderCategoryResponse;
+import courseitda.workspace.application.dto.response.UpdateCategoryResponse;
 import courseitda.workspace.domain.Category;
 import courseitda.workspace.domain.CategoryRepository;
 import courseitda.workspace.domain.Workspace;
 import courseitda.workspace.domain.WorkspaceRepository;
-import courseitda.workspace.ui.dto.response.CategoriesResponse;
-import courseitda.workspace.ui.dto.response.CategoryCreateResponse;
-import courseitda.workspace.ui.dto.response.CategoryReorderResponse;
-import courseitda.workspace.ui.dto.response.CategoryResponse;
-import courseitda.workspace.ui.dto.response.CategoryUpdateResponse;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,7 +30,7 @@ public class CategoryService {
     private final WorkspaceRepository workspaceRepository;
 
     @Transactional
-    public CategoryCreateResponse createCategory(
+    public CreateCategoryResponse createCategory(
             final MemberAuthInfo memberAuthInfo,
             final String workspaceIdentifier,
             final CategoryCreateCommand command
@@ -43,11 +43,11 @@ public class CategoryService {
         final var category = Category.createNew(workspace, command.name(), command.color(), nextSequence);
         final var savedCategory = categoryRepository.save(category);
 
-        return CategoryCreateResponse.from(savedCategory);
+        return CreateCategoryResponse.from(savedCategory);
     }
 
     @Transactional
-    public CategoryReorderResponse updateCategorySequence(
+    public ReorderCategoryResponse updateCategorySequence(
             final MemberAuthInfo memberAuthInfo,
             final String workspaceIdentifier,
             final CategoryReorderCommand command
@@ -80,11 +80,11 @@ public class CategoryService {
             category.updateSequence(sequenceRequest.sequence());
         }
 
-        return CategoryReorderResponse.from(categories);
+        return ReorderCategoryResponse.from(categories);
     }
 
     @Transactional
-    public CategoryUpdateResponse updateCategory(
+    public UpdateCategoryResponse updateCategory(
             final MemberAuthInfo memberAuthInfo,
             final String workspaceIdentifier,
             final Long categoryId,
@@ -95,7 +95,7 @@ public class CategoryService {
         validateCategoryBelongsToWorkspace(getWorkspaceByIdentifier(workspaceIdentifier), category);
 
         category.updateNameAndColor(command.name(), command.color());
-        return CategoryUpdateResponse.from(category);
+        return UpdateCategoryResponse.from(category);
     }
 
     @Transactional
@@ -112,7 +112,7 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = true)
-    public CategoryResponse findCategory(
+    public ReadCategoryResponse findCategory(
             final MemberAuthInfo memberAuthInfo,
             final String workspaceIdentifier,
             final Long categoryId
@@ -121,11 +121,11 @@ public class CategoryService {
         category.validateOwnership(memberAuthInfo.id());
         validateCategoryBelongsToWorkspace(getWorkspaceByIdentifier(workspaceIdentifier), category);
 
-        return CategoryResponse.from(category);
+        return ReadCategoryResponse.from(category);
     }
 
     @Transactional(readOnly = true)
-    public CategoriesResponse findAllCategories(
+    public ReadCategoriesResponse findAllCategories(
             final MemberAuthInfo memberAuthInfo,
             final String workspaceIdentifier
     ) {
@@ -133,7 +133,7 @@ public class CategoryService {
         workspace.validateOwnership(memberAuthInfo.id());
 
         final var categories = workspace.getCategories();
-        return CategoriesResponse.from(categories);
+        return ReadCategoriesResponse.from(categories);
     }
 
     private Workspace getWorkspaceByIdentifier(final String workspaceIdentifier) {

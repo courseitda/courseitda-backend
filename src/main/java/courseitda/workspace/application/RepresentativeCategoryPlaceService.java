@@ -4,11 +4,11 @@ import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.common.exception.BusinessException;
 import courseitda.common.exception.ErrorCode;
 import courseitda.workspace.application.dto.request.RepresentativeCategoryPlaceUpdateCommand;
+import courseitda.workspace.application.dto.response.UpdateRepresentativeCategoryPlaceResponse;
 import courseitda.workspace.domain.Category;
 import courseitda.workspace.domain.CategoryPlace;
 import courseitda.workspace.domain.CategoryPlaceRepository;
 import courseitda.workspace.domain.CategoryRepository;
-import courseitda.workspace.ui.dto.response.RepresentativeCategoryPlaceUpdateResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +21,7 @@ public class RepresentativeCategoryPlaceService {
     private final CategoryPlaceRepository categoryPlaceRepository;
 
     @Transactional
-    public RepresentativeCategoryPlaceUpdateResponse updateRepresentativeCategoryPlace(
+    public UpdateRepresentativeCategoryPlaceResponse updateRepresentativeCategoryPlace(
             final MemberAuthInfo memberAuthInfo,
             final Long categoryId,
             final RepresentativeCategoryPlaceUpdateCommand command
@@ -33,7 +33,7 @@ public class RepresentativeCategoryPlaceService {
 
         category.updateRepresentativePlaceTo(candidatePlace);
 
-        return RepresentativeCategoryPlaceUpdateResponse.from(category.getRepresentativePlace());
+        return UpdateRepresentativeCategoryPlaceResponse.from(category.getRepresentativePlace());
     }
 
     @Transactional

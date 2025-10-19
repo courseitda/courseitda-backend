@@ -31,14 +31,14 @@ public class RepresentativeCategoryPlaceController {
             @PathVariable final Long categoryId,
             @Valid @RequestBody final RepresentativeCategoryPlaceUpdateRequest request
     ) {
-        final RepresentativeCategoryPlaceUpdateResponse response = representativeCategoryPlaceService
+        final var response = representativeCategoryPlaceService
                 .updateRepresentativeCategoryPlace(
                         memberAuthInfo,
                         categoryId,
                         request.toCommand()
                 );
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(RepresentativeCategoryPlaceUpdateResponse.from(response));
     }
 
     // 카테고리 대표 장소 해제

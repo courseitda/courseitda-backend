@@ -1,6 +1,6 @@
 package courseitda.workspace.ui.dto.response;
 
-import courseitda.workspace.application.dto.response.UpdateCategoryResponse;
+import courseitda.workspace.application.dto.response.UpdateCategoryResult;
 
 public record CategoryUpdateResponse(
         Long id,
@@ -8,7 +8,7 @@ public record CategoryUpdateResponse(
         String color
 ) {
 
-    public static CategoryUpdateResponse from(final UpdateCategoryResponse response) {
+    public static CategoryUpdateResponse from(final UpdateCategoryResult response) {
         return new CategoryUpdateResponse(
                 response.id(),
                 response.name(),

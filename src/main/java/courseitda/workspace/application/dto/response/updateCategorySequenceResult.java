@@ -3,11 +3,11 @@ package courseitda.workspace.application.dto.response;
 import courseitda.workspace.domain.Category;
 import java.util.List;
 
-public record ReorderCategoryResponse(
+public record updateCategorySequenceResult(
         List<CategorySequenceResponse> categorySequenceResponses
 ) {
-    public static ReorderCategoryResponse from(final List<Category> categories) {
-        return new ReorderCategoryResponse(
+    public static updateCategorySequenceResult from(final List<Category> categories) {
+        return new updateCategorySequenceResult(
                 categories.stream()
                         .map(CategorySequenceResponse::from)
                         .toList()

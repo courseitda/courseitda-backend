@@ -3,14 +3,14 @@ package courseitda.workspace.application;
 import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.common.exception.BusinessException;
 import courseitda.common.exception.ErrorCode;
-import courseitda.workspace.application.dto.request.CategoryCreateCommand;
-import courseitda.workspace.application.dto.request.CategoryReorderCommand;
-import courseitda.workspace.application.dto.request.CategoryUpdateCommand;
-import courseitda.workspace.application.dto.response.CreateCategoryResponse;
-import courseitda.workspace.application.dto.response.ReadCategoriesResponse;
-import courseitda.workspace.application.dto.response.ReadCategoryResponse;
-import courseitda.workspace.application.dto.response.ReorderCategoryResponse;
-import courseitda.workspace.application.dto.response.UpdateCategoryResponse;
+import courseitda.workspace.application.dto.request.CreateCategoryCommand;
+import courseitda.workspace.application.dto.request.UpdateCategoryCommand;
+import courseitda.workspace.application.dto.request.UpdateCategorySequenceCommand;
+import courseitda.workspace.application.dto.response.CreateCategoryResult;
+import courseitda.workspace.application.dto.response.FindAllCategoriesResult;
+import courseitda.workspace.application.dto.response.FindCategoryResult;
+import courseitda.workspace.application.dto.response.UpdateCategoryResult;
+import courseitda.workspace.application.dto.response.updateCategorySequenceResult;
 import courseitda.workspace.domain.Category;
 import courseitda.workspace.domain.CategoryRepository;
 import courseitda.workspace.domain.Workspace;
@@ -30,10 +30,10 @@ public class CategoryService {
     private final WorkspaceRepository workspaceRepository;
 
     @Transactional
-    public CreateCategoryResponse createCategory(
+    public CreateCategoryResult createCategory(
             final MemberAuthInfo memberAuthInfo,
             final String workspaceIdentifier,
-            final CategoryCreateCommand command
+            final CreateCategoryCommand command
     ) {
         final var workspace = getWorkspaceByIdentifier(workspaceIdentifier);
         workspace.validateOwnership(memberAuthInfo.id());
@@ -43,20 +43,20 @@ public class CategoryService {
         final var category = Category.createNew(workspace, command.name(), command.color(), nextSequence);
         final var savedCategory = categoryRepository.save(category);
 
-        return CreateCategoryResponse.from(savedCategory);
+        return CreateCategoryResult.from(savedCategory);
     }
 
     @Transactional
-    public ReorderCategoryResponse updateCategorySequence(
+    public updateCategorySequenceResult updateCategorySequence(
             final MemberAuthInfo memberAuthInfo,
             final String workspaceIdentifier,
-            final CategoryReorderCommand command
+            final UpdateCategorySequenceCommand command
     ) {
         final var workspace = getWorkspaceByIdentifier(workspaceIdentifier);
         workspace.validateOwnership(memberAuthInfo.id());
 
         final var categoryIds = command.categorySequenceRequests().stream()
-                .map(CategoryReorderCommand.CategorySequenceCommand::id)
+                .map(UpdateCategorySequenceCommand.CategorySequenceCommand::id)
                 .toList();
 
         final var categories = categoryRepository.findAllById(categoryIds);
@@ -80,22 +80,22 @@ public class CategoryService {
             category.updateSequence(sequenceRequest.sequence());
         }
 
-        return ReorderCategoryResponse.from(categories);
+        return updateCategorySequenceResult.from(categories);
     }
 
     @Transactional
-    public UpdateCategoryResponse updateCategory(
+    public UpdateCategoryResult updateCategory(
             final MemberAuthInfo memberAuthInfo,
             final String workspaceIdentifier,
             final Long categoryId,
-            final CategoryUpdateCommand command
+            final UpdateCategoryCommand command
     ) {
         final var category = getCategoryById(categoryId);
         category.validateOwnership(memberAuthInfo.id());
         validateCategoryBelongsToWorkspace(getWorkspaceByIdentifier(workspaceIdentifier), category);
 
         category.updateNameAndColor(command.name(), command.color());
-        return UpdateCategoryResponse.from(category);
+        return UpdateCategoryResult.from(category);
     }
 
     @Transactional
@@ -112,7 +112,7 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = true)
-    public ReadCategoryResponse findCategory(
+    public FindCategoryResult findCategory(
             final MemberAuthInfo memberAuthInfo,
             final String workspaceIdentifier,
             final Long categoryId
@@ -121,11 +121,11 @@ public class CategoryService {
         category.validateOwnership(memberAuthInfo.id());
         validateCategoryBelongsToWorkspace(getWorkspaceByIdentifier(workspaceIdentifier), category);
 
-        return ReadCategoryResponse.from(category);
+        return FindCategoryResult.from(category);
     }
 
     @Transactional(readOnly = true)
-    public ReadCategoriesResponse findAllCategories(
+    public FindAllCategoriesResult findAllCategories(
             final MemberAuthInfo memberAuthInfo,
             final String workspaceIdentifier
     ) {
@@ -133,7 +133,7 @@ public class CategoryService {
         workspace.validateOwnership(memberAuthInfo.id());
 
         final var categories = workspace.getCategories();
-        return ReadCategoriesResponse.from(categories);
+        return FindAllCategoriesResult.from(categories);
     }
 
     private Workspace getWorkspaceByIdentifier(final String workspaceIdentifier) {
@@ -153,7 +153,7 @@ public class CategoryService {
         }
     }
 
-    private void validateNoDuplicateSequences(final CategoryReorderCommand command) {
+    private void validateNoDuplicateSequences(final UpdateCategorySequenceCommand command) {
         final Set<Integer> sequences = new HashSet<>();
         for (final var sequenceRequest : command.categorySequenceRequests()) {
             if (!sequences.add(sequenceRequest.sequence())) {

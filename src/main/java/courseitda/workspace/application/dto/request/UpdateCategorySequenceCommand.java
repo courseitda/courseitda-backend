@@ -2,7 +2,7 @@ package courseitda.workspace.application.dto.request;
 
 import java.util.List;
 
-public record CategoryReorderCommand(
+public record UpdateCategorySequenceCommand(
         List<CategorySequenceCommand> categorySequenceRequests
 ) {
 

@@ -43,7 +43,8 @@ public class CategoryPlaceController {
         );
         final var uiResponse = CategoryPlaceCreateResponse.from(response);
 
-        return ResponseEntity.created(URI.create("/api/categories/" + categoryId + "/category-places/" + uiResponse.id()))
+        return ResponseEntity.created(URI.create("/api/categories/" + categoryId + "/category-places/" + uiResponse
+                .id()))
                 .body(uiResponse);
     }
 

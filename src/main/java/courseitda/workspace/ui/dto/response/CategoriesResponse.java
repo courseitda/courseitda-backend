@@ -1,14 +1,14 @@
 package courseitda.workspace.ui.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import courseitda.workspace.application.dto.response.ReadCategoriesResponse;
+import courseitda.workspace.application.dto.response.FindAllCategoriesResult;
 import java.util.List;
 
 public record CategoriesResponse(
         @JsonProperty("categories") List<CategoryResponse> categoryResponses
 ) {
 
-    public static CategoriesResponse from(final ReadCategoriesResponse response) {
+    public static CategoriesResponse from(final FindAllCategoriesResult response) {
         return new CategoriesResponse(
                 response.categoryResponses().stream()
                         .map(CategoryResponse::from)
@@ -24,7 +24,7 @@ public record CategoriesResponse(
             @JsonProperty("categoryPlaces") CategoryPlacesResponse categoryPlacesResponse
     ) {
 
-        public static CategoryResponse from(final ReadCategoriesResponse.CategoryResponse response) {
+        public static CategoryResponse from(final FindAllCategoriesResult.CategoryResponse response) {
             return new CategoryResponse(
                     response.id(),
                     response.name(),
@@ -39,7 +39,8 @@ public record CategoriesResponse(
                 @JsonProperty("categoryPlaces") List<CategoryPlaceResponse> categoryPlaceResponses
         ) {
 
-            public static CategoryPlacesResponse from(final ReadCategoriesResponse.CategoryResponse.CategoryPlacesResponse response) {
+            public static CategoryPlacesResponse from(
+                    final FindAllCategoriesResult.CategoryResponse.CategoryPlacesResponse response) {
                 return new CategoryPlacesResponse(
                         response.categoryPlaceResponses().stream()
                                 .map(CategoryPlaceResponse::from)
@@ -56,7 +57,8 @@ public record CategoriesResponse(
                     boolean isRepresentative
             ) {
 
-                public static CategoryPlaceResponse from(final ReadCategoriesResponse.CategoryResponse.CategoryPlacesResponse.CategoryPlaceResponse response) {
+                public static CategoryPlaceResponse from(
+                        final FindAllCategoriesResult.CategoryResponse.CategoryPlacesResponse.CategoryPlaceResponse response) {
                     return new CategoryPlaceResponse(
                             response.id(),
                             response.name(),

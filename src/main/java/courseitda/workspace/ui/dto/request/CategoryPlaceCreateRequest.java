@@ -1,6 +1,6 @@
 package courseitda.workspace.ui.dto.request;
 
-import courseitda.workspace.application.dto.request.CategoryPlaceCreateCommand;
+import courseitda.workspace.application.dto.request.CreateCategoryPlaceCommand;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -18,7 +18,7 @@ public record CategoryPlaceCreateRequest(
 // todo: 검색 결과 상으로 도로명 주소의 유무에 따라 변경되어야 하는데, 해당 과정을 확인한 후 수정할 것
 ) {
 
-    public CategoryPlaceCreateCommand toCommand() {
-        return new CategoryPlaceCreateCommand(name, roadAddressName, addressName, lat, lng);
+    public CreateCategoryPlaceCommand toCommand() {
+        return new CreateCategoryPlaceCommand(name, roadAddressName, addressName, lat, lng);
     }
 }

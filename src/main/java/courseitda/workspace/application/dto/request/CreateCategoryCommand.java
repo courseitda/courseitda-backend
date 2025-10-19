@@ -1,6 +1,6 @@
 package courseitda.workspace.application.dto.request;
 
-public record CategoryCreateCommand(
+public record CreateCategoryCommand(
         String name,
         String color
 ) {

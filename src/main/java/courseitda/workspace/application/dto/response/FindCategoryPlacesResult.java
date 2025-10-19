@@ -4,15 +4,15 @@ import courseitda.workspace.domain.CategoryPlace;
 import java.util.List;
 import java.util.Objects;
 
-public record ReadCategoryPlacesResponse(
+public record FindCategoryPlacesResult(
         List<CategoryPlaceResponse> categoryPlaceResponses
 ) {
 
-    public static ReadCategoryPlacesResponse of(
+    public static FindCategoryPlacesResult of(
             final List<CategoryPlace> categoryPlaces,
             final CategoryPlace representativePlace
     ) {
-        return new ReadCategoryPlacesResponse(
+        return new FindCategoryPlacesResult(
                 categoryPlaces.stream()
                         .map(categoryPlace -> {
                             final boolean isRepresentative = representativePlace != null &&

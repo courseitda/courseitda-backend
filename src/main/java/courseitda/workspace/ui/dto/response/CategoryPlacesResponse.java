@@ -1,13 +1,13 @@
 package courseitda.workspace.ui.dto.response;
 
-import courseitda.workspace.application.dto.response.ReadCategoryPlacesResponse;
+import courseitda.workspace.application.dto.response.FindCategoryPlacesResult;
 import java.util.List;
 
 public record CategoryPlacesResponse(
         List<CategoryPlaceResponse> categoryPlaceResponses
 ) {
 
-    public static CategoryPlacesResponse from(final ReadCategoryPlacesResponse response) {
+    public static CategoryPlacesResponse from(final FindCategoryPlacesResult response) {
         return new CategoryPlacesResponse(
                 response.categoryPlaceResponses().stream()
                         .map(CategoryPlaceResponse::from)
@@ -22,7 +22,7 @@ public record CategoryPlacesResponse(
             boolean isRepresentative
     ) {
 
-        public static CategoryPlaceResponse from(final ReadCategoryPlacesResponse.CategoryPlaceResponse response) {
+        public static CategoryPlaceResponse from(final FindCategoryPlacesResult.CategoryPlaceResponse response) {
             return new CategoryPlaceResponse(
                     response.id(),
                     response.name(),

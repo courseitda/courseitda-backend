@@ -3,8 +3,8 @@ package courseitda.workspace.application;
 import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.common.exception.BusinessException;
 import courseitda.common.exception.ErrorCode;
-import courseitda.workspace.application.dto.request.RepresentativeCategoryPlaceUpdateCommand;
-import courseitda.workspace.application.dto.response.UpdateRepresentativeCategoryPlaceResponse;
+import courseitda.workspace.application.dto.request.UpdateRepresentativeCategoryPlaceCommand;
+import courseitda.workspace.application.dto.response.UpdateRepresentativeCategoryPlaceResult;
 import courseitda.workspace.domain.Category;
 import courseitda.workspace.domain.CategoryPlace;
 import courseitda.workspace.domain.CategoryPlaceRepository;
@@ -21,10 +21,10 @@ public class RepresentativeCategoryPlaceService {
     private final CategoryPlaceRepository categoryPlaceRepository;
 
     @Transactional
-    public UpdateRepresentativeCategoryPlaceResponse updateRepresentativeCategoryPlace(
+    public UpdateRepresentativeCategoryPlaceResult updateRepresentativeCategoryPlace(
             final MemberAuthInfo memberAuthInfo,
             final Long categoryId,
-            final RepresentativeCategoryPlaceUpdateCommand command
+            final UpdateRepresentativeCategoryPlaceCommand command
     ) {
         final var category = getCategoryById(categoryId);
         category.validateOwnership(memberAuthInfo.id());
@@ -33,7 +33,7 @@ public class RepresentativeCategoryPlaceService {
 
         category.updateRepresentativePlaceTo(candidatePlace);
 
-        return UpdateRepresentativeCategoryPlaceResponse.from(category.getRepresentativePlace());
+        return UpdateRepresentativeCategoryPlaceResult.from(category.getRepresentativePlace());
     }
 
     @Transactional

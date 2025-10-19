@@ -2,14 +2,14 @@ package courseitda.workspace.application.dto.response;
 
 import courseitda.workspace.domain.Category;
 
-public record UpdateCategoryResponse(
+public record UpdateCategoryResult(
         Long id,
         String name,
         String color
 ) {
 
-    public static UpdateCategoryResponse from(final Category category) {
-        return new UpdateCategoryResponse(
+    public static UpdateCategoryResult from(final Category category) {
+        return new UpdateCategoryResult(
                 category.getId(),
                 category.getName(),
                 category.getColor()

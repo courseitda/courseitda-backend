@@ -1,6 +1,6 @@
 package courseitda.workspace.application.dto.request;
 
-public record CategoryPlaceCreateCommand(
+public record CreateCategoryPlaceCommand(
         String name,
         String roadAddressName,
         String addressName,

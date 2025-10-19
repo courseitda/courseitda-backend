@@ -5,12 +5,12 @@ import courseitda.workspace.domain.CategoryPlace;
 import java.util.List;
 import java.util.Objects;
 
-public record ReadCategoriesResponse(
+public record FindAllCategoriesResult(
         List<CategoryResponse> categoryResponses
 ) {
 
-    public static ReadCategoriesResponse from(final List<Category> categories) {
-        return new ReadCategoriesResponse(
+    public static FindAllCategoriesResult from(final List<Category> categories) {
+        return new FindAllCategoriesResult(
                 categories.stream()
                         .map(CategoryResponse::from)
                         .toList());

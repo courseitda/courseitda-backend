@@ -4,12 +4,12 @@ import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.common.exception.BusinessException;
 import courseitda.common.exception.ErrorCode;
 import courseitda.member.domain.Member;
-import courseitda.workspace.application.dto.request.WorkspaceCreateCommand;
-import courseitda.workspace.application.dto.request.WorkspaceUpdateCommand;
-import courseitda.workspace.application.dto.response.CreateWorkspaceResponse;
-import courseitda.workspace.application.dto.response.ReadWorkspaceResponse;
-import courseitda.workspace.application.dto.response.ReadWorkspacesResponse;
-import courseitda.workspace.application.dto.response.UpdateWorkspaceResponse;
+import courseitda.workspace.application.dto.request.CreateWorkspaceCommand;
+import courseitda.workspace.application.dto.request.UpdateWorkspaceCommand;
+import courseitda.workspace.application.dto.response.CreateWorkspaceResult;
+import courseitda.workspace.application.dto.response.ReadWorkspaceResult;
+import courseitda.workspace.application.dto.response.ReadWorkspacesByMemberIdResult;
+import courseitda.workspace.application.dto.response.UpdateWorkspaceResult;
 import courseitda.workspace.domain.Workspace;
 import courseitda.workspace.domain.WorkspaceRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,20 +23,20 @@ public class WorkspaceService {
     private final WorkspaceRepository workspaceRepository;
 
     @Transactional
-    public CreateWorkspaceResponse createWorkspace(final Member member, final WorkspaceCreateCommand command) {
+    public CreateWorkspaceResult createWorkspace(final Member member, final CreateWorkspaceCommand command) {
         validateDuplicatedTitle(member.getId(), command.title());
 
         final var workspace = Workspace.createNew(member, command.title());
         final var savedWorkspace = workspaceRepository.save(workspace);
 
-        return CreateWorkspaceResponse.from(savedWorkspace);
+        return CreateWorkspaceResult.from(savedWorkspace);
     }
 
     @Transactional
-    public UpdateWorkspaceResponse updateWorkspace(
+    public UpdateWorkspaceResult updateWorkspace(
             final MemberAuthInfo memberAuthInfo,
             final String workspaceIdentifier,
-            final WorkspaceUpdateCommand command
+            final UpdateWorkspaceCommand command
     ) {
         final var workspace = getByIdentifier(workspaceIdentifier);
         final var newTitle = Workspace.formatTitle(command.title());
@@ -48,7 +48,7 @@ public class WorkspaceService {
         }
         workspace.rename(newTitle);
 
-        return UpdateWorkspaceResponse.from(workspace);
+        return UpdateWorkspaceResult.from(workspace);
     }
 
     @Transactional
@@ -60,16 +60,16 @@ public class WorkspaceService {
     }
 
     @Transactional(readOnly = true)
-    public ReadWorkspacesResponse readWorkspacesByMemberId(final Long memberId) {
-        return ReadWorkspacesResponse.from(workspaceRepository.findAllByOwnerId(memberId));
+    public ReadWorkspacesByMemberIdResult readWorkspacesByMemberId(final Long memberId) {
+        return ReadWorkspacesByMemberIdResult.from(workspaceRepository.findAllByOwnerId(memberId));
     }
 
     @Transactional(readOnly = true)
-    public ReadWorkspaceResponse readWorkspace(final MemberAuthInfo memberAuthInfo, final String workspaceIdentifier) {
+    public ReadWorkspaceResult readWorkspace(final MemberAuthInfo memberAuthInfo, final String workspaceIdentifier) {
         final var workspace = getByIdentifier(workspaceIdentifier);
         workspace.validateOwnership(memberAuthInfo.id());
 
-        return ReadWorkspaceResponse.from(workspace);
+        return ReadWorkspaceResult.from(workspace);
     }
 
     private Workspace getByIdentifier(final String identifier) {

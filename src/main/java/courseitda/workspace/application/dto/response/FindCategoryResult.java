@@ -5,7 +5,7 @@ import courseitda.workspace.domain.CategoryPlace;
 import java.util.List;
 import java.util.Objects;
 
-public record ReadCategoryResponse(
+public record FindCategoryResult(
         Long id,
         String name,
         String color,
@@ -14,8 +14,8 @@ public record ReadCategoryResponse(
         CategoryPlacesResponse categoryPlacesResponse
 ) {
 
-    public static ReadCategoryResponse from(final Category category) {
-        return new ReadCategoryResponse(
+    public static FindCategoryResult from(final Category category) {
+        return new FindCategoryResult(
                 category.getId(),
                 category.getName(),
                 category.getColor(),

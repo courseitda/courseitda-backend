@@ -2,13 +2,13 @@ package courseitda.workspace.application.dto.response;
 
 import courseitda.workspace.domain.Workspace;
 
-public record UpdateWorkspaceResponse(
+public record ReadWorkspaceResult(
         String identifier,
         String title
 ) {
 
-    public static UpdateWorkspaceResponse from(final Workspace workspace) {
-        return new UpdateWorkspaceResponse(
+    public static ReadWorkspaceResult from(final Workspace workspace) {
+        return new ReadWorkspaceResult(
                 workspace.getIdentifier(),
                 workspace.getTitle()
         );

@@ -1,7 +1,7 @@
 package courseitda.workspace.ui.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import courseitda.workspace.application.dto.response.ReadCategoryResponse;
+import courseitda.workspace.application.dto.response.FindCategoryResult;
 import java.util.List;
 
 public record CategoryResponse(
@@ -13,7 +13,7 @@ public record CategoryResponse(
         @JsonProperty("categoryPlaces") CategoryPlacesResponse categoryPlacesResponse
 ) {
 
-    public static CategoryResponse from(final ReadCategoryResponse response) {
+    public static CategoryResponse from(final FindCategoryResult response) {
         return new CategoryResponse(
                 response.id(),
                 response.name(),
@@ -28,7 +28,7 @@ public record CategoryResponse(
             @JsonProperty("categoryPlaces") List<CategoryPlaceResponse> categoryPlaceResponses
     ) {
 
-        public static CategoryPlacesResponse from(final ReadCategoryResponse.CategoryPlacesResponse response) {
+        public static CategoryPlacesResponse from(final FindCategoryResult.CategoryPlacesResponse response) {
             return new CategoryPlacesResponse(
                     response.categoryPlaceResponses().stream()
                             .map(CategoryPlaceResponse::from)
@@ -45,7 +45,8 @@ public record CategoryResponse(
                 boolean isRepresentative
         ) {
 
-            public static CategoryPlaceResponse from(final ReadCategoryResponse.CategoryPlacesResponse.CategoryPlaceResponse response) {
+            public static CategoryPlaceResponse from(
+                    final FindCategoryResult.CategoryPlacesResponse.CategoryPlaceResponse response) {
                 return new CategoryPlaceResponse(
                         response.id(),
                         response.name(),

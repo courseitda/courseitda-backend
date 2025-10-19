@@ -1,6 +1,6 @@
 package courseitda.workspace.application.dto.request;
 
-public record WorkspaceCreateCommand(
+public record UpdateWorkspaceCommand(
         String title
 ) {
 }

@@ -6,12 +6,12 @@ import courseitda.common.exception.ErrorCode;
 import courseitda.member.domain.Member;
 import courseitda.workspace.application.dto.request.WorkspaceCreateCommand;
 import courseitda.workspace.application.dto.request.WorkspaceUpdateCommand;
+import courseitda.workspace.application.dto.response.CreateWorkspaceResponse;
+import courseitda.workspace.application.dto.response.ReadWorkspaceResponse;
+import courseitda.workspace.application.dto.response.ReadWorkspacesResponse;
+import courseitda.workspace.application.dto.response.UpdateWorkspaceResponse;
 import courseitda.workspace.domain.Workspace;
 import courseitda.workspace.domain.WorkspaceRepository;
-import courseitda.workspace.ui.dto.response.WorkspaceCreateResponse;
-import courseitda.workspace.ui.dto.response.WorkspaceReadResponse;
-import courseitda.workspace.ui.dto.response.WorkspaceUpdateResponse;
-import courseitda.workspace.ui.dto.response.WorkspacesResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,17 +23,17 @@ public class WorkspaceService {
     private final WorkspaceRepository workspaceRepository;
 
     @Transactional
-    public WorkspaceCreateResponse createWorkspace(final Member member, final WorkspaceCreateCommand command) {
+    public CreateWorkspaceResponse createWorkspace(final Member member, final WorkspaceCreateCommand command) {
         validateDuplicatedTitle(member.getId(), command.title());
 
         final var workspace = Workspace.createNew(member, command.title());
         final var savedWorkspace = workspaceRepository.save(workspace);
 
-        return WorkspaceCreateResponse.from(savedWorkspace);
+        return CreateWorkspaceResponse.from(savedWorkspace);
     }
 
     @Transactional
-    public WorkspaceUpdateResponse updateWorkspace(
+    public UpdateWorkspaceResponse updateWorkspace(
             final MemberAuthInfo memberAuthInfo,
             final String workspaceIdentifier,
             final WorkspaceUpdateCommand command
@@ -48,7 +48,7 @@ public class WorkspaceService {
         }
         workspace.rename(newTitle);
 
-        return WorkspaceUpdateResponse.from(workspace);
+        return UpdateWorkspaceResponse.from(workspace);
     }
 
     @Transactional
@@ -60,16 +60,16 @@ public class WorkspaceService {
     }
 
     @Transactional(readOnly = true)
-    public WorkspacesResponse readWorkspacesByMemberId(final Long memberId) {
-        return WorkspacesResponse.from(workspaceRepository.findAllByOwnerId(memberId));
+    public ReadWorkspacesResponse readWorkspacesByMemberId(final Long memberId) {
+        return ReadWorkspacesResponse.from(workspaceRepository.findAllByOwnerId(memberId));
     }
 
     @Transactional(readOnly = true)
-    public WorkspaceReadResponse readWorkspace(final MemberAuthInfo memberAuthInfo, final String workspaceIdentifier) {
+    public ReadWorkspaceResponse readWorkspace(final MemberAuthInfo memberAuthInfo, final String workspaceIdentifier) {
         final var workspace = getByIdentifier(workspaceIdentifier);
         workspace.validateOwnership(memberAuthInfo.id());
 
-        return WorkspaceReadResponse.from(workspace);
+        return ReadWorkspaceResponse.from(workspace);
     }
 
     private Workspace getByIdentifier(final String identifier) {

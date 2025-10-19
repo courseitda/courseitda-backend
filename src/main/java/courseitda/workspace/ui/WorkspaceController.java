@@ -41,12 +41,12 @@ public class WorkspaceController {
         // ✅ 400 Bad Request	필수 필드 누락, 유효성 검증 실패 -> request dto에서 검증 진행
         // ✅ 401 Unauthorized	로그인하지 않은 사용자의 생성 요청 -> Member 받아오는 과정에서 알아서 처리
 
-        final WorkspaceCreateResponse response = workspaceService.createWorkspace(
+        final var response = workspaceService.createWorkspace(
                 member,
                 request.toCommand()
         );
         return ResponseEntity.created(URI.create("/api/workspaces/" + response.identifier()))
-                .body(response);
+                .body(WorkspaceCreateResponse.from(response));
     }
 
     // 워크스페이스 제목 수정
@@ -63,13 +63,13 @@ public class WorkspaceController {
         // ✅ 404 Not Found	    워크스페이스 ID가 존재하지 않음 -> findById 예외 처리
         // ✅ 409 Conflict      워크스페이스 삭제 과정에서 충돌이 일어난 경우 -> 라젤 추가) 동일한 워크스페이스 닉네임이 존재하는 경우
 
-        final WorkspaceUpdateResponse response = workspaceService.updateWorkspace(
+        final var response = workspaceService.updateWorkspace(
                 memberAuthInfo,
                 workspaceIdentifier,
                 request.toCommand()
         );
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(WorkspaceUpdateResponse.from(response));
     }
 
     // 워크스페이스 삭제
@@ -100,8 +100,8 @@ public class WorkspaceController {
         // ✅ 403 Forbidden	    유효한 토큰을 갖고 있지만, 해당 워크스페이스의 조회 권한이 없음 -> 워크스페이스 소유자 여부 예외 처리
         // ✅ 404 Not Found	    워크스페이스 ID가 존재하지 않음 -> findById 예외 처리
 
-        final WorkspaceReadResponse response = workspaceService.readWorkspace(memberAuthInfo, workspaceIdentifier);
+        final var response = workspaceService.readWorkspace(memberAuthInfo, workspaceIdentifier);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(WorkspaceReadResponse.from(response));
     }
 }

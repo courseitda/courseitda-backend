@@ -8,11 +8,11 @@ public record CategoryUpdateResponse(
         String color
 ) {
 
-    public static CategoryUpdateResponse from(final UpdateCategoryResult response) {
+    public static CategoryUpdateResponse from(final UpdateCategoryResult result) {
         return new CategoryUpdateResponse(
-                response.id(),
-                response.name(),
-                response.color()
+                result.id(),
+                result.name(),
+                result.color()
         );
     }
 }

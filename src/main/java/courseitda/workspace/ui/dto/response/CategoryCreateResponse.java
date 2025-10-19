@@ -9,12 +9,12 @@ public record CategoryCreateResponse(
         Integer sequence
 ) {
 
-    public static CategoryCreateResponse from(final CreateCategoryResult response) {
+    public static CategoryCreateResponse from(final CreateCategoryResult result) {
         return new CategoryCreateResponse(
-                response.id(),
-                response.name(),
-                response.color(),
-                response.sequence()
+                result.id(),
+                result.name(),
+                result.color(),
+                result.sequence()
         );
     }
 }

@@ -11,7 +11,7 @@ public record FindCategoryResult(
         String color,
         Integer sequence,
         Long representativePlaceId,
-        CategoryPlacesResponse categoryPlacesResponse
+        CategoryPlacesResult categoryPlacesResult
 ) {
 
     public static FindCategoryResult from(final Category category) {
@@ -21,28 +21,28 @@ public record FindCategoryResult(
                 category.getColor(),
                 category.getSequence(),
                 category.getRepresentativePlace() != null ? category.getRepresentativePlace().getId() : null,
-                CategoryPlacesResponse.of(
+                CategoryPlacesResult.of(
                         category.getCategoryPlaces(),
                         category.getRepresentativePlace()
                 )
         );
     }
 
-    public record CategoryPlacesResponse(
-            List<CategoryPlaceResponse> categoryPlaceResponses
+    public record CategoryPlacesResult(
+            List<CategoryPlaceResult> categoryPlaceResults
     ) {
 
-        public static CategoryPlacesResponse of(
+        public static CategoryPlacesResult of(
                 final List<CategoryPlace> categoryPlaces,
                 final CategoryPlace representativePlace
         ) {
-            return new CategoryPlacesResponse(
+            return new CategoryPlacesResult(
                     categoryPlaces.stream()
                             .map(categoryPlace -> {
                                 final boolean isRepresentative = representativePlace != null &&
                                         Objects.equals(categoryPlace.getId(), representativePlace.getId());
 
-                                return CategoryPlaceResponse.of(
+                                return CategoryPlaceResult.of(
                                         categoryPlace,
                                         isRepresentative
                                 );
@@ -51,7 +51,7 @@ public record FindCategoryResult(
             );
         }
 
-        public record CategoryPlaceResponse(
+        public record CategoryPlaceResult(
                 Long id,
                 String name,
                 String address,
@@ -60,11 +60,11 @@ public record FindCategoryResult(
                 boolean isRepresentative
         ) {
 
-            public static CategoryPlaceResponse of(
+            public static CategoryPlaceResult of(
                     final CategoryPlace categoryPlace,
                     final boolean isRepresentative
             ) {
-                return new CategoryPlaceResponse(
+                return new CategoryPlaceResult(
                         categoryPlace.getId(),
                         categoryPlace.getPlace().getName(),
                         categoryPlace.getPlace().getAddressName(),

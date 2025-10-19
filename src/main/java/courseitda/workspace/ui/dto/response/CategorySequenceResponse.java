@@ -1,16 +1,16 @@
 package courseitda.workspace.ui.dto.response;
 
-import courseitda.workspace.application.dto.response.updateCategorySequenceResult;
+import courseitda.workspace.application.dto.response.UpdateCategorySequenceResult.CategorySequenceResult;
 
 public record CategorySequenceResponse(
         Long id,
         Integer sequence
 ) {
 
-    public static CategorySequenceResponse from(final updateCategorySequenceResult.CategorySequenceResponse response) {
+    public static CategorySequenceResponse from(final CategorySequenceResult result) {
         return new CategorySequenceResponse(
-                response.id(),
-                response.sequence()
+                result.id(),
+                result.sequence()
         );
     }
 }

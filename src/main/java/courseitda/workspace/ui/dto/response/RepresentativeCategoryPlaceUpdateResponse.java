@@ -8,10 +8,10 @@ public record RepresentativeCategoryPlaceUpdateResponse(
 ) {
 
     public static RepresentativeCategoryPlaceUpdateResponse from(
-            final UpdateRepresentativeCategoryPlaceResult response) {
+            final UpdateRepresentativeCategoryPlaceResult result) {
         return new RepresentativeCategoryPlaceUpdateResponse(
-                response.id(),
-                response.representativeCategoryPlaceId()
+                result.id(),
+                result.representativeCategoryPlaceId()
         );
     }
 }

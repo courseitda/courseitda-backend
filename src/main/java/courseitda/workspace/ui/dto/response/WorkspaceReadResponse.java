@@ -7,10 +7,10 @@ public record WorkspaceReadResponse(
         String title
 ) {
 
-    public static WorkspaceReadResponse from(final ReadWorkspaceResult response) {
+    public static WorkspaceReadResponse from(final ReadWorkspaceResult result) {
         return new WorkspaceReadResponse(
-                response.identifier(),
-                response.title()
+                result.identifier(),
+                result.title()
         );
     }
 }

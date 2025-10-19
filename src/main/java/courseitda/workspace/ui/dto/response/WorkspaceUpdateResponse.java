@@ -7,10 +7,10 @@ public record WorkspaceUpdateResponse(
         String title
 ) {
 
-    public static WorkspaceUpdateResponse from(final UpdateWorkspaceResult response) {
+    public static WorkspaceUpdateResponse from(final UpdateWorkspaceResult result) {
         return new WorkspaceUpdateResponse(
-                response.identifier(),
-                response.title()
+                result.identifier(),
+                result.title()
         );
     }
 }

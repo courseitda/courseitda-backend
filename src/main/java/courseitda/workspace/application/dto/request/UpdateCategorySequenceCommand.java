@@ -3,7 +3,7 @@ package courseitda.workspace.application.dto.request;
 import java.util.List;
 
 public record UpdateCategorySequenceCommand(
-        List<CategorySequenceCommand> categorySequenceRequests
+        List<CategorySequenceCommand> categorySequenceCommands
 ) {
 
     public record CategorySequenceCommand(

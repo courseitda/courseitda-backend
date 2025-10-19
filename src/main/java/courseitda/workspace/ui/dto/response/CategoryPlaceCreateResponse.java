@@ -7,10 +7,10 @@ public record CategoryPlaceCreateResponse(
         Long placeId
 ) {
 
-    public static CategoryPlaceCreateResponse from(final CreateCategoryPlaceResult response) {
+    public static CategoryPlaceCreateResponse from(final CreateCategoryPlaceResult result) {
         return new CategoryPlaceCreateResponse(
-                response.id(),
-                response.placeId()
+                result.id(),
+                result.placeId()
         );
     }
 }

@@ -6,54 +6,54 @@ import java.util.List;
 import java.util.Objects;
 
 public record FindAllCategoriesResult(
-        List<CategoryResponse> categoryResponses
+        List<CategoryResult> categoryResults
 ) {
 
     public static FindAllCategoriesResult from(final List<Category> categories) {
         return new FindAllCategoriesResult(
                 categories.stream()
-                        .map(CategoryResponse::from)
+                        .map(CategoryResult::from)
                         .toList());
     }
 
-    public record CategoryResponse(
+    public record CategoryResult(
             Long id,
             String name,
             String color,
             Integer sequence,
             Long representativePlaceId,
-            CategoryPlacesResponse categoryPlacesResponse
+            CategoryPlacesResult categoryPlacesResult
     ) {
 
-        public static CategoryResponse from(final Category category) {
-            return new CategoryResponse(
+        public static CategoryResult from(final Category category) {
+            return new CategoryResult(
                     category.getId(),
                     category.getName(),
                     category.getColor(),
                     category.getSequence(),
                     category.getRepresentativePlace() != null ? category.getRepresentativePlace().getId() : null,
-                    CategoryPlacesResponse.of(
+                    CategoryPlacesResult.of(
                             category.getCategoryPlaces(),
                             category.getRepresentativePlace()
                     )
             );
         }
 
-        public record CategoryPlacesResponse(
-                List<CategoryPlaceResponse> categoryPlaceResponses
+        public record CategoryPlacesResult(
+                List<CategoryPlaceResult> categoryPlaceResults
         ) {
 
-            public static CategoryPlacesResponse of(
+            public static CategoryPlacesResult of(
                     final List<CategoryPlace> categoryPlaces,
                     final CategoryPlace representativePlace
             ) {
-                return new CategoryPlacesResponse(
+                return new CategoryPlacesResult(
                         categoryPlaces.stream()
                                 .map(categoryPlace -> {
                                     final boolean isRepresentative = representativePlace != null &&
                                             Objects.equals(categoryPlace.getId(), representativePlace.getId());
 
-                                    return CategoryPlaceResponse.of(
+                                    return CategoryPlaceResult.of(
                                             categoryPlace,
                                             isRepresentative
                                     );
@@ -62,7 +62,7 @@ public record FindAllCategoriesResult(
                 );
             }
 
-            public record CategoryPlaceResponse(
+            public record CategoryPlaceResult(
                     Long id,
                     String name,
                     String address,
@@ -71,11 +71,11 @@ public record FindAllCategoriesResult(
                     boolean isRepresentative
             ) {
 
-                public static CategoryPlaceResponse of(
+                public static CategoryPlaceResult of(
                         final CategoryPlace categoryPlace,
                         final boolean isRepresentative
                 ) {
-                    return new CategoryPlaceResponse(
+                    return new CategoryPlaceResult(
                             categoryPlace.getId(),
                             categoryPlace.getPlace().getName(),
                             categoryPlace.getPlace().getAddressName(),

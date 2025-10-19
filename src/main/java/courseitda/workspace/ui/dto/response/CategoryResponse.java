@@ -2,6 +2,7 @@ package courseitda.workspace.ui.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import courseitda.workspace.application.dto.response.FindCategoryResult;
+import courseitda.workspace.application.dto.response.FindCategoryResult.CategoryPlacesResult;
 import java.util.List;
 
 public record CategoryResponse(
@@ -13,14 +14,14 @@ public record CategoryResponse(
         @JsonProperty("categoryPlaces") CategoryPlacesResponse categoryPlacesResponse
 ) {
 
-    public static CategoryResponse from(final FindCategoryResult response) {
+    public static CategoryResponse from(final FindCategoryResult result) {
         return new CategoryResponse(
-                response.id(),
-                response.name(),
-                response.color(),
-                response.sequence(),
-                response.representativePlaceId(),
-                CategoryPlacesResponse.from(response.categoryPlacesResponse())
+                result.id(),
+                result.name(),
+                result.color(),
+                result.sequence(),
+                result.representativePlaceId(),
+                CategoryPlacesResponse.from(result.categoryPlacesResult())
         );
     }
 
@@ -28,9 +29,9 @@ public record CategoryResponse(
             @JsonProperty("categoryPlaces") List<CategoryPlaceResponse> categoryPlaceResponses
     ) {
 
-        public static CategoryPlacesResponse from(final FindCategoryResult.CategoryPlacesResponse response) {
+        public static CategoryPlacesResponse from(final CategoryPlacesResult result) {
             return new CategoryPlacesResponse(
-                    response.categoryPlaceResponses().stream()
+                    result.categoryPlaceResults().stream()
                             .map(CategoryPlaceResponse::from)
                             .toList()
             );
@@ -46,14 +47,14 @@ public record CategoryResponse(
         ) {
 
             public static CategoryPlaceResponse from(
-                    final FindCategoryResult.CategoryPlacesResponse.CategoryPlaceResponse response) {
+                    final CategoryPlacesResult.CategoryPlaceResult result) {
                 return new CategoryPlaceResponse(
-                        response.id(),
-                        response.name(),
-                        response.address(),
-                        response.lat(),
-                        response.lng(),
-                        response.isRepresentative()
+                        result.id(),
+                        result.name(),
+                        result.address(),
+                        result.lat(),
+                        result.lng(),
+                        result.isRepresentative()
                 );
             }
         }

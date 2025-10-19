@@ -10,7 +10,7 @@ import courseitda.workspace.application.dto.response.CreateCategoryResult;
 import courseitda.workspace.application.dto.response.FindAllCategoriesResult;
 import courseitda.workspace.application.dto.response.FindCategoryResult;
 import courseitda.workspace.application.dto.response.UpdateCategoryResult;
-import courseitda.workspace.application.dto.response.updateCategorySequenceResult;
+import courseitda.workspace.application.dto.response.UpdateCategorySequenceResult;
 import courseitda.workspace.domain.Category;
 import courseitda.workspace.domain.CategoryRepository;
 import courseitda.workspace.domain.Workspace;
@@ -47,7 +47,7 @@ public class CategoryService {
     }
 
     @Transactional
-    public updateCategorySequenceResult updateCategorySequence(
+    public UpdateCategorySequenceResult updateCategorySequence(
             final MemberAuthInfo memberAuthInfo,
             final String workspaceIdentifier,
             final UpdateCategorySequenceCommand command
@@ -55,7 +55,7 @@ public class CategoryService {
         final var workspace = getWorkspaceByIdentifier(workspaceIdentifier);
         workspace.validateOwnership(memberAuthInfo.id());
 
-        final var categoryIds = command.categorySequenceRequests().stream()
+        final var categoryIds = command.categorySequenceCommands().stream()
                 .map(UpdateCategorySequenceCommand.CategorySequenceCommand::id)
                 .toList();
 
@@ -70,17 +70,17 @@ public class CategoryService {
         // 중복된 sequence 값 검증
         validateNoDuplicateSequences(command);
 
-        for (final var sequenceRequest : command.categorySequenceRequests()) {
+        for (final var sequenceCommand : command.categorySequenceCommands()) {
             final var category = categories.stream()
-                    .filter(c -> c.getId().equals(sequenceRequest.id()))
+                    .filter(c -> c.getId().equals(sequenceCommand.id()))
                     .findFirst()
                     .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
 
             validateCategoryBelongsToWorkspace(workspace, category);
-            category.updateSequence(sequenceRequest.sequence());
+            category.updateSequence(sequenceCommand.sequence());
         }
 
-        return updateCategorySequenceResult.from(categories);
+        return UpdateCategorySequenceResult.from(categories);
     }
 
     @Transactional
@@ -155,8 +155,8 @@ public class CategoryService {
 
     private void validateNoDuplicateSequences(final UpdateCategorySequenceCommand command) {
         final Set<Integer> sequences = new HashSet<>();
-        for (final var sequenceRequest : command.categorySequenceRequests()) {
-            if (!sequences.add(sequenceRequest.sequence())) {
+        for (final var sequenceCommand : command.categorySequenceCommands()) {
+            if (!sequences.add(sequenceCommand.sequence())) {
                 throw new BusinessException(ErrorCode.DUPLICATE_CATEGORY_ORDER_IN_REQUEST);
             }
         }

@@ -2,15 +2,18 @@ package courseitda.workspace.ui.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import courseitda.workspace.application.dto.response.FindAllCategoriesResult;
+import courseitda.workspace.application.dto.response.FindAllCategoriesResult.CategoryResult;
+import courseitda.workspace.application.dto.response.FindAllCategoriesResult.CategoryResult.CategoryPlacesResult;
+import courseitda.workspace.application.dto.response.FindAllCategoriesResult.CategoryResult.CategoryPlacesResult.CategoryPlaceResult;
 import java.util.List;
 
 public record CategoriesResponse(
         @JsonProperty("categories") List<CategoryResponse> categoryResponses
 ) {
 
-    public static CategoriesResponse from(final FindAllCategoriesResult response) {
+    public static CategoriesResponse from(final FindAllCategoriesResult result) {
         return new CategoriesResponse(
-                response.categoryResponses().stream()
+                result.categoryResults().stream()
                         .map(CategoryResponse::from)
                         .toList());
     }
@@ -24,14 +27,14 @@ public record CategoriesResponse(
             @JsonProperty("categoryPlaces") CategoryPlacesResponse categoryPlacesResponse
     ) {
 
-        public static CategoryResponse from(final FindAllCategoriesResult.CategoryResponse response) {
+        public static CategoryResponse from(final CategoryResult result) {
             return new CategoryResponse(
-                    response.id(),
-                    response.name(),
-                    response.color(),
-                    response.sequence(),
-                    response.representativePlaceId(),
-                    CategoryPlacesResponse.from(response.categoryPlacesResponse())
+                    result.id(),
+                    result.name(),
+                    result.color(),
+                    result.sequence(),
+                    result.representativePlaceId(),
+                    CategoryPlacesResponse.from(result.categoryPlacesResult())
             );
         }
 
@@ -40,9 +43,9 @@ public record CategoriesResponse(
         ) {
 
             public static CategoryPlacesResponse from(
-                    final FindAllCategoriesResult.CategoryResponse.CategoryPlacesResponse response) {
+                    final CategoryPlacesResult result) {
                 return new CategoryPlacesResponse(
-                        response.categoryPlaceResponses().stream()
+                        result.categoryPlaceResults().stream()
                                 .map(CategoryPlaceResponse::from)
                                 .toList()
                 );
@@ -58,14 +61,14 @@ public record CategoriesResponse(
             ) {
 
                 public static CategoryPlaceResponse from(
-                        final FindAllCategoriesResult.CategoryResponse.CategoryPlacesResponse.CategoryPlaceResponse response) {
+                        final CategoryPlaceResult result) {
                     return new CategoryPlaceResponse(
-                            response.id(),
-                            response.name(),
-                            response.address(),
-                            response.lat(),
-                            response.lng(),
-                            response.isRepresentative()
+                            result.id(),
+                            result.name(),
+                            result.address(),
+                            result.lat(),
+                            result.lng(),
+                            result.isRepresentative()
                     );
                 }
             }

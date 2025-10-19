@@ -10,14 +10,14 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 public record CategoryReorderRequest(
-        @NotNull(message = "카테고리 목록은 필수입니다") @NotEmpty(message = "카테고리 목록이 비어있을 수 없습니다") @Valid @JsonProperty("categories") List<CategorySequenceRequest> categorySequenceRequests
+        @NotNull(message = "카테고리 목록은 필수입니다") @NotEmpty(message = "카테고리 목록이 비어있을 수 없습니다") @Valid @JsonProperty("categories") List<CategorySequenceRequest> categorySequenceRequest
 ) {
 
     public UpdateCategorySequenceCommand toCommand() {
-        final List<CategorySequenceCommand> commands = categorySequenceRequests.stream()
+        final var categorySequenceCommands = categorySequenceRequest.stream()
                 .map(CategorySequenceRequest::toCommand)
                 .toList();
-        return new UpdateCategorySequenceCommand(commands);
+        return new UpdateCategorySequenceCommand(categorySequenceCommands);
     }
 
     public record CategorySequenceRequest(

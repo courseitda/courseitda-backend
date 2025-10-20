@@ -1,23 +1,3 @@
-moved {
-  from = aws_s3_bucket.tf_state["dev"]
-  to   = aws_s3_bucket.bucket["dev"]
-}
-
-moved {
-  from = aws_s3_bucket_public_access_block.tf_state_public["dev"]
-  to   = aws_s3_bucket_public_access_block.public_access["dev"]
-}
-
-moved {
-  from = aws_s3_bucket_versioning.tf_state_versioning["dev"]
-  to   = aws_s3_bucket_versioning.versioning["dev"]
-}
-
-moved {
-  from = aws_s3_bucket_object_lock_configuration.tf_state_objlock["dev"]
-  to   = aws_s3_bucket_object_lock_configuration.object_lock_config["dev"]
-}
-
 # S3 Bucket
 resource "aws_s3_bucket" "bucket" {
   for_each = toset(var.environments)

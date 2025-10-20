@@ -1,9 +1,11 @@
 package courseitda.workspace.application;
 
-import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.common.exception.BusinessException;
 import courseitda.common.exception.ErrorCode;
 import courseitda.workspace.application.dto.request.CreateCategoryCommand;
+import courseitda.workspace.application.dto.request.DeleteCategoryCommand;
+import courseitda.workspace.application.dto.request.FindAllCategoriesCommand;
+import courseitda.workspace.application.dto.request.FindCategoryCommand;
 import courseitda.workspace.application.dto.request.UpdateCategoryCommand;
 import courseitda.workspace.application.dto.request.UpdateCategorySequenceCommand;
 import courseitda.workspace.application.dto.response.CreateCategoryResult;
@@ -31,12 +33,10 @@ public class CategoryService {
 
     @Transactional
     public CreateCategoryResult createCategory(
-            final MemberAuthInfo memberAuthInfo,
-            final String workspaceIdentifier,
             final CreateCategoryCommand command
     ) {
-        final var workspace = getWorkspaceByIdentifier(workspaceIdentifier);
-        workspace.validateOwnership(memberAuthInfo.id());
+        final var workspace = getWorkspaceByIdentifier(command.workspaceIdentifier());
+        workspace.validateOwnership(command.memberAuthInfo().id());
 
         // N+1 문제 해결: workspace.getCategories().size() 대신 직접 count 쿼리 사용
         final var nextSequence = categoryRepository.countByWorkspaceId(workspace.getId()) + 1;
@@ -48,12 +48,10 @@ public class CategoryService {
 
     @Transactional
     public UpdateCategorySequenceResult updateCategorySequence(
-            final MemberAuthInfo memberAuthInfo,
-            final String workspaceIdentifier,
             final UpdateCategorySequenceCommand command
     ) {
-        final var workspace = getWorkspaceByIdentifier(workspaceIdentifier);
-        workspace.validateOwnership(memberAuthInfo.id());
+        final var workspace = getWorkspaceByIdentifier(command.workspaceIdentifier());
+        workspace.validateOwnership(command.memberAuthInfo().id());
 
         final var categoryIds = command.categorySequenceCommands().stream()
                 .map(UpdateCategorySequenceCommand.CategorySequenceCommand::id)
@@ -85,14 +83,11 @@ public class CategoryService {
 
     @Transactional
     public UpdateCategoryResult updateCategory(
-            final MemberAuthInfo memberAuthInfo,
-            final String workspaceIdentifier,
-            final Long categoryId,
             final UpdateCategoryCommand command
     ) {
-        final var category = getCategoryById(categoryId);
-        category.validateOwnership(memberAuthInfo.id());
-        validateCategoryBelongsToWorkspace(getWorkspaceByIdentifier(workspaceIdentifier), category);
+        final var category = getCategoryById(command.categoryId());
+        category.validateOwnership(command.memberAuthInfo().id());
+        validateCategoryBelongsToWorkspace(getWorkspaceByIdentifier(command.workspaceIdentifier()), category);
 
         category.updateNameAndColor(command.name(), command.color());
         return UpdateCategoryResult.from(category);
@@ -100,37 +95,32 @@ public class CategoryService {
 
     @Transactional
     public void deleteCategory(
-            final MemberAuthInfo memberAuthInfo,
-            final String workspaceIdentifier,
-            final Long categoryId
+            final DeleteCategoryCommand command
     ) {
-        final var category = getCategoryById(categoryId);
-        category.validateOwnership(memberAuthInfo.id());
-        validateCategoryBelongsToWorkspace(getWorkspaceByIdentifier(workspaceIdentifier), category);
+        final var category = getCategoryById(command.categoryId());
+        category.validateOwnership(command.memberAuthInfo().id());
+        validateCategoryBelongsToWorkspace(getWorkspaceByIdentifier(command.workspaceIdentifier()), category);
 
         categoryRepository.delete(category);
     }
 
     @Transactional(readOnly = true)
     public FindCategoryResult findCategory(
-            final MemberAuthInfo memberAuthInfo,
-            final String workspaceIdentifier,
-            final Long categoryId
+            final FindCategoryCommand command
     ) {
-        final var category = getCategoryById(categoryId);
-        category.validateOwnership(memberAuthInfo.id());
-        validateCategoryBelongsToWorkspace(getWorkspaceByIdentifier(workspaceIdentifier), category);
+        final var category = getCategoryById(command.categoryId());
+        category.validateOwnership(command.memberAuthInfo().id());
+        validateCategoryBelongsToWorkspace(getWorkspaceByIdentifier(command.workspaceIdentifier()), category);
 
         return FindCategoryResult.from(category);
     }
 
     @Transactional(readOnly = true)
     public FindAllCategoriesResult findAllCategories(
-            final MemberAuthInfo memberAuthInfo,
-            final String workspaceIdentifier
+            final FindAllCategoriesCommand command
     ) {
-        final var workspace = getWorkspaceByIdentifier(workspaceIdentifier);
-        workspace.validateOwnership(memberAuthInfo.id());
+        final var workspace = getWorkspaceByIdentifier(command.workspaceIdentifier());
+        workspace.validateOwnership(command.memberAuthInfo().id());
 
         final var categories = workspace.getCategories();
         return FindAllCategoriesResult.from(categories);

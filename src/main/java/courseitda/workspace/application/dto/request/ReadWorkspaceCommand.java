@@ -2,10 +2,8 @@ package courseitda.workspace.application.dto.request;
 
 import courseitda.auth.domain.MemberAuthInfo;
 
-public record CreateCategoryCommand(
+public record ReadWorkspaceCommand(
         MemberAuthInfo memberAuthInfo,
-        String workspaceIdentifier,
-        String name,
-        String color
+        String workspaceIdentifier
 ) {
 }

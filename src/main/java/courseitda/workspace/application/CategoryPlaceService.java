@@ -1,11 +1,12 @@
 package courseitda.workspace.application;
 
-import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.common.exception.BusinessException;
 import courseitda.common.exception.ErrorCode;
 import courseitda.place.domain.Place;
 import courseitda.place.domain.PlaceRepository;
 import courseitda.workspace.application.dto.request.CreateCategoryPlaceCommand;
+import courseitda.workspace.application.dto.request.DeleteCategoryPlaceCommand;
+import courseitda.workspace.application.dto.request.FindCategoryPlacesCommand;
 import courseitda.workspace.application.dto.response.CreateCategoryPlaceResult;
 import courseitda.workspace.application.dto.response.FindCategoryPlacesResult;
 import courseitda.workspace.domain.Category;
@@ -25,13 +26,9 @@ public class CategoryPlaceService {
     private final PlaceRepository placeRepository;
 
     @Transactional
-    public CreateCategoryPlaceResult createCategoryPlace(
-            final MemberAuthInfo memberAuthInfo,
-            final Long categoryId,
-            final CreateCategoryPlaceCommand command
-    ) {
-        final var category = getCategoryById(categoryId);
-        category.validateOwnership(memberAuthInfo.id());
+    public CreateCategoryPlaceResult createCategoryPlace(final CreateCategoryPlaceCommand command) {
+        final var category = getCategoryById(command.categoryId());
+        category.validateOwnership(command.memberAuthInfo().id());
 
         final var place = findOrCreatePlace(command);
 
@@ -42,20 +39,16 @@ public class CategoryPlaceService {
     }
 
     @Transactional
-    public void deleteCategoryPlace(
-            final MemberAuthInfo memberAuthInfo,
-            final Long categoryId,
-            final Long categoryPlaceId
-    ) {
-        final var category = getCategoryById(categoryId);
-        final var categoryPlace = getCategoryPlaceById(categoryPlaceId);
+    public void deleteCategoryPlace(final DeleteCategoryPlaceCommand command) {
+        final var category = getCategoryById(command.categoryId());
+        final var categoryPlace = getCategoryPlaceById(command.categoryPlaceId());
 
-        categoryPlace.validateOwnership(memberAuthInfo.id());
-        validateCategoryOwnership(categoryId, categoryPlace);
+        categoryPlace.validateOwnership(command.memberAuthInfo().id());
+        validateCategoryOwnership(command.categoryId(), categoryPlace);
 
         // 대표 장소인 경우 먼저 해제
         if (category.getRepresentativePlace() != null &&
-                category.getRepresentativePlace().getId().equals(categoryPlaceId)) {
+                category.getRepresentativePlace().getId().equals(command.categoryPlaceId())) {
             category.updateRepresentativePlaceTo(null);
         }
 
@@ -63,9 +56,9 @@ public class CategoryPlaceService {
     }
 
     @Transactional(readOnly = true)
-    public FindCategoryPlacesResult findCategoryPlaces(final MemberAuthInfo memberAuthInfo, final Long categoryId) {
-        final var category = getCategoryById(categoryId);
-        category.validateOwnership(memberAuthInfo.id());
+    public FindCategoryPlacesResult findCategoryPlaces(final FindCategoryPlacesCommand command) {
+        final var category = getCategoryById(command.categoryId());
+        category.validateOwnership(command.memberAuthInfo().id());
 
         final var categoryPlaces = category.getCategoryPlaces();
         final var representativePlace = category.getRepresentativePlace();

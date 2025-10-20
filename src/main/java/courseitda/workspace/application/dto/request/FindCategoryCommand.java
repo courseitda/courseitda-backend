@@ -2,10 +2,9 @@ package courseitda.workspace.application.dto.request;
 
 import courseitda.auth.domain.MemberAuthInfo;
 
-public record CreateCategoryCommand(
+public record FindCategoryCommand(
         MemberAuthInfo memberAuthInfo,
         String workspaceIdentifier,
-        String name,
-        String color
+        Long categoryId
 ) {
 }

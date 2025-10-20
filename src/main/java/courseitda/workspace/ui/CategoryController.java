@@ -4,6 +4,9 @@ import courseitda.auth.domain.AuthRole;
 import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.auth.domain.RequiresRole;
 import courseitda.workspace.application.CategoryService;
+import courseitda.workspace.application.dto.request.DeleteCategoryCommand;
+import courseitda.workspace.application.dto.request.FindAllCategoriesCommand;
+import courseitda.workspace.application.dto.request.FindCategoryCommand;
 import courseitda.workspace.ui.dto.request.CategoryCreateRequest;
 import courseitda.workspace.ui.dto.request.CategoryReorderRequest;
 import courseitda.workspace.ui.dto.request.CategoryUpdateRequest;
@@ -41,9 +44,7 @@ public class CategoryController {
             @Valid @RequestBody final CategoryCreateRequest request
     ) {
         final var response = categoryService.createCategory(
-                memberAuthInfo,
-                workspaceIdentifier,
-                request.toCommand()
+                request.toCommandWith(memberAuthInfo, workspaceIdentifier)
         );
         return ResponseEntity.created(
                 URI.create("/api/workspaces/"
@@ -61,9 +62,7 @@ public class CategoryController {
             @Valid @RequestBody final CategoryReorderRequest request
     ) {
         final var response = categoryService.updateCategorySequence(
-                memberAuthInfo,
-                workspaceIdentifier,
-                request.toCommand()
+                request.toCommandWith(memberAuthInfo, workspaceIdentifier)
         );
         return ResponseEntity.ok(CategoryReorderResponse.from(response));
     }
@@ -77,10 +76,7 @@ public class CategoryController {
             @Valid @RequestBody final CategoryUpdateRequest request
     ) {
         final var response = categoryService.updateCategory(
-                memberAuthInfo,
-                workspaceIdentifier,
-                categoryId,
-                request.toCommand()
+                request.toCommandWith(memberAuthInfo, workspaceIdentifier, categoryId)
         );
 
         return ResponseEntity.ok(CategoryUpdateResponse.from(response));
@@ -93,7 +89,9 @@ public class CategoryController {
             @PathVariable final String workspaceIdentifier,
             @PathVariable final Long categoryId
     ) {
-        categoryService.deleteCategory(memberAuthInfo, workspaceIdentifier, categoryId);
+        categoryService.deleteCategory(
+                new DeleteCategoryCommand(memberAuthInfo, workspaceIdentifier, categoryId)
+        );
 
         return ResponseEntity.noContent().build();
     }
@@ -105,7 +103,9 @@ public class CategoryController {
             @PathVariable final String workspaceIdentifier,
             @PathVariable final Long categoryId
     ) {
-        final var response = categoryService.findCategory(memberAuthInfo, workspaceIdentifier, categoryId);
+        final var response = categoryService.findCategory(
+                new FindCategoryCommand(memberAuthInfo, workspaceIdentifier, categoryId)
+        );
 
         return ResponseEntity.ok(CategoryResponse.from(response));
     }
@@ -116,7 +116,9 @@ public class CategoryController {
             final MemberAuthInfo memberAuthInfo,
             @PathVariable final String workspaceIdentifier
     ) {
-        final var response = categoryService.findAllCategories(memberAuthInfo, workspaceIdentifier);
+        final var response = categoryService.findAllCategories(
+                new FindAllCategoriesCommand(memberAuthInfo, workspaceIdentifier)
+        );
 
         return ResponseEntity.ok(CategoriesResponse.from(response));
     }

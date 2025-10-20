@@ -4,6 +4,8 @@ import courseitda.auth.domain.AuthRole;
 import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.auth.domain.RequiresRole;
 import courseitda.workspace.application.CategoryPlaceService;
+import courseitda.workspace.application.dto.request.DeleteCategoryPlaceCommand;
+import courseitda.workspace.application.dto.request.FindCategoryPlacesCommand;
 import courseitda.workspace.ui.dto.request.CategoryPlaceCreateRequest;
 import courseitda.workspace.ui.dto.response.CategoryPlaceCreateResponse;
 import courseitda.workspace.ui.dto.response.CategoryPlacesResponse;
@@ -36,16 +38,12 @@ public class CategoryPlaceController {
     ) {
 
         // ✅ 201 Created	카테고리 장소 생성 성공
-        final var response = categoryPlaceService.createCategoryPlace(
-                memberAuthInfo,
-                categoryId,
-                request.toCommand()
+        final var result = categoryPlaceService.createCategoryPlace(
+                request.toCommandWith(memberAuthInfo, categoryId)
         );
-        final var uiResponse = CategoryPlaceCreateResponse.from(response);
 
-        return ResponseEntity.created(URI.create("/api/categories/" + categoryId + "/category-places/" + uiResponse
-                .id()))
-                .body(uiResponse);
+        return ResponseEntity.created(URI.create("/api/categories/" + categoryId + "/category-places/" + result.id()))
+                .body(CategoryPlaceCreateResponse.from(result));
     }
 
     // 카테고리 장소 삭제
@@ -58,7 +56,9 @@ public class CategoryPlaceController {
 
         // ✅ 204 No Content	카테고리 장소 삭제 성공
         // ✅ 403 Forbidden 카테고리 안의 장소가 아닐때
-        categoryPlaceService.deleteCategoryPlace(memberAuthInfo, categoryId, categoryPlaceId);
+        categoryPlaceService.deleteCategoryPlace(
+                new DeleteCategoryPlaceCommand(memberAuthInfo, categoryId, categoryPlaceId)
+        );
 
         return ResponseEntity.noContent().build();
     }
@@ -71,8 +71,10 @@ public class CategoryPlaceController {
     ) {
 
         // ✅ 200 OK	카테고리 장소 목록 조회 성공
-        final var response = categoryPlaceService.findCategoryPlaces(memberAuthInfo, categoryId);
+        final var result = categoryPlaceService.findCategoryPlaces(
+                new FindCategoryPlacesCommand(memberAuthInfo, categoryId)
+        );
 
-        return ResponseEntity.ok(CategoryPlacesResponse.from(response));
+        return ResponseEntity.ok(CategoryPlacesResponse.from(result));
     }
 }

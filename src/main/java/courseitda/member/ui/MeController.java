@@ -9,6 +9,7 @@ import courseitda.member.ui.dto.response.MemberReadDropdownResponse;
 import courseitda.member.ui.dto.response.MemberReadNavigatorResponse;
 import courseitda.member.ui.dto.response.MemberReadProfileResponse;
 import courseitda.workspace.application.WorkspaceService;
+import courseitda.workspace.application.dto.request.ReadWorkspacesByMemberIdCommand;
 import courseitda.workspace.ui.dto.response.WorkspacesResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -57,7 +58,9 @@ public class MeController {
     @GetMapping("/workspaces")
     // TODO: 페이징 고려 필요
     public ResponseEntity<WorkspacesResponse> readMyWorkspaces(final MemberAuthInfo memberAuthInfo) {
-        final var response = workspaceService.readWorkspacesByMemberId(memberAuthInfo.id());
+        final var response = workspaceService.readWorkspacesByMemberId(
+                new ReadWorkspacesByMemberIdCommand(memberAuthInfo.id())
+        );
 
         return ResponseEntity.ok(WorkspacesResponse.from(response));
     }

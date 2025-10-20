@@ -1,6 +1,7 @@
 package courseitda.workspace.ui.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.workspace.application.dto.request.UpdateCategorySequenceCommand;
 import courseitda.workspace.application.dto.request.UpdateCategorySequenceCommand.CategorySequenceCommand;
 import jakarta.validation.Valid;
@@ -13,11 +14,14 @@ public record CategoryReorderRequest(
         @NotNull(message = "카테고리 목록은 필수입니다") @NotEmpty(message = "카테고리 목록이 비어있을 수 없습니다") @Valid @JsonProperty("categories") List<CategorySequenceRequest> categorySequenceRequest
 ) {
 
-    public UpdateCategorySequenceCommand toCommand() {
+    public UpdateCategorySequenceCommand toCommandWith(
+            final MemberAuthInfo memberAuthInfo,
+            final String workspaceIdentifier
+    ) {
         final var categorySequenceCommands = categorySequenceRequest.stream()
                 .map(CategorySequenceRequest::toCommand)
                 .toList();
-        return new UpdateCategorySequenceCommand(categorySequenceCommands);
+        return new UpdateCategorySequenceCommand(memberAuthInfo, workspaceIdentifier, categorySequenceCommands);
     }
 
     public record CategorySequenceRequest(

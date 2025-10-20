@@ -4,6 +4,7 @@ import courseitda.auth.domain.AuthRole;
 import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.auth.domain.RequiresRole;
 import courseitda.workspace.application.RepresentativeCategoryPlaceService;
+import courseitda.workspace.application.dto.request.DeleteRepresentativeCategoryPlaceCommand;
 import courseitda.workspace.ui.dto.request.RepresentativeCategoryPlaceUpdateRequest;
 import courseitda.workspace.ui.dto.response.RepresentativeCategoryPlaceUpdateResponse;
 import jakarta.validation.Valid;
@@ -31,14 +32,11 @@ public class RepresentativeCategoryPlaceController {
             @PathVariable final Long categoryId,
             @Valid @RequestBody final RepresentativeCategoryPlaceUpdateRequest request
     ) {
-        final var response = representativeCategoryPlaceService
-                .updateRepresentativeCategoryPlace(
-                        memberAuthInfo,
-                        categoryId,
-                        request.toCommand()
-                );
+        final var result = representativeCategoryPlaceService.updateRepresentativeCategoryPlace(
+                request.toCommandWith(memberAuthInfo, categoryId)
+        );
 
-        return ResponseEntity.ok(RepresentativeCategoryPlaceUpdateResponse.from(response));
+        return ResponseEntity.ok(RepresentativeCategoryPlaceUpdateResponse.from(result));
     }
 
     // 카테고리 대표 장소 해제
@@ -47,7 +45,9 @@ public class RepresentativeCategoryPlaceController {
             final MemberAuthInfo memberAuthInfo,
             @PathVariable final Long categoryId
     ) {
-        representativeCategoryPlaceService.deleteRepresentativeCategoryPlace(memberAuthInfo, categoryId);
+        representativeCategoryPlaceService.deleteRepresentativeCategoryPlace(
+                new DeleteRepresentativeCategoryPlaceCommand(memberAuthInfo, categoryId)
+        );
 
         return ResponseEntity.noContent().build();
     }

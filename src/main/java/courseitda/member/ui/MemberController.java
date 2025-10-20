@@ -23,10 +23,9 @@ public class MemberController {
     public ResponseEntity<SignUpResponse> signup(
             @RequestBody @Valid final SignUpRequest request
     ) {
-        final var response = memberService.create(request.toCommand());
-        final var uiResponse = SignUpResponse.from(response);
+        final var result = memberService.create(request.toCommand());
 
-        return ResponseEntity.created(URI.create("/api/members/" + uiResponse.id()))
-                .body(uiResponse);
+        return ResponseEntity.created(URI.create("/api/members/" + result.id()))
+                .body(SignUpResponse.from(result));
     }
 }

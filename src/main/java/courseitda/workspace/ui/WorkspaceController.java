@@ -41,6 +41,19 @@ public class WorkspaceController {
     private final WorkspaceService workspaceService;
     private final CategoryService categoryService;
 
+    // 워크스페이스 생성
+    @PostMapping
+    public ResponseEntity<WorkspaceCreateResponse> createWorkspace(
+            final Member member,
+            @Valid @RequestBody final WorkspaceCreateRequest request
+    ) {
+        final var response = workspaceService.createWorkspace(
+                request.toCommandWith(member)
+        );
+        return ResponseEntity.created(URI.create("/api/workspaces/" + response.identifier()))
+                .body(WorkspaceCreateResponse.from(response));
+    }
+
     // 카테고리 생성
     @PostMapping("/{workspaceIdentifier}/categories")
     public ResponseEntity<CategoryCreateResponse> createCategory(
@@ -59,45 +72,6 @@ public class WorkspaceController {
         ).body(CategoryCreateResponse.from(response));
     }
 
-    // 카테고리 순서 변경
-    @PostMapping("/{workspaceIdentifier}/categories/sequence")
-    public ResponseEntity<CategoryReorderResponse> updateCategorySequence(
-            final MemberAuthInfo memberAuthInfo,
-            @PathVariable final String workspaceIdentifier,
-            @Valid @RequestBody final CategoryReorderRequest request
-    ) {
-        final var response = categoryService.updateCategorySequence(
-                request.toCommandWith(memberAuthInfo, workspaceIdentifier)
-        );
-        return ResponseEntity.ok(CategoryReorderResponse.from(response));
-    }
-
-    // 카테고리 목록 전체 조회 - 워크스페이스 상세 페이지
-    @GetMapping("/{workspaceIdentifier}/categories")
-    public ResponseEntity<CategoriesResponse> readAllCategories(
-            final MemberAuthInfo memberAuthInfo,
-            @PathVariable final String workspaceIdentifier
-    ) {
-        final var response = categoryService.findAllCategories(
-                new FindAllCategoriesCommand(memberAuthInfo, workspaceIdentifier)
-        );
-
-        return ResponseEntity.ok(CategoriesResponse.from(response));
-    }
-
-    // 워크스페이스 생성
-    @PostMapping
-    public ResponseEntity<WorkspaceCreateResponse> createWorkspace(
-            final Member member,
-            @Valid @RequestBody final WorkspaceCreateRequest request
-    ) {
-        final var response = workspaceService.createWorkspace(
-                request.toCommandWith(member)
-        );
-        return ResponseEntity.created(URI.create("/api/workspaces/" + response.identifier()))
-                .body(WorkspaceCreateResponse.from(response));
-    }
-
     // 워크스페이스 제목 수정
     @PatchMapping("/{workspaceIdentifier}")
     public ResponseEntity<WorkspaceUpdateResponse> updateWorkspace(
@@ -110,6 +84,19 @@ public class WorkspaceController {
         );
 
         return ResponseEntity.ok(WorkspaceUpdateResponse.from(response));
+    }
+
+    // 카테고리 순서 변경
+    @PostMapping("/{workspaceIdentifier}/categories/sequence")
+    public ResponseEntity<CategoryReorderResponse> updateCategorySequence(
+            final MemberAuthInfo memberAuthInfo,
+            @PathVariable final String workspaceIdentifier,
+            @Valid @RequestBody final CategoryReorderRequest request
+    ) {
+        final var response = categoryService.updateCategorySequence(
+                request.toCommandWith(memberAuthInfo, workspaceIdentifier)
+        );
+        return ResponseEntity.ok(CategoryReorderResponse.from(response));
     }
 
     // 워크스페이스 삭제
@@ -136,5 +123,18 @@ public class WorkspaceController {
         );
 
         return ResponseEntity.ok(WorkspaceReadResponse.from(response));
+    }
+
+    // 카테고리 목록 전체 조회 - 워크스페이스 상세 페이지
+    @GetMapping("/{workspaceIdentifier}/categories")
+    public ResponseEntity<CategoriesResponse> readAllCategories(
+            final MemberAuthInfo memberAuthInfo,
+            @PathVariable final String workspaceIdentifier
+    ) {
+        final var response = categoryService.findAllCategories(
+                new FindAllCategoriesCommand(memberAuthInfo, workspaceIdentifier)
+        );
+
+        return ResponseEntity.ok(CategoriesResponse.from(response));
     }
 }

@@ -14,9 +14,8 @@ public record CategoryUpdateRequest(
 
     public UpdateCategoryCommand toCommandWith(
             final MemberAuthInfo memberAuthInfo,
-            final String workspaceIdentifier,
             final Long categoryId
     ) {
-        return new UpdateCategoryCommand(memberAuthInfo, workspaceIdentifier, categoryId, name, color);
+        return new UpdateCategoryCommand(memberAuthInfo, categoryId, name, color);
     }
 }

@@ -87,7 +87,6 @@ public class CategoryService {
     ) {
         final var category = getCategoryById(command.categoryId());
         category.validateOwnership(command.memberAuthInfo().id());
-        validateCategoryBelongsToWorkspace(getWorkspaceByIdentifier(command.workspaceIdentifier()), category);
 
         category.updateNameAndColor(command.name(), command.color());
         return UpdateCategoryResult.from(category);
@@ -99,7 +98,6 @@ public class CategoryService {
     ) {
         final var category = getCategoryById(command.categoryId());
         category.validateOwnership(command.memberAuthInfo().id());
-        validateCategoryBelongsToWorkspace(getWorkspaceByIdentifier(command.workspaceIdentifier()), category);
 
         categoryRepository.delete(category);
     }
@@ -110,7 +108,6 @@ public class CategoryService {
     ) {
         final var category = getCategoryById(command.categoryId());
         category.validateOwnership(command.memberAuthInfo().id());
-        validateCategoryBelongsToWorkspace(getWorkspaceByIdentifier(command.workspaceIdentifier()), category);
 
         return FindCategoryResult.from(category);
     }

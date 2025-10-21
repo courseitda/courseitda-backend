@@ -55,7 +55,7 @@ public class CategoryController {
     }
 
     // 카테고리 순서 변경
-    @PostMapping("/reorder")
+    @PostMapping("/sequence")
     public ResponseEntity<CategoryReorderResponse> updateCategorySequence(
             final MemberAuthInfo memberAuthInfo,
             @PathVariable final String workspaceIdentifier,

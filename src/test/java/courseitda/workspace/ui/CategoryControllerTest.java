@@ -111,187 +111,6 @@ class CategoryControllerTest {
     }
 
     @Nested
-    @DisplayName("카테고리 생성 성공 시나리오")
-    class CreateCategorySuccessScenarios {
-
-        @Test
-        @DisplayName("카테고리 생성에 성공한다")
-        void createCategory_success() {
-            // given
-            final String accessToken = signUpAndLogin();
-            final String workspaceIdentifier = createWorkspace(accessToken);
-
-            final String name = CategoryFixture.anyName();
-            final String color = CategoryFixture.anyColor();
-            final CategoryCreateRequest request = new CategoryCreateRequest(name, color);
-
-            // when
-            final CategoryCreateResponse response = given()
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .header(HttpHeaders.AUTHORIZATION, accessToken)
-                    .body(request)
-                    .when()
-                    .post("/api/workspaces/" + workspaceIdentifier + "/categories")
-                    .then()
-                    .statusCode(HttpStatus.CREATED.value())
-                    .extract()
-                    .as(CategoryCreateResponse.class);
-
-            // then
-            assertThat(response.id()).isNotNull();
-            assertThat(response.name()).isEqualTo(name);
-            assertThat(response.color()).isEqualTo(color);
-            assertThat(response.sequence()).isEqualTo(1);
-        }
-    }
-
-    @Nested
-    @DisplayName("카테고리 생성 실패 시나리오")
-    class CreateCategoryFailureScenarios {
-
-        @Test
-        @DisplayName("존재하지 않는 워크스페이스에 카테고리 생성 시 실패한다")
-        void createCategory_fail_workspaceNotFound() {
-            // given
-            final String accessToken = signUpAndLogin();
-            final String nonExistentIdentifier = "non-existent-identifier";
-
-            final String name = CategoryFixture.anyName();
-            final String color = CategoryFixture.anyColor();
-            final CategoryCreateRequest request = new CategoryCreateRequest(name, color);
-
-            // when & then
-            given()
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .header(HttpHeaders.AUTHORIZATION, accessToken)
-                    .body(request)
-                    .when()
-                    .post("/api/workspaces/" + nonExistentIdentifier + "/categories")
-                    .then()
-                    .statusCode(HttpStatus.NOT_FOUND.value())
-                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.WORKSPACE_NOT_FOUND.getCode()));
-        }
-
-        @Test
-        @DisplayName("다른 사용자의 워크스페이스에 카테고리 생성 시 실패한다")
-        void createCategory_fail_workspaceModifyForbidden() {
-            // given
-            final String owner = signUpAndLogin();
-            final String workspaceIdentifier = createWorkspace(owner);
-
-            final String otherUser = signUpAndLogin();
-            final String name = CategoryFixture.anyName();
-            final String color = CategoryFixture.anyColor();
-            final CategoryCreateRequest request = new CategoryCreateRequest(name, color);
-
-            // when & then
-            given()
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .header(HttpHeaders.AUTHORIZATION, otherUser)
-                    .body(request)
-                    .when()
-                    .post("/api/workspaces/" + workspaceIdentifier + "/categories")
-                    .then()
-                    .statusCode(HttpStatus.FORBIDDEN.value())
-                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.WORKSPACE_MODIFY_FORBIDDEN.getCode()));
-        }
-    }
-
-    @Nested
-    @DisplayName("카테고리 순서 변경 성공 시나리오")
-    class UpdateCategorySequenceSuccessScenarios {
-
-        @Test
-        @DisplayName("카테고리 순서 변경에 성공한다")
-        void updateCategorySequence_success() {
-            // given
-            final String accessToken = signUpAndLogin();
-            final String workspaceIdentifier = createWorkspace(accessToken);
-
-            final CategoryCreateResponse category1 = createCategory(accessToken, workspaceIdentifier);
-            final CategoryCreateResponse category2 = createCategory(accessToken, workspaceIdentifier);
-
-            final List<CategorySequenceRequest> sequenceRequests = List.of(
-                    new CategorySequenceRequest(category1.id(), 2),
-                    new CategorySequenceRequest(category2.id(), 1)
-            );
-            final CategoryReorderRequest request = new CategoryReorderRequest(sequenceRequests);
-
-            // when
-            final CategoryReorderResponse response = given()
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .header(HttpHeaders.AUTHORIZATION, accessToken)
-                    .body(request)
-                    .when()
-                    .post("/api/workspaces/" + workspaceIdentifier + "/categories/reorder")
-                    .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .extract()
-                    .as(CategoryReorderResponse.class);
-
-            // then
-            assertThat(response.categorySequenceResponses()).hasSize(2);
-            assertThat(response.categorySequenceResponses()).extracting("id")
-                    .containsExactlyInAnyOrder(category1.id(), category2.id());
-        }
-    }
-
-    @Nested
-    @DisplayName("카테고리 순서 변경 실패 시나리오")
-    class UpdateCategorySequenceFailureScenarios {
-
-        @Test
-        @DisplayName("존재하지 않는 워크스페이스의 카테고리 순서 변경 시 실패한다")
-        void updateCategorySequence_fail_workspaceNotFound() {
-            // given
-            final String accessToken = signUpAndLogin();
-            final String nonExistentIdentifier = "non-existent-identifier";
-
-            final List<CategorySequenceRequest> sequenceRequests = List.of(
-                    new CategorySequenceRequest(1L, 1)
-            );
-            final CategoryReorderRequest request = new CategoryReorderRequest(sequenceRequests);
-
-            // when & then
-            given()
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .header(HttpHeaders.AUTHORIZATION, accessToken)
-                    .body(request)
-                    .when()
-                    .post("/api/workspaces/" + nonExistentIdentifier + "/categories/reorder")
-                    .then()
-                    .statusCode(HttpStatus.NOT_FOUND.value())
-                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.WORKSPACE_NOT_FOUND.getCode()));
-        }
-
-        @Test
-        @DisplayName("다른 사용자의 워크스페이스 카테고리 순서 변경 시 실패한다")
-        void updateCategorySequence_fail_workspaceModifyForbidden() {
-            // given
-            final String owner = signUpAndLogin();
-            final String workspaceIdentifier = createWorkspace(owner);
-            final CategoryCreateResponse category1 = createCategory(owner, workspaceIdentifier);
-
-            final String otherUser = signUpAndLogin();
-            final List<CategorySequenceRequest> sequenceRequests = List.of(
-                    new CategorySequenceRequest(category1.id(), 1)
-            );
-            final CategoryReorderRequest request = new CategoryReorderRequest(sequenceRequests);
-
-            // when & then
-            given()
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .header(HttpHeaders.AUTHORIZATION, otherUser)
-                    .body(request)
-                    .when()
-                    .post("/api/workspaces/" + workspaceIdentifier + "/categories/reorder")
-                    .then()
-                    .statusCode(HttpStatus.FORBIDDEN.value())
-                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.WORKSPACE_MODIFY_FORBIDDEN.getCode()));
-        }
-    }
-
-    @Nested
     @DisplayName("카테고리 수정 성공 시나리오")
     class UpdateCategorySuccessScenarios {
 
@@ -313,7 +132,7 @@ class CategoryControllerTest {
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .body(request)
                     .when()
-                    .patch("/api/workspaces/" + workspaceIdentifier + "/categories/" + category.id())
+                    .patch("/api/categories/" + category.id())
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .extract()
@@ -335,7 +154,6 @@ class CategoryControllerTest {
         void updateCategory_fail_categoryNotFound() {
             // given
             final String accessToken = signUpAndLogin();
-            final String workspaceIdentifier = createWorkspace(accessToken);
             final Long nonExistentCategoryId = 999999L;
 
             final String newName = CategoryFixture.anyName();
@@ -348,7 +166,7 @@ class CategoryControllerTest {
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .body(request)
                     .when()
-                    .patch("/api/workspaces/" + workspaceIdentifier + "/categories/" + nonExistentCategoryId)
+                    .patch("/api/categories/" + nonExistentCategoryId)
                     .then()
                     .statusCode(HttpStatus.NOT_FOUND.value())
                     .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.CATEGORY_NOT_FOUND.getCode()));
@@ -373,36 +191,12 @@ class CategoryControllerTest {
                     .header(HttpHeaders.AUTHORIZATION, otherUser)
                     .body(request)
                     .when()
-                    .patch("/api/workspaces/" + workspaceIdentifier + "/categories/" + category.id())
+                    .patch("/api/categories/" + category.id())
                     .then()
                     .statusCode(HttpStatus.FORBIDDEN.value())
                     .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.CATEGORY_MODIFY_FORBIDDEN.getCode()));
         }
 
-        @Test
-        @DisplayName("다른 워크스페이스의 카테고리 수정 시 실패한다")
-        void updateCategory_fail_categoryOutOfWorkspace() {
-            // given
-            final String accessToken = signUpAndLogin();
-            final String workspaceIdentifier1 = createWorkspace(accessToken);
-            final String workspaceIdentifier2 = createWorkspace(accessToken);
-            final CategoryCreateResponse category = createCategory(accessToken, workspaceIdentifier1);
-
-            final String newName = CategoryFixture.anyName();
-            final String newColor = "#123456";
-            final CategoryUpdateRequest request = new CategoryUpdateRequest(newName, newColor);
-
-            // when & then
-            given()
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .header(HttpHeaders.AUTHORIZATION, accessToken)
-                    .body(request)
-                    .when()
-                    .patch("/api/workspaces/" + workspaceIdentifier2 + "/categories/" + category.id())
-                    .then()
-                    .statusCode(HttpStatus.FORBIDDEN.value())
-                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.CATEGORY_OUT_OF_WORKSPACE.getCode()));
-        }
     }
 
     @Nested
@@ -422,7 +216,7 @@ class CategoryControllerTest {
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .when()
-                    .delete("/api/workspaces/" + workspaceIdentifier + "/categories/" + category.id())
+                    .delete("/api/categories/" + category.id())
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
         }
@@ -437,7 +231,6 @@ class CategoryControllerTest {
         void deleteCategory_fail_categoryNotFound() {
             // given
             final String accessToken = signUpAndLogin();
-            final String workspaceIdentifier = createWorkspace(accessToken);
             final Long nonExistentCategoryId = 999999L;
 
             // when & then
@@ -445,7 +238,7 @@ class CategoryControllerTest {
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .when()
-                    .delete("/api/workspaces/" + workspaceIdentifier + "/categories/" + nonExistentCategoryId)
+                    .delete("/api/categories/" + nonExistentCategoryId)
                     .then()
                     .statusCode(HttpStatus.NOT_FOUND.value())
                     .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.CATEGORY_NOT_FOUND.getCode()));
@@ -466,31 +259,12 @@ class CategoryControllerTest {
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, otherUser)
                     .when()
-                    .delete("/api/workspaces/" + workspaceIdentifier + "/categories/" + category.id())
+                    .delete("/api/categories/" + category.id())
                     .then()
                     .statusCode(HttpStatus.FORBIDDEN.value())
                     .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.CATEGORY_MODIFY_FORBIDDEN.getCode()));
         }
 
-        @Test
-        @DisplayName("다른 워크스페이스의 카테고리 삭제 시 실패한다")
-        void deleteCategory_fail_categoryOutOfWorkspace() {
-            // given
-            final String accessToken = signUpAndLogin();
-            final String workspaceIdentifier1 = createWorkspace(accessToken);
-            final String workspaceIdentifier2 = createWorkspace(accessToken);
-            final CategoryCreateResponse category = createCategory(accessToken, workspaceIdentifier1);
-
-            // when & then
-            given()
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .header(HttpHeaders.AUTHORIZATION, accessToken)
-                    .when()
-                    .delete("/api/workspaces/" + workspaceIdentifier2 + "/categories/" + category.id())
-                    .then()
-                    .statusCode(HttpStatus.FORBIDDEN.value())
-                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.CATEGORY_OUT_OF_WORKSPACE.getCode()));
-        }
     }
 
     @Nested
@@ -510,7 +284,7 @@ class CategoryControllerTest {
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .when()
-                    .get("/api/workspaces/" + workspaceIdentifier + "/categories/" + category.id())
+                    .get("/api/categories/" + category.id())
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .extract()
@@ -533,7 +307,6 @@ class CategoryControllerTest {
         void readCategory_fail_categoryNotFound() {
             // given
             final String accessToken = signUpAndLogin();
-            final String workspaceIdentifier = createWorkspace(accessToken);
             final Long nonExistentCategoryId = 999999L;
 
             // when & then
@@ -541,126 +314,12 @@ class CategoryControllerTest {
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .when()
-                    .get("/api/workspaces/" + workspaceIdentifier + "/categories/" + nonExistentCategoryId)
+                    .get("/api/categories/" + nonExistentCategoryId)
                     .then()
                     .statusCode(HttpStatus.NOT_FOUND.value())
                     .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.CATEGORY_NOT_FOUND.getCode()));
         }
 
-        @Test
-        @DisplayName("다른 워크스페이스의 카테고리 단건 조회 시 실패한다")
-        void readCategory_fail_categoryOutOfWorkspace() {
-            // given
-            final String accessToken = signUpAndLogin();
-            final String workspaceIdentifier1 = createWorkspace(accessToken);
-            final String workspaceIdentifier2 = createWorkspace(accessToken);
-            final CategoryCreateResponse category = createCategory(accessToken, workspaceIdentifier1);
-
-            // when & then
-            given()
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .header(HttpHeaders.AUTHORIZATION, accessToken)
-                    .when()
-                    .get("/api/workspaces/" + workspaceIdentifier2 + "/categories/" + category.id())
-                    .then()
-                    .statusCode(HttpStatus.FORBIDDEN.value())
-                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.CATEGORY_OUT_OF_WORKSPACE.getCode()));
-        }
     }
 
-    @Nested
-    @DisplayName("카테고리 목록 조회 성공 시나리오")
-    class ReadAllCategoriesSuccessScenarios {
-
-        @Test
-        @DisplayName("카테고리 목록 조회에 성공한다")
-        void readAllCategories_success() {
-            // given
-            final String accessToken = signUpAndLogin();
-            final String workspaceIdentifier = createWorkspace(accessToken);
-
-            createCategory(accessToken, workspaceIdentifier);
-            createCategory(accessToken, workspaceIdentifier);
-            createCategory(accessToken, workspaceIdentifier);
-
-            // when
-            final CategoriesResponse response = given()
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .header(HttpHeaders.AUTHORIZATION, accessToken)
-                    .when()
-                    .get("/api/workspaces/" + workspaceIdentifier + "/categories")
-                    .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .extract()
-                    .as(CategoriesResponse.class);
-
-            // then
-            assertThat(response.categoryResponses()).hasSize(3);
-        }
-
-        @Test
-        @DisplayName("카테고리가 없는 경우 빈 목록이 반환된다")
-        void readAllCategories_success_emptyList() {
-            // given
-            final String accessToken = signUpAndLogin();
-            final String workspaceIdentifier = createWorkspace(accessToken);
-
-            // when
-            final CategoriesResponse response = given()
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .header(HttpHeaders.AUTHORIZATION, accessToken)
-                    .when()
-                    .get("/api/workspaces/" + workspaceIdentifier + "/categories")
-                    .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .extract()
-                    .as(CategoriesResponse.class);
-
-            // then
-            assertThat(response.categoryResponses()).isEmpty();
-        }
-    }
-
-    @Nested
-    @DisplayName("카테고리 목록 조회 실패 시나리오")
-    class ReadAllCategoriesFailureScenarios {
-
-        @Test
-        @DisplayName("존재하지 않는 워크스페이스의 카테고리 목록 조회 시 실패한다")
-        void readAllCategories_fail_workspaceNotFound() {
-            // given
-            final String accessToken = signUpAndLogin();
-            final String nonExistentIdentifier = "non-existent-identifier";
-
-            // when & then
-            given()
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .header(HttpHeaders.AUTHORIZATION, accessToken)
-                    .when()
-                    .get("/api/workspaces/" + nonExistentIdentifier + "/categories")
-                    .then()
-                    .statusCode(HttpStatus.NOT_FOUND.value())
-                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.WORKSPACE_NOT_FOUND.getCode()));
-        }
-
-        @Test
-        @DisplayName("다른 사용자의 워크스페이스 카테고리 목록 조회 시 실패한다")
-        void readAllCategories_fail_workspaceModifyForbidden() {
-            // given
-            final String owner = signUpAndLogin();
-            final String workspaceIdentifier = createWorkspace(owner);
-
-            final String otherUser = signUpAndLogin();
-
-            // when & then
-            given()
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .header(HttpHeaders.AUTHORIZATION, otherUser)
-                    .when()
-                    .get("/api/workspaces/" + workspaceIdentifier + "/categories")
-                    .then()
-                    .statusCode(HttpStatus.FORBIDDEN.value())
-                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.WORKSPACE_MODIFY_FORBIDDEN.getCode()));
-        }
-    }
 }

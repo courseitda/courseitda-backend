@@ -359,7 +359,7 @@ class RepresentativeCategoryPlaceControllerTest {
                 .header(HttpHeaders.AUTHORIZATION, accessToken)
                 .body(request)
                 .when()
-                .post("/api/categories/" + categoryId + "/category-places")
+                .post("/api/categories/" + categoryId + "/places")
                 .then()
                 .statusCode(HttpStatus.CREATED.value())
                 .extract()

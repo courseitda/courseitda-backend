@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequiresRole(authRoles = {AuthRole.MEMBER})
-@RequestMapping("/api/categories/{categoryId}/category-places")
+@RequestMapping("/api/categories/{categoryId}/places")
 public class CategoryPlaceController {
 
     private final CategoryPlaceService categoryPlaceService;

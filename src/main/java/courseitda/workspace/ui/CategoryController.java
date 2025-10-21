@@ -4,6 +4,9 @@ import courseitda.auth.domain.AuthRole;
 import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.auth.domain.RequiresRole;
 import courseitda.workspace.application.CategoryService;
+import courseitda.workspace.application.dto.request.DeleteCategoryCommand;
+import courseitda.workspace.application.dto.request.FindAllCategoriesCommand;
+import courseitda.workspace.application.dto.request.FindCategoryCommand;
 import courseitda.workspace.ui.dto.request.CategoryCreateRequest;
 import courseitda.workspace.ui.dto.request.CategoryReorderRequest;
 import courseitda.workspace.ui.dto.request.CategoryUpdateRequest;
@@ -40,14 +43,15 @@ public class CategoryController {
             @PathVariable final String workspaceIdentifier,
             @Valid @RequestBody final CategoryCreateRequest request
     ) {
-        final CategoryCreateResponse response = categoryService.createCategory(memberAuthInfo, workspaceIdentifier,
-                request);
+        final var response = categoryService.createCategory(
+                request.toCommandWith(memberAuthInfo, workspaceIdentifier)
+        );
         return ResponseEntity.created(
                 URI.create("/api/workspaces/"
                         + workspaceIdentifier + "/categories/"
                         + response.id()
                 )
-        ).body(response);
+        ).body(CategoryCreateResponse.from(response));
     }
 
     // 카테고리 순서 변경
@@ -57,12 +61,10 @@ public class CategoryController {
             @PathVariable final String workspaceIdentifier,
             @Valid @RequestBody final CategoryReorderRequest request
     ) {
-        final CategoryReorderResponse response = categoryService.updateCategorySequence(
-                memberAuthInfo,
-                workspaceIdentifier,
-                request
+        final var response = categoryService.updateCategorySequence(
+                request.toCommandWith(memberAuthInfo, workspaceIdentifier)
         );
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(CategoryReorderResponse.from(response));
     }
 
     // 카테고리 (이름/색상) 수정
@@ -73,14 +75,11 @@ public class CategoryController {
             @PathVariable final Long categoryId,
             @Valid @RequestBody final CategoryUpdateRequest request
     ) {
-        final CategoryUpdateResponse response = categoryService.updateCategory(
-                memberAuthInfo,
-                workspaceIdentifier,
-                categoryId,
-                request
+        final var response = categoryService.updateCategory(
+                request.toCommandWith(memberAuthInfo, workspaceIdentifier, categoryId)
         );
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(CategoryUpdateResponse.from(response));
     }
 
     // 카테고리 삭제
@@ -90,7 +89,9 @@ public class CategoryController {
             @PathVariable final String workspaceIdentifier,
             @PathVariable final Long categoryId
     ) {
-        categoryService.deleteCategory(memberAuthInfo, workspaceIdentifier, categoryId);
+        categoryService.deleteCategory(
+                new DeleteCategoryCommand(memberAuthInfo, workspaceIdentifier, categoryId)
+        );
 
         return ResponseEntity.noContent().build();
     }
@@ -102,9 +103,11 @@ public class CategoryController {
             @PathVariable final String workspaceIdentifier,
             @PathVariable final Long categoryId
     ) {
-        final CategoryResponse response = categoryService.findCategory(memberAuthInfo, workspaceIdentifier, categoryId);
+        final var response = categoryService.findCategory(
+                new FindCategoryCommand(memberAuthInfo, workspaceIdentifier, categoryId)
+        );
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(CategoryResponse.from(response));
     }
 
     // 카테고리 목록 전체 조회 - 워크스페이스 상세 페이지
@@ -113,8 +116,10 @@ public class CategoryController {
             final MemberAuthInfo memberAuthInfo,
             @PathVariable final String workspaceIdentifier
     ) {
-        final CategoriesResponse response = categoryService.findAllCategories(memberAuthInfo, workspaceIdentifier);
+        final var response = categoryService.findAllCategories(
+                new FindAllCategoriesCommand(memberAuthInfo, workspaceIdentifier)
+        );
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(CategoriesResponse.from(response));
     }
 }

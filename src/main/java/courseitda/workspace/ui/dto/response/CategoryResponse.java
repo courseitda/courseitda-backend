@@ -1,10 +1,9 @@
 package courseitda.workspace.ui.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import courseitda.workspace.domain.Category;
-import courseitda.workspace.domain.CategoryPlace;
+import courseitda.workspace.application.dto.response.FindCategoryResult;
+import courseitda.workspace.application.dto.response.FindCategoryResult.CategoryPlacesResult;
 import java.util.List;
-import java.util.Objects;
 
 public record CategoryResponse(
         Long id,
@@ -15,17 +14,14 @@ public record CategoryResponse(
         @JsonProperty("categoryPlaces") CategoryPlacesResponse categoryPlacesResponse
 ) {
 
-    public static CategoryResponse from(final Category category) {
+    public static CategoryResponse from(final FindCategoryResult result) {
         return new CategoryResponse(
-                category.getId(),
-                category.getName(),
-                category.getColor(),
-                category.getSequence(),
-                category.getRepresentativePlace() != null ? category.getRepresentativePlace().getId() : null,
-                CategoryPlacesResponse.of(
-                        category.getCategoryPlaces(),
-                        category.getRepresentativePlace()
-                )
+                result.id(),
+                result.name(),
+                result.color(),
+                result.sequence(),
+                result.representativePlaceId(),
+                CategoryPlacesResponse.from(result.categoryPlacesResult())
         );
     }
 
@@ -33,21 +29,10 @@ public record CategoryResponse(
             @JsonProperty("categoryPlaces") List<CategoryPlaceResponse> categoryPlaceResponses
     ) {
 
-        public static CategoryPlacesResponse of(
-                final List<CategoryPlace> categoryPlaces,
-                final CategoryPlace representativePlace
-        ) {
+        public static CategoryPlacesResponse from(final CategoryPlacesResult result) {
             return new CategoryPlacesResponse(
-                    categoryPlaces.stream()
-                            .map(categoryPlace -> {
-                                final boolean isRepresentative = representativePlace != null &&
-                                        Objects.equals(categoryPlace.getId(), representativePlace.getId());
-
-                                return CategoryPlaceResponse.of(
-                                        categoryPlace,
-                                        isRepresentative
-                                );
-                            })
+                    result.categoryPlaceResults().stream()
+                            .map(CategoryPlaceResponse::from)
                             .toList()
             );
         }
@@ -61,18 +46,15 @@ public record CategoryResponse(
                 boolean isRepresentative
         ) {
 
-            public static CategoryPlaceResponse of(
-                    final CategoryPlace categoryPlace,
-                    final boolean isRepresentative
-            ) {
+            public static CategoryPlaceResponse from(
+                    final CategoryPlacesResult.CategoryPlaceResult result) {
                 return new CategoryPlaceResponse(
-                        categoryPlace.getId(),
-                        categoryPlace.getPlace().getName(),
-                        categoryPlace.getPlace().getAddressName(),
-                        categoryPlace.getPlace().getLatitude(),
-                        categoryPlace.getPlace().getLongitude(),
-                        isRepresentative
-                // todo: 도로명 주소가 있으면 도로명 주소, 없으면 지번 주소
+                        result.id(),
+                        result.name(),
+                        result.address(),
+                        result.lat(),
+                        result.lng(),
+                        result.isRepresentative()
                 );
             }
         }

@@ -1,21 +1,22 @@
 package courseitda.workspace.application;
 
-import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.common.exception.BusinessException;
 import courseitda.common.exception.ErrorCode;
+import courseitda.workspace.application.dto.request.CreateCategoryCommand;
+import courseitda.workspace.application.dto.request.DeleteCategoryCommand;
+import courseitda.workspace.application.dto.request.FindAllCategoriesCommand;
+import courseitda.workspace.application.dto.request.FindCategoryCommand;
+import courseitda.workspace.application.dto.request.UpdateCategoryCommand;
+import courseitda.workspace.application.dto.request.UpdateCategorySequenceCommand;
+import courseitda.workspace.application.dto.response.CreateCategoryResult;
+import courseitda.workspace.application.dto.response.FindAllCategoriesResult;
+import courseitda.workspace.application.dto.response.FindCategoryResult;
+import courseitda.workspace.application.dto.response.UpdateCategoryResult;
+import courseitda.workspace.application.dto.response.UpdateCategorySequenceResult;
 import courseitda.workspace.domain.Category;
 import courseitda.workspace.domain.CategoryRepository;
 import courseitda.workspace.domain.Workspace;
 import courseitda.workspace.domain.WorkspaceRepository;
-import courseitda.workspace.ui.dto.request.CategoryCreateRequest;
-import courseitda.workspace.ui.dto.request.CategoryReorderRequest;
-import courseitda.workspace.ui.dto.request.CategorySequenceRequest;
-import courseitda.workspace.ui.dto.request.CategoryUpdateRequest;
-import courseitda.workspace.ui.dto.response.CategoriesResponse;
-import courseitda.workspace.ui.dto.response.CategoryCreateResponse;
-import courseitda.workspace.ui.dto.response.CategoryReorderResponse;
-import courseitda.workspace.ui.dto.response.CategoryResponse;
-import courseitda.workspace.ui.dto.response.CategoryUpdateResponse;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,33 +32,29 @@ public class CategoryService {
     private final WorkspaceRepository workspaceRepository;
 
     @Transactional
-    public CategoryCreateResponse createCategory(
-            final MemberAuthInfo memberAuthInfo,
-            final String workspaceIdentifier,
-            final CategoryCreateRequest request
+    public CreateCategoryResult createCategory(
+            final CreateCategoryCommand command
     ) {
-        final var workspace = getWorkspaceByIdentifier(workspaceIdentifier);
-        workspace.validateOwnership(memberAuthInfo.id());
+        final var workspace = getWorkspaceByIdentifier(command.workspaceIdentifier());
+        workspace.validateOwnership(command.memberAuthInfo().id());
 
         // N+1 문제 해결: workspace.getCategories().size() 대신 직접 count 쿼리 사용
         final var nextSequence = categoryRepository.countByWorkspaceId(workspace.getId()) + 1;
-        final var category = Category.createNew(workspace, request.name(), request.color(), nextSequence);
+        final var category = Category.createNew(workspace, command.name(), command.color(), nextSequence);
         final var savedCategory = categoryRepository.save(category);
 
-        return CategoryCreateResponse.from(savedCategory);
+        return CreateCategoryResult.from(savedCategory);
     }
 
     @Transactional
-    public CategoryReorderResponse updateCategorySequence(
-            final MemberAuthInfo memberAuthInfo,
-            final String workspaceIdentifier,
-            final CategoryReorderRequest request
+    public UpdateCategorySequenceResult updateCategorySequence(
+            final UpdateCategorySequenceCommand command
     ) {
-        final var workspace = getWorkspaceByIdentifier(workspaceIdentifier);
-        workspace.validateOwnership(memberAuthInfo.id());
+        final var workspace = getWorkspaceByIdentifier(command.workspaceIdentifier());
+        workspace.validateOwnership(command.memberAuthInfo().id());
 
-        final var categoryIds = request.categorySequenceRequests().stream()
-                .map(CategorySequenceRequest::id)
+        final var categoryIds = command.categorySequenceCommands().stream()
+                .map(UpdateCategorySequenceCommand.CategorySequenceCommand::id)
                 .toList();
 
         final var categories = categoryRepository.findAllById(categoryIds);
@@ -69,72 +66,64 @@ public class CategoryService {
         validateNoDuplicateCategoryIds(categoryIds);
 
         // 중복된 sequence 값 검증
-        validateNoDuplicateSequences(request);
+        validateNoDuplicateSequences(command);
 
-        for (final var sequenceRequest : request.categorySequenceRequests()) {
+        for (final var sequenceCommand : command.categorySequenceCommands()) {
             final var category = categories.stream()
-                    .filter(c -> c.getId().equals(sequenceRequest.id()))
+                    .filter(c -> c.getId().equals(sequenceCommand.id()))
                     .findFirst()
                     .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
 
             validateCategoryBelongsToWorkspace(workspace, category);
-            category.updateSequence(sequenceRequest.sequence());
+            category.updateSequence(sequenceCommand.sequence());
         }
 
-        return CategoryReorderResponse.from(categories);
+        return UpdateCategorySequenceResult.from(categories);
     }
 
     @Transactional
-    public CategoryUpdateResponse updateCategory(
-            final MemberAuthInfo memberAuthInfo,
-            final String workspaceIdentifier,
-            final Long categoryId,
-            final CategoryUpdateRequest request
+    public UpdateCategoryResult updateCategory(
+            final UpdateCategoryCommand command
     ) {
-        final var category = getCategoryById(categoryId);
-        category.validateOwnership(memberAuthInfo.id());
-        validateCategoryBelongsToWorkspace(getWorkspaceByIdentifier(workspaceIdentifier), category);
+        final var category = getCategoryById(command.categoryId());
+        category.validateOwnership(command.memberAuthInfo().id());
+        validateCategoryBelongsToWorkspace(getWorkspaceByIdentifier(command.workspaceIdentifier()), category);
 
-        category.updateNameAndColor(request.name(), request.color());
-        return CategoryUpdateResponse.from(category);
+        category.updateNameAndColor(command.name(), command.color());
+        return UpdateCategoryResult.from(category);
     }
 
     @Transactional
     public void deleteCategory(
-            final MemberAuthInfo memberAuthInfo,
-            final String workspaceIdentifier,
-            final Long categoryId
+            final DeleteCategoryCommand command
     ) {
-        final var category = getCategoryById(categoryId);
-        category.validateOwnership(memberAuthInfo.id());
-        validateCategoryBelongsToWorkspace(getWorkspaceByIdentifier(workspaceIdentifier), category);
+        final var category = getCategoryById(command.categoryId());
+        category.validateOwnership(command.memberAuthInfo().id());
+        validateCategoryBelongsToWorkspace(getWorkspaceByIdentifier(command.workspaceIdentifier()), category);
 
         categoryRepository.delete(category);
     }
 
     @Transactional(readOnly = true)
-    public CategoryResponse findCategory(
-            final MemberAuthInfo memberAuthInfo,
-            final String workspaceIdentifier,
-            final Long categoryId
+    public FindCategoryResult findCategory(
+            final FindCategoryCommand command
     ) {
-        final var category = getCategoryById(categoryId);
-        category.validateOwnership(memberAuthInfo.id());
-        validateCategoryBelongsToWorkspace(getWorkspaceByIdentifier(workspaceIdentifier), category);
+        final var category = getCategoryById(command.categoryId());
+        category.validateOwnership(command.memberAuthInfo().id());
+        validateCategoryBelongsToWorkspace(getWorkspaceByIdentifier(command.workspaceIdentifier()), category);
 
-        return CategoryResponse.from(category);
+        return FindCategoryResult.from(category);
     }
 
     @Transactional(readOnly = true)
-    public CategoriesResponse findAllCategories(
-            final MemberAuthInfo memberAuthInfo,
-            final String workspaceIdentifier
+    public FindAllCategoriesResult findAllCategories(
+            final FindAllCategoriesCommand command
     ) {
-        final var workspace = getWorkspaceByIdentifier(workspaceIdentifier);
-        workspace.validateOwnership(memberAuthInfo.id());
+        final var workspace = getWorkspaceByIdentifier(command.workspaceIdentifier());
+        workspace.validateOwnership(command.memberAuthInfo().id());
 
         final var categories = workspace.getCategories();
-        return CategoriesResponse.from(categories);
+        return FindAllCategoriesResult.from(categories);
     }
 
     private Workspace getWorkspaceByIdentifier(final String workspaceIdentifier) {
@@ -154,10 +143,10 @@ public class CategoryService {
         }
     }
 
-    private void validateNoDuplicateSequences(final CategoryReorderRequest request) {
+    private void validateNoDuplicateSequences(final UpdateCategorySequenceCommand command) {
         final Set<Integer> sequences = new HashSet<>();
-        for (final var sequenceRequest : request.categorySequenceRequests()) {
-            if (!sequences.add(sequenceRequest.sequence())) {
+        for (final var sequenceCommand : command.categorySequenceCommands()) {
+            if (!sequences.add(sequenceCommand.sequence())) {
                 throw new BusinessException(ErrorCode.DUPLICATE_CATEGORY_ORDER_IN_REQUEST);
             }
         }

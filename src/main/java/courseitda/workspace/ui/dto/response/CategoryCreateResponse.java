@@ -1,6 +1,6 @@
 package courseitda.workspace.ui.dto.response;
 
-import courseitda.workspace.domain.Category;
+import courseitda.workspace.application.dto.response.CreateCategoryResult;
 
 public record CategoryCreateResponse(
         Long id,
@@ -9,12 +9,12 @@ public record CategoryCreateResponse(
         Integer sequence
 ) {
 
-    public static CategoryCreateResponse from(final Category category) {
+    public static CategoryCreateResponse from(final CreateCategoryResult result) {
         return new CategoryCreateResponse(
-                category.getId(),
-                category.getName(),
-                category.getColor(),
-                category.getSequence()
+                result.id(),
+                result.name(),
+                result.color(),
+                result.sequence()
         );
     }
 }

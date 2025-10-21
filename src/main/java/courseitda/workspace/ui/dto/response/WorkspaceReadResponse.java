@@ -1,16 +1,16 @@
 package courseitda.workspace.ui.dto.response;
 
-import courseitda.workspace.domain.Workspace;
+import courseitda.workspace.application.dto.response.ReadWorkspaceResult;
 
 public record WorkspaceReadResponse(
         String identifier,
         String title
 ) {
 
-    public static WorkspaceReadResponse from(final Workspace workspace) {
+    public static WorkspaceReadResponse from(final ReadWorkspaceResult result) {
         return new WorkspaceReadResponse(
-                workspace.getIdentifier(),
-                workspace.getTitle()
+                result.identifier(),
+                result.title()
         );
     }
 }

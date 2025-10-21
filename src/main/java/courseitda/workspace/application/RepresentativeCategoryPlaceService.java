@@ -1,14 +1,14 @@
 package courseitda.workspace.application;
 
-import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.common.exception.BusinessException;
 import courseitda.common.exception.ErrorCode;
+import courseitda.workspace.application.dto.request.DeleteRepresentativeCategoryPlaceCommand;
+import courseitda.workspace.application.dto.request.UpdateRepresentativeCategoryPlaceCommand;
+import courseitda.workspace.application.dto.response.UpdateRepresentativeCategoryPlaceResult;
 import courseitda.workspace.domain.Category;
 import courseitda.workspace.domain.CategoryPlace;
 import courseitda.workspace.domain.CategoryPlaceRepository;
 import courseitda.workspace.domain.CategoryRepository;
-import courseitda.workspace.ui.dto.request.RepresentativeCategoryPlaceUpdateRequest;
-import courseitda.workspace.ui.dto.response.RepresentativeCategoryPlaceUpdateResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,28 +21,23 @@ public class RepresentativeCategoryPlaceService {
     private final CategoryPlaceRepository categoryPlaceRepository;
 
     @Transactional
-    public RepresentativeCategoryPlaceUpdateResponse updateRepresentativeCategoryPlace(
-            final MemberAuthInfo memberAuthInfo,
-            final Long categoryId,
-            final RepresentativeCategoryPlaceUpdateRequest request
+    public UpdateRepresentativeCategoryPlaceResult updateRepresentativeCategoryPlace(
+            final UpdateRepresentativeCategoryPlaceCommand command
     ) {
-        final var category = getCategoryById(categoryId);
-        category.validateOwnership(memberAuthInfo.id());
+        final var category = getCategoryById(command.categoryId());
+        category.validateOwnership(command.memberAuthInfo().id());
 
-        final var candidatePlace = getCategoryPlaceById(request.categoryPlaceId());
+        final var candidatePlace = getCategoryPlaceById(command.categoryPlaceId());
 
         category.updateRepresentativePlaceTo(candidatePlace);
 
-        return RepresentativeCategoryPlaceUpdateResponse.from(category.getRepresentativePlace());
+        return UpdateRepresentativeCategoryPlaceResult.from(category.getRepresentativePlace());
     }
 
     @Transactional
-    public void deleteRepresentativeCategoryPlace(
-            final MemberAuthInfo memberAuthInfo,
-            final Long categoryId
-    ) {
-        final var category = getCategoryById(categoryId);
-        category.validateOwnership(memberAuthInfo.id());
+    public void deleteRepresentativeCategoryPlace(final DeleteRepresentativeCategoryPlaceCommand command) {
+        final var category = getCategoryById(command.categoryId());
+        category.validateOwnership(command.memberAuthInfo().id());
 
         category.updateRepresentativePlaceTo(null);
     }

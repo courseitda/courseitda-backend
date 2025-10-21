@@ -37,7 +37,7 @@ public class MemberController {
 
     @GetMapping("/validations/nickname")
     public ResponseEntity<CheckNicknameDuplicateResponse> checkNicknameDuplicate(
-            @RequestParam final String value
+            @RequestParam(required = false) final String value
     ) {
         final var result = memberService.isNicknameDuplicate(new IsNicknameDuplicateCommand(value));
 
@@ -46,7 +46,7 @@ public class MemberController {
 
     @GetMapping("/validations/email")
     public ResponseEntity<CheckEmailDuplicateResponse> checkEmailDuplicate(
-            @RequestParam final String value
+            @RequestParam(required = false) final String value
     ) {
         final var result = memberService.isEmailDuplicate(new IsEmailDuplicateCommand(value));
 

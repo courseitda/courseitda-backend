@@ -30,7 +30,7 @@ public record FindCategoryPlacesResult(
     public record CategoryPlaceResult(
             Long id,
             String name,
-            String address,
+            String addressName,
             boolean isRepresentative
     ) {
 

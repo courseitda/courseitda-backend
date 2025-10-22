@@ -40,7 +40,7 @@ public record CategoryResponse(
         public record CategoryPlaceResponse(
                 Long id,
                 String name,
-                String address,
+                String addressName,
                 double latitude,
                 double longitude,
                 boolean isRepresentative
@@ -51,7 +51,7 @@ public record CategoryResponse(
                 return new CategoryPlaceResponse(
                         result.id(),
                         result.name(),
-                        result.address(),
+                        result.addressName(),
                         result.latitude(),
                         result.longitude(),
                         result.isRepresentative()

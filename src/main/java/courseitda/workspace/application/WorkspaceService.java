@@ -1,15 +1,15 @@
 package courseitda.workspace.application;
 
-import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.common.exception.BusinessException;
 import courseitda.common.exception.ErrorCode;
-import courseitda.member.domain.Member;
 import courseitda.workspace.application.dto.request.CreateWorkspaceCommand;
 import courseitda.workspace.application.dto.request.DeleteWorkspaceCommand;
+import courseitda.workspace.application.dto.request.IsTitleDuplicateCommand;
 import courseitda.workspace.application.dto.request.ReadWorkspaceCommand;
 import courseitda.workspace.application.dto.request.ReadWorkspacesByMemberIdCommand;
 import courseitda.workspace.application.dto.request.UpdateWorkspaceCommand;
 import courseitda.workspace.application.dto.response.CreateWorkspaceResult;
+import courseitda.workspace.application.dto.response.IsTitleDuplicateResult;
 import courseitda.workspace.application.dto.response.ReadWorkspaceResult;
 import courseitda.workspace.application.dto.response.ReadWorkspacesByMemberIdResult;
 import courseitda.workspace.application.dto.response.UpdateWorkspaceResult;
@@ -73,6 +73,17 @@ public class WorkspaceService {
         return ReadWorkspaceResult.from(workspace);
     }
 
+    public IsTitleDuplicateResult isTitleDuplicate(final IsTitleDuplicateCommand command) {
+        validateTitleNotEmpty(command.title());
+
+        final var isDuplicate = workspaceRepository.existsByOwnerIdAndTitle(
+                command.memberAuthInfo().id(),
+                command.title()
+        );
+
+        return new IsTitleDuplicateResult(isDuplicate);
+    }
+
     private Workspace getByIdentifier(final String identifier) {
         return workspaceRepository.findByIdentifier(identifier)
                 .orElseThrow(() -> new BusinessException(ErrorCode.WORKSPACE_NOT_FOUND));
@@ -82,6 +93,12 @@ public class WorkspaceService {
         // 해당 회원 소유의 워크스페이스에 이미 해당 타이틀을 사용중인지
         if (workspaceRepository.existsByOwnerIdAndTitle(memberId, newTitle)) {
             throw new BusinessException(ErrorCode.DUPLICATE_WORKSPACE_TITLE);
+        }
+    }
+
+    private void validateTitleNotEmpty(final String title) {
+        if (title == null || title.isBlank()) {
+            throw new BusinessException(ErrorCode.WORKSPACE_TITLE_EMPTY);
         }
     }
 }

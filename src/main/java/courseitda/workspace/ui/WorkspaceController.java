@@ -8,6 +8,7 @@ import courseitda.workspace.application.CategoryService;
 import courseitda.workspace.application.WorkspaceService;
 import courseitda.workspace.application.dto.request.DeleteWorkspaceCommand;
 import courseitda.workspace.application.dto.request.FindAllCategoriesCommand;
+import courseitda.workspace.application.dto.request.IsTitleDuplicateCommand;
 import courseitda.workspace.application.dto.request.ReadWorkspaceCommand;
 import courseitda.workspace.ui.dto.request.CategoryCreateRequest;
 import courseitda.workspace.ui.dto.request.CategoryReorderRequest;
@@ -16,6 +17,7 @@ import courseitda.workspace.ui.dto.request.WorkspaceUpdateRequest;
 import courseitda.workspace.ui.dto.response.CategoriesResponse;
 import courseitda.workspace.ui.dto.response.CategoryCreateResponse;
 import courseitda.workspace.ui.dto.response.CategoryReorderResponse;
+import courseitda.workspace.ui.dto.response.CheckTitleDuplicateResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceCreateResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceReadResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceUpdateResponse;
@@ -30,6 +32,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -136,5 +139,16 @@ public class WorkspaceController {
         );
 
         return ResponseEntity.ok(CategoriesResponse.from(response));
+    }
+
+    // 워크스페이스 타이틀 중복 검증
+    @GetMapping("/validations/title")
+    public ResponseEntity<CheckTitleDuplicateResponse> checkTitleDuplicate(
+            final MemberAuthInfo memberAuthInfo,
+            @RequestParam(required = false) final String value
+    ) {
+        final var result = workspaceService.isTitleDuplicate(new IsTitleDuplicateCommand(memberAuthInfo, value));
+
+        return ResponseEntity.ok(CheckTitleDuplicateResponse.from(result));
     }
 }

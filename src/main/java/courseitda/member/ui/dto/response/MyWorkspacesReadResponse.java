@@ -1,4 +1,4 @@
-package courseitda.workspace.ui.dto.response;
+package courseitda.member.ui.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import courseitda.workspace.application.dto.response.ReadWorkspacesByMemberIdResult;
@@ -6,16 +6,16 @@ import courseitda.workspace.application.dto.response.ReadWorkspacesByMemberIdRes
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record WorkspacesResponse(
+public record MyWorkspacesReadResponse(
         List<WorkspaceResponse> workspaces
 ) {
 
-    public static WorkspacesResponse from(final ReadWorkspacesByMemberIdResult result) {
+    public static MyWorkspacesReadResponse from(final ReadWorkspacesByMemberIdResult result) {
         final List<WorkspaceResponse> workspaceResponses = result.workspaceResults().stream()
                 .map(WorkspaceResponse::from)
                 .toList();
 
-        return new WorkspacesResponse(workspaceResponses);
+        return new MyWorkspacesReadResponse(workspaceResponses);
     }
 
     public record WorkspaceResponse(

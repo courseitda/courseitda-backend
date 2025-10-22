@@ -55,8 +55,8 @@ public record CategoriesResponse(
                     Long id,
                     String name,
                     String address,
-                    double lat,
-                    double lng,
+                    double latitude,
+                    double longitude,
                     boolean isRepresentative
             ) {
 
@@ -66,8 +66,8 @@ public record CategoriesResponse(
                             result.id(),
                             result.name(),
                             result.address(),
-                            result.lat(),
-                            result.lng(),
+                            result.latitude(),
+                            result.longitude(),
                             result.isRepresentative()
                     );
                 }

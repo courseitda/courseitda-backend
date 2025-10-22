@@ -66,8 +66,8 @@ public record FindAllCategoriesResult(
                     Long id,
                     String name,
                     String address,
-                    double lat,
-                    double lng,
+                    double latitude,
+                    double longitude,
                     boolean isRepresentative
             ) {
 

@@ -20,6 +20,7 @@ public record CategoryPlacesResponse(
             Long id,
             String name,
             String addressName,
+            String roadAddressName,
             boolean isRepresentative
     ) {
 
@@ -28,6 +29,7 @@ public record CategoryPlacesResponse(
                     result.id(),
                     result.name(),
                     result.addressName(),
+                    result.roadAddressName(),
                     result.isRepresentative()
             );
         }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -34,16 +35,20 @@ public class MemberController {
                 .body(SignUpResponse.from(result));
     }
 
-    @GetMapping("/check-nickname-duplicate")
-    public ResponseEntity<CheckNicknameDuplicateResponse> checkNicknameDuplicate(final String nickname) {
-        final var result = memberService.isNicknameDuplicate(new IsNicknameDuplicateCommand(nickname));
+    @GetMapping("/validations/nickname")
+    public ResponseEntity<CheckNicknameDuplicateResponse> checkNicknameDuplicate(
+            @RequestParam(required = false) final String value
+    ) {
+        final var result = memberService.isNicknameDuplicate(new IsNicknameDuplicateCommand(value));
 
         return ResponseEntity.ok(CheckNicknameDuplicateResponse.from(result));
     }
 
-    @GetMapping("/check-email-duplicate")
-    public ResponseEntity<CheckEmailDuplicateResponse> checkEmailDuplicate(final String email) {
-        final var result = memberService.isEmailDuplicate(new IsEmailDuplicateCommand(email));
+    @GetMapping("/validations/email")
+    public ResponseEntity<CheckEmailDuplicateResponse> checkEmailDuplicate(
+            @RequestParam(required = false) final String value
+    ) {
+        final var result = memberService.isEmailDuplicate(new IsEmailDuplicateCommand(value));
 
         return ResponseEntity.ok(CheckEmailDuplicateResponse.from(result));
     }

@@ -72,7 +72,7 @@ class CategoryPlaceControllerTest {
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .body(request)
                     .when()
-                    .post("/api/categories/" + categoryId + "/category-places")
+                    .post("/api/categories/" + categoryId + "/places")
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
                     .extract()
@@ -106,7 +106,7 @@ class CategoryPlaceControllerTest {
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .body(request)
                     .when()
-                    .post("/api/categories/" + nonExistentCategoryId + "/category-places")
+                    .post("/api/categories/" + nonExistentCategoryId + "/places")
                     .then()
                     .statusCode(HttpStatus.NOT_FOUND.value())
                     .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.CATEGORY_NOT_FOUND.getCode()));
@@ -132,7 +132,7 @@ class CategoryPlaceControllerTest {
                     .header(HttpHeaders.AUTHORIZATION, otherUser)
                     .body(request)
                     .when()
-                    .post("/api/categories/" + categoryId + "/category-places")
+                    .post("/api/categories/" + categoryId + "/places")
                     .then()
                     .statusCode(HttpStatus.FORBIDDEN.value())
                     .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.CATEGORY_MODIFY_FORBIDDEN.getCode()));
@@ -159,7 +159,7 @@ class CategoryPlaceControllerTest {
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .when()
-                    .get("/api/categories/" + categoryId + "/category-places")
+                    .get("/api/categories/" + categoryId + "/places")
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .extract()
@@ -182,7 +182,7 @@ class CategoryPlaceControllerTest {
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .when()
-                    .get("/api/categories/" + categoryId + "/category-places")
+                    .get("/api/categories/" + categoryId + "/places")
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .extract()
@@ -209,7 +209,7 @@ class CategoryPlaceControllerTest {
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .when()
-                    .get("/api/categories/" + nonExistentCategoryId + "/category-places")
+                    .get("/api/categories/" + nonExistentCategoryId + "/places")
                     .then()
                     .statusCode(HttpStatus.NOT_FOUND.value())
                     .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.CATEGORY_NOT_FOUND.getCode()));
@@ -230,7 +230,7 @@ class CategoryPlaceControllerTest {
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, otherUser)
                     .when()
-                    .get("/api/categories/" + categoryId + "/category-places")
+                    .get("/api/categories/" + categoryId + "/places")
                     .then()
                     .statusCode(HttpStatus.FORBIDDEN.value())
                     .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.CATEGORY_MODIFY_FORBIDDEN.getCode()));
@@ -255,7 +255,7 @@ class CategoryPlaceControllerTest {
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .when()
-                    .delete("/api/categories/" + categoryId + "/category-places/" + categoryPlaceId)
+                    .delete("/api/categories/" + categoryId + "/places/" + categoryPlaceId)
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
         }
@@ -279,7 +279,7 @@ class CategoryPlaceControllerTest {
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .when()
-                    .delete("/api/categories/" + categoryId + "/category-places/" + nonExistentCategoryPlaceId)
+                    .delete("/api/categories/" + categoryId + "/places/" + nonExistentCategoryPlaceId)
                     .then()
                     .statusCode(HttpStatus.NOT_FOUND.value())
                     .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.CATEGORY_PLACE_NOT_FOUND.getCode()));
@@ -301,7 +301,7 @@ class CategoryPlaceControllerTest {
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, otherUser)
                     .when()
-                    .delete("/api/categories/" + categoryId + "/category-places/" + categoryPlaceId)
+                    .delete("/api/categories/" + categoryId + "/places/" + categoryPlaceId)
                     .then()
                     .statusCode(HttpStatus.FORBIDDEN.value())
                     .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.CATEGORY_MODIFY_FORBIDDEN.getCode()));
@@ -322,7 +322,7 @@ class CategoryPlaceControllerTest {
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .when()
-                    .delete("/api/categories/" + categoryId2 + "/category-places/" + categoryPlaceId)
+                    .delete("/api/categories/" + categoryId2 + "/places/" + categoryPlaceId)
                     .then()
                     .statusCode(HttpStatus.FORBIDDEN.value())
                     .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.PLACE_NOT_BELONG_TO_CATEGORY.getCode()));
@@ -407,7 +407,7 @@ class CategoryPlaceControllerTest {
                 .header(HttpHeaders.AUTHORIZATION, accessToken)
                 .body(request)
                 .when()
-                .post("/api/categories/" + categoryId + "/category-places")
+                .post("/api/categories/" + categoryId + "/places")
                 .then()
                 .statusCode(HttpStatus.CREATED.value())
                 .extract()

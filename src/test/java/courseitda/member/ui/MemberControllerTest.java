@@ -144,9 +144,9 @@ class MemberControllerTest {
 
             // when
             final CheckNicknameDuplicateResponse response = given()
-                    .queryParam("nickname", nickname)
+                    .queryParam("value", nickname)
                     .when()
-                    .get("/api/members/check-nickname-duplicate")
+                    .get("/api/members/validations/nickname")
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .extract()
@@ -175,9 +175,9 @@ class MemberControllerTest {
 
             // when
             final CheckNicknameDuplicateResponse response = given()
-                    .queryParam("nickname", nickname)
+                    .queryParam("value", nickname)
                     .when()
-                    .get("/api/members/check-nickname-duplicate")
+                    .get("/api/members/validations/nickname")
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .extract()
@@ -198,7 +198,7 @@ class MemberControllerTest {
             // when & then
             given()
                     .when()
-                    .get("/api/members/check-nickname-duplicate")
+                    .get("/api/members/validations/nickname")
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.MEMBER_NICKNAME_EMPTY.getCode()));
@@ -212,9 +212,9 @@ class MemberControllerTest {
 
             // when & then
             given()
-                    .queryParam("nickname", emptyNickname)
+                    .queryParam("value", emptyNickname)
                     .when()
-                    .get("/api/members/check-nickname-duplicate")
+                    .get("/api/members/validations/nickname")
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.MEMBER_NICKNAME_EMPTY.getCode()));
@@ -233,9 +233,9 @@ class MemberControllerTest {
 
             // when
             final CheckEmailDuplicateResponse response = given()
-                    .queryParam("email", email)
+                    .queryParam("value", email)
                     .when()
-                    .get("/api/members/check-email-duplicate")
+                    .get("/api/members/validations/email")
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .extract()
@@ -264,9 +264,9 @@ class MemberControllerTest {
 
             // when
             final CheckEmailDuplicateResponse response = given()
-                    .queryParam("email", email)
+                    .queryParam("value", email)
                     .when()
-                    .get("/api/members/check-email-duplicate")
+                    .get("/api/members/validations/email")
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .extract()
@@ -287,7 +287,7 @@ class MemberControllerTest {
             // when & then
             given()
                     .when()
-                    .get("/api/members/check-email-duplicate")
+                    .get("/api/members/validations/email")
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.MEMBER_EMAIL_EMPTY.getCode()));
@@ -301,9 +301,9 @@ class MemberControllerTest {
 
             // when & then
             given()
-                    .queryParam("email", emptyEmail)
+                    .queryParam("value", emptyEmail)
                     .when()
-                    .get("/api/members/check-email-duplicate")
+                    .get("/api/members/validations/email")
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.MEMBER_EMAIL_EMPTY.getCode()));
@@ -317,9 +317,9 @@ class MemberControllerTest {
 
             // when & then
             given()
-                    .queryParam("email", invalidEmail)
+                    .queryParam("value", invalidEmail)
                     .when()
-                    .get("/api/members/check-email-duplicate")
+                    .get("/api/members/validations/email")
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.INVALID_EMAIL_FORMAT.getCode()));

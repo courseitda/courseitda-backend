@@ -16,7 +16,7 @@ import courseitda.workspace.ui.dto.request.WorkspaceCreateRequest;
 import courseitda.workspace.ui.dto.request.WorkspaceUpdateRequest;
 import courseitda.workspace.ui.dto.response.CategoriesReadResponse;
 import courseitda.workspace.ui.dto.response.CategoryCreateResponse;
-import courseitda.workspace.ui.dto.response.CategoryReorderResponse;
+import courseitda.workspace.ui.dto.response.CategorySequenceUpdateResponse;
 import courseitda.workspace.ui.dto.response.CheckTitleDuplicateResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceCreateResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceReadResponse;
@@ -91,7 +91,7 @@ public class WorkspaceController {
 
     // 카테고리 순서 변경
     @PostMapping("/{workspaceIdentifier}/categories/sequence")
-    public ResponseEntity<CategoryReorderResponse> updateCategorySequence(
+    public ResponseEntity<CategorySequenceUpdateResponse> updateCategorySequence(
             final MemberAuthInfo memberAuthInfo,
             @PathVariable final String workspaceIdentifier,
             @Valid @RequestBody final CategoryReorderRequest request
@@ -99,7 +99,7 @@ public class WorkspaceController {
         final var response = categoryService.updateCategorySequence(
                 request.toCommandWith(memberAuthInfo, workspaceIdentifier)
         );
-        return ResponseEntity.ok(CategoryReorderResponse.from(response));
+        return ResponseEntity.ok(CategorySequenceUpdateResponse.from(response));
     }
 
     // 워크스페이스 삭제

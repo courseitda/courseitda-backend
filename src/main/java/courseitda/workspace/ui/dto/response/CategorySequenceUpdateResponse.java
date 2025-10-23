@@ -5,12 +5,12 @@ import courseitda.workspace.application.dto.response.UpdateCategorySequenceResul
 import courseitda.workspace.application.dto.response.UpdateCategorySequenceResult.CategorySequenceResult;
 import java.util.List;
 
-public record CategoryReorderResponse(
+public record CategorySequenceUpdateResponse(
         @JsonProperty("categories") List<CategorySequenceResponse> categorySequenceResponses
 ) {
 
-    public static CategoryReorderResponse from(final UpdateCategorySequenceResult result) {
-        return new CategoryReorderResponse(
+    public static CategorySequenceUpdateResponse from(final UpdateCategorySequenceResult result) {
+        return new CategorySequenceUpdateResponse(
                 result.categorySequenceResults().stream()
                         .map(CategorySequenceResponse::from)
                         .toList()

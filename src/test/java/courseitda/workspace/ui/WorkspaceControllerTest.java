@@ -18,7 +18,7 @@ import courseitda.workspace.ui.dto.request.WorkspaceCreateRequest;
 import courseitda.workspace.ui.dto.request.WorkspaceUpdateRequest;
 import courseitda.workspace.ui.dto.response.CategoriesReadResponse;
 import courseitda.workspace.ui.dto.response.CategoryCreateResponse;
-import courseitda.workspace.ui.dto.response.CategoryReorderResponse;
+import courseitda.workspace.ui.dto.response.CategorySequenceUpdateResponse;
 import courseitda.workspace.ui.dto.response.CheckTitleDuplicateResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceCreateResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceReadResponse;
@@ -500,7 +500,7 @@ class WorkspaceControllerTest {
             final CategoryReorderRequest request = new CategoryReorderRequest(sequenceRequests);
 
             // when
-            final CategoryReorderResponse response = given()
+            final CategorySequenceUpdateResponse response = given()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .body(request)
@@ -509,7 +509,7 @@ class WorkspaceControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .extract()
-                    .as(CategoryReorderResponse.class);
+                    .as(CategorySequenceUpdateResponse.class);
 
             // then
             assertThat(response.categorySequenceResponses()).hasSize(2);

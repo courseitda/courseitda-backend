@@ -8,7 +8,7 @@ import courseitda.workspace.application.dto.request.DeleteCategoryPlaceCommand;
 import courseitda.workspace.application.dto.request.FindCategoryPlacesCommand;
 import courseitda.workspace.ui.dto.request.CategoryPlaceCreateRequest;
 import courseitda.workspace.ui.dto.response.CategoryPlaceCreateResponse;
-import courseitda.workspace.ui.dto.response.CategoryPlacesResponse;
+import courseitda.workspace.ui.dto.response.CategoryPlacesReadResponse;
 import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
@@ -65,7 +65,7 @@ public class CategoryPlaceController {
 
     // 카테고리 장소 목록 조회
     @GetMapping
-    public ResponseEntity<CategoryPlacesResponse> readCategoryPlaces(
+    public ResponseEntity<CategoryPlacesReadResponse> readCategoryPlaces(
             final MemberAuthInfo memberAuthInfo,
             @PathVariable final Long categoryId
     ) {
@@ -75,6 +75,6 @@ public class CategoryPlaceController {
                 new FindCategoryPlacesCommand(memberAuthInfo, categoryId)
         );
 
-        return ResponseEntity.ok(CategoryPlacesResponse.from(result));
+        return ResponseEntity.ok(CategoryPlacesReadResponse.from(result));
     }
 }

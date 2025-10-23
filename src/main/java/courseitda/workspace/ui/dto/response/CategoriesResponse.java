@@ -66,8 +66,8 @@ public record CategoriesResponse(
                     return new CategoryPlaceResponse(
                             result.id(),
                             result.name(),
-                            result.roadAddressName(),
                             result.addressName(),
+                            result.roadAddressName(),
                             result.latitude(),
                             result.longitude(),
                             result.isRepresentative()

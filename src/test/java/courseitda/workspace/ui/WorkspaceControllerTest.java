@@ -16,7 +16,7 @@ import courseitda.workspace.ui.dto.request.CategoryReorderRequest;
 import courseitda.workspace.ui.dto.request.CategoryReorderRequest.CategorySequenceRequest;
 import courseitda.workspace.ui.dto.request.WorkspaceCreateRequest;
 import courseitda.workspace.ui.dto.request.WorkspaceUpdateRequest;
-import courseitda.workspace.ui.dto.response.CategoriesResponse;
+import courseitda.workspace.ui.dto.response.CategoriesReadResponse;
 import courseitda.workspace.ui.dto.response.CategoryCreateResponse;
 import courseitda.workspace.ui.dto.response.CategoryReorderResponse;
 import courseitda.workspace.ui.dto.response.CheckTitleDuplicateResponse;
@@ -47,6 +47,68 @@ class WorkspaceControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+    }
+
+    private String signUpAndLogin() {
+        final String email = MemberFixture.anyEmail();
+        final String password = MemberFixture.anyPassword();
+        final String nickname = MemberFixture.anyNickname();
+        final SignUpRequest signUpRequest = new SignUpRequest(nickname, email, password);
+
+        given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(signUpRequest)
+                .when()
+                .post("/api/members")
+                .then()
+                .statusCode(HttpStatus.CREATED.value());
+
+        final LoginRequest loginRequest = new LoginRequest(email, password);
+        final LoginResponse loginResponse = given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(loginRequest)
+                .when()
+                .post("/api/auth/login")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .as(LoginResponse.class);
+
+        return loginResponse.tokenType() + " " + loginResponse.accessToken();
+    }
+
+    private String createWorkspace(final String accessToken) {
+        final String title = WorkspaceFixture.anyTitle();
+        final WorkspaceCreateRequest request = new WorkspaceCreateRequest(title);
+
+        return given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .body(request)
+                .when()
+                .post("/api/workspaces")
+                .then()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract()
+                .as(WorkspaceCreateResponse.class)
+                .identifier();
+    }
+
+    private CategoryCreateResponse createCategory(final String accessToken, final String workspaceIdentifier) {
+        final String name = CategoryFixture.anyName();
+        final String color = CategoryFixture.anyColor();
+        final CategoryCreateRequest request = new CategoryCreateRequest(name, color);
+
+        return given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .body(request)
+                .when()
+                .post("/api/workspaces/" + workspaceIdentifier + "/categories")
+                .then()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract()
+                .as(CategoryCreateResponse.class);
     }
 
     @Nested
@@ -330,68 +392,6 @@ class WorkspaceControllerTest {
         }
     }
 
-    private String signUpAndLogin() {
-        final String email = MemberFixture.anyEmail();
-        final String password = MemberFixture.anyPassword();
-        final String nickname = MemberFixture.anyNickname();
-        final SignUpRequest signUpRequest = new SignUpRequest(nickname, email, password);
-
-        given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(signUpRequest)
-                .when()
-                .post("/api/members")
-                .then()
-                .statusCode(HttpStatus.CREATED.value());
-
-        final LoginRequest loginRequest = new LoginRequest(email, password);
-        final LoginResponse loginResponse = given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(loginRequest)
-                .when()
-                .post("/api/auth/login")
-                .then()
-                .statusCode(HttpStatus.OK.value())
-                .extract()
-                .as(LoginResponse.class);
-
-        return loginResponse.tokenType() + " " + loginResponse.accessToken();
-    }
-
-    private String createWorkspace(final String accessToken) {
-        final String title = WorkspaceFixture.anyTitle();
-        final WorkspaceCreateRequest request = new WorkspaceCreateRequest(title);
-
-        return given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, accessToken)
-                .body(request)
-                .when()
-                .post("/api/workspaces")
-                .then()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract()
-                .as(WorkspaceCreateResponse.class)
-                .identifier();
-    }
-
-    private CategoryCreateResponse createCategory(final String accessToken, final String workspaceIdentifier) {
-        final String name = CategoryFixture.anyName();
-        final String color = CategoryFixture.anyColor();
-        final CategoryCreateRequest request = new CategoryCreateRequest(name, color);
-
-        return given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, accessToken)
-                .body(request)
-                .when()
-                .post("/api/workspaces/" + workspaceIdentifier + "/categories")
-                .then()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract()
-                .as(CategoryCreateResponse.class);
-    }
-
     @Nested
     @DisplayName("카테고리 생성 성공 시나리오")
     class CreateCategorySuccessScenarios {
@@ -589,7 +589,7 @@ class WorkspaceControllerTest {
             createCategory(accessToken, workspaceIdentifier);
 
             // when
-            final CategoriesResponse response = given()
+            final CategoriesReadResponse response = given()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .when()
@@ -597,7 +597,7 @@ class WorkspaceControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .extract()
-                    .as(CategoriesResponse.class);
+                    .as(CategoriesReadResponse.class);
 
             // then
             assertThat(response.categoryResponses()).hasSize(3);
@@ -611,7 +611,7 @@ class WorkspaceControllerTest {
             final String workspaceIdentifier = createWorkspace(accessToken);
 
             // when
-            final CategoriesResponse response = given()
+            final CategoriesReadResponse response = given()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .when()
@@ -619,7 +619,7 @@ class WorkspaceControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .extract()
-                    .as(CategoriesResponse.class);
+                    .as(CategoriesReadResponse.class);
 
             // then
             assertThat(response.categoryResponses()).isEmpty();

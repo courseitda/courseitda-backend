@@ -14,7 +14,7 @@ import courseitda.workspace.ui.dto.request.CategoryCreateRequest;
 import courseitda.workspace.ui.dto.request.CategoryReorderRequest;
 import courseitda.workspace.ui.dto.request.WorkspaceCreateRequest;
 import courseitda.workspace.ui.dto.request.WorkspaceUpdateRequest;
-import courseitda.workspace.ui.dto.response.CategoriesResponse;
+import courseitda.workspace.ui.dto.response.CategoriesReadResponse;
 import courseitda.workspace.ui.dto.response.CategoryCreateResponse;
 import courseitda.workspace.ui.dto.response.CategoryReorderResponse;
 import courseitda.workspace.ui.dto.response.CheckTitleDuplicateResponse;
@@ -130,7 +130,7 @@ public class WorkspaceController {
 
     // 카테고리 목록 전체 조회 - 워크스페이스 상세 페이지
     @GetMapping("/{workspaceIdentifier}/categories")
-    public ResponseEntity<CategoriesResponse> readAllCategories(
+    public ResponseEntity<CategoriesReadResponse> readAllCategories(
             final MemberAuthInfo memberAuthInfo,
             @PathVariable final String workspaceIdentifier
     ) {
@@ -138,7 +138,7 @@ public class WorkspaceController {
                 new FindAllCategoriesCommand(memberAuthInfo, workspaceIdentifier)
         );
 
-        return ResponseEntity.ok(CategoriesResponse.from(response));
+        return ResponseEntity.ok(CategoriesReadResponse.from(response));
     }
 
     // 워크스페이스 타이틀 중복 검증

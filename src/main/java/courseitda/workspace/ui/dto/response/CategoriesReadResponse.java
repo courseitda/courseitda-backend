@@ -7,12 +7,12 @@ import courseitda.workspace.application.dto.response.FindAllCategoriesResult.Cat
 import courseitda.workspace.application.dto.response.FindAllCategoriesResult.CategoryResult.CategoryPlacesResult.CategoryPlaceResult;
 import java.util.List;
 
-public record CategoriesResponse(
+public record CategoriesReadResponse(
         @JsonProperty("categories") List<CategoryResponse> categoryResponses
 ) {
 
-    public static CategoriesResponse from(final FindAllCategoriesResult result) {
-        return new CategoriesResponse(
+    public static CategoriesReadResponse from(final FindAllCategoriesResult result) {
+        return new CategoriesReadResponse(
                 result.categoryResults().stream()
                         .map(CategoryResponse::from)
                         .toList());

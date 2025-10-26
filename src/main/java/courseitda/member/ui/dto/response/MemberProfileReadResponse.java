@@ -3,14 +3,14 @@ package courseitda.member.ui.dto.response;
 import courseitda.member.domain.Member;
 
 public record MemberProfileReadResponse(
-        String nickName,
+        String nickname,
         String email
 ) {
 
-    public static MemberProfileReadResponse from(final Member memeber) {
+    public static MemberProfileReadResponse from(final Member member) {
         return new MemberProfileReadResponse(
-                memeber.getNickname(),
-                memeber.getEmail()
+                member.getNickname(),
+                member.getEmail()
         );
     }
 }

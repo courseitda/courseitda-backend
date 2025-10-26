@@ -160,7 +160,7 @@ class MeControllerTest {
                     .as(MemberProfileReadResponse.class);
 
             // then
-            assertThat(response.nickName()).isNotNull();
+            assertThat(response.nickname()).isNotNull();
             assertThat(response.email()).isNotNull();
         }
     }

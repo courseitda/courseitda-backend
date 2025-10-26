@@ -30,7 +30,8 @@ public record FindCategoryPlacesResult(
     public record CategoryPlaceResult(
             Long id,
             String name,
-            String address,
+            String addressName,
+            String roadAddressName,
             boolean isRepresentative
     ) {
 
@@ -42,6 +43,7 @@ public record FindCategoryPlacesResult(
                     categoryPlace.getId(),
                     categoryPlace.getPlace().getName(),
                     categoryPlace.getPlace().getAddressName(),
+                    categoryPlace.getPlace().getRoadAddressName(),
                     isRepresentative
             );
         }

@@ -4,12 +4,12 @@ import courseitda.workspace.application.dto.response.FindCategoryPlacesResult;
 import courseitda.workspace.application.dto.response.FindCategoryPlacesResult.CategoryPlaceResult;
 import java.util.List;
 
-public record CategoryPlacesResponse(
+public record CategoryPlacesReadResponse(
         List<CategoryPlaceResponse> categoryPlaceResponses
 ) {
 
-    public static CategoryPlacesResponse from(final FindCategoryPlacesResult result) {
-        return new CategoryPlacesResponse(
+    public static CategoryPlacesReadResponse from(final FindCategoryPlacesResult result) {
+        return new CategoryPlacesReadResponse(
                 result.categoryPlaceResults().stream()
                         .map(CategoryPlaceResponse::from)
                         .toList()
@@ -19,7 +19,8 @@ public record CategoryPlacesResponse(
     public record CategoryPlaceResponse(
             Long id,
             String name,
-            String address,
+            String addressName,
+            String roadAddressName,
             boolean isRepresentative
     ) {
 
@@ -27,7 +28,8 @@ public record CategoryPlacesResponse(
             return new CategoryPlaceResponse(
                     result.id(),
                     result.name(),
-                    result.address(),
+                    result.addressName(),
+                    result.roadAddressName(),
                     result.isRepresentative()
             );
         }

@@ -8,14 +8,16 @@ import courseitda.workspace.application.CategoryService;
 import courseitda.workspace.application.WorkspaceService;
 import courseitda.workspace.application.dto.request.DeleteWorkspaceCommand;
 import courseitda.workspace.application.dto.request.FindAllCategoriesCommand;
+import courseitda.workspace.application.dto.request.IsTitleDuplicateCommand;
 import courseitda.workspace.application.dto.request.ReadWorkspaceCommand;
 import courseitda.workspace.ui.dto.request.CategoryCreateRequest;
 import courseitda.workspace.ui.dto.request.CategoryReorderRequest;
 import courseitda.workspace.ui.dto.request.WorkspaceCreateRequest;
 import courseitda.workspace.ui.dto.request.WorkspaceUpdateRequest;
-import courseitda.workspace.ui.dto.response.CategoriesResponse;
+import courseitda.workspace.ui.dto.response.CategoriesReadResponse;
 import courseitda.workspace.ui.dto.response.CategoryCreateResponse;
-import courseitda.workspace.ui.dto.response.CategoryReorderResponse;
+import courseitda.workspace.ui.dto.response.CategorySequenceUpdateResponse;
+import courseitda.workspace.ui.dto.response.CheckTitleDuplicateResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceCreateResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceReadResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceUpdateResponse;
@@ -30,6 +32,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -88,7 +91,7 @@ public class WorkspaceController {
 
     // 카테고리 순서 변경
     @PostMapping("/{workspaceIdentifier}/categories/sequence")
-    public ResponseEntity<CategoryReorderResponse> updateCategorySequence(
+    public ResponseEntity<CategorySequenceUpdateResponse> updateCategorySequence(
             final MemberAuthInfo memberAuthInfo,
             @PathVariable final String workspaceIdentifier,
             @Valid @RequestBody final CategoryReorderRequest request
@@ -96,7 +99,7 @@ public class WorkspaceController {
         final var response = categoryService.updateCategorySequence(
                 request.toCommandWith(memberAuthInfo, workspaceIdentifier)
         );
-        return ResponseEntity.ok(CategoryReorderResponse.from(response));
+        return ResponseEntity.ok(CategorySequenceUpdateResponse.from(response));
     }
 
     // 워크스페이스 삭제
@@ -127,7 +130,7 @@ public class WorkspaceController {
 
     // 카테고리 목록 전체 조회 - 워크스페이스 상세 페이지
     @GetMapping("/{workspaceIdentifier}/categories")
-    public ResponseEntity<CategoriesResponse> readAllCategories(
+    public ResponseEntity<CategoriesReadResponse> readAllCategories(
             final MemberAuthInfo memberAuthInfo,
             @PathVariable final String workspaceIdentifier
     ) {
@@ -135,6 +138,17 @@ public class WorkspaceController {
                 new FindAllCategoriesCommand(memberAuthInfo, workspaceIdentifier)
         );
 
-        return ResponseEntity.ok(CategoriesResponse.from(response));
+        return ResponseEntity.ok(CategoriesReadResponse.from(response));
+    }
+
+    // 워크스페이스 타이틀 중복 검증
+    @GetMapping("/validations/title")
+    public ResponseEntity<CheckTitleDuplicateResponse> checkTitleDuplicate(
+            final MemberAuthInfo memberAuthInfo,
+            @RequestParam(required = false) final String value
+    ) {
+        final var result = workspaceService.isTitleDuplicate(new IsTitleDuplicateCommand(memberAuthInfo, value));
+
+        return ResponseEntity.ok(CheckTitleDuplicateResponse.from(result));
     }
 }

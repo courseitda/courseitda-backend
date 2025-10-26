@@ -7,12 +7,12 @@ import courseitda.workspace.application.dto.response.FindAllCategoriesResult.Cat
 import courseitda.workspace.application.dto.response.FindAllCategoriesResult.CategoryResult.CategoryPlacesResult.CategoryPlaceResult;
 import java.util.List;
 
-public record CategoriesResponse(
+public record CategoriesReadResponse(
         @JsonProperty("categories") List<CategoryResponse> categoryResponses
 ) {
 
-    public static CategoriesResponse from(final FindAllCategoriesResult result) {
-        return new CategoriesResponse(
+    public static CategoriesReadResponse from(final FindAllCategoriesResult result) {
+        return new CategoriesReadResponse(
                 result.categoryResults().stream()
                         .map(CategoryResponse::from)
                         .toList());
@@ -54,9 +54,10 @@ public record CategoriesResponse(
             public record CategoryPlaceResponse(
                     Long id,
                     String name,
-                    String address,
-                    double lat,
-                    double lng,
+                    String addressName,
+                    String roadAddressName,
+                    double latitude,
+                    double longitude,
                     boolean isRepresentative
             ) {
 
@@ -65,9 +66,10 @@ public record CategoriesResponse(
                     return new CategoryPlaceResponse(
                             result.id(),
                             result.name(),
-                            result.address(),
-                            result.lat(),
-                            result.lng(),
+                            result.addressName(),
+                            result.roadAddressName(),
+                            result.latitude(),
+                            result.longitude(),
                             result.isRepresentative()
                     );
                 }

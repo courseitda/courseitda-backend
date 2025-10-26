@@ -5,7 +5,7 @@ import courseitda.workspace.application.dto.response.FindCategoryResult;
 import courseitda.workspace.application.dto.response.FindCategoryResult.CategoryPlacesResult;
 import java.util.List;
 
-public record CategoryResponse(
+public record CategoryReadResponse(
         Long id,
         String name,
         String color,
@@ -14,8 +14,8 @@ public record CategoryResponse(
         @JsonProperty("categoryPlaces") CategoryPlacesResponse categoryPlacesResponse
 ) {
 
-    public static CategoryResponse from(final FindCategoryResult result) {
-        return new CategoryResponse(
+    public static CategoryReadResponse from(final FindCategoryResult result) {
+        return new CategoryReadResponse(
                 result.id(),
                 result.name(),
                 result.color(),
@@ -40,9 +40,10 @@ public record CategoryResponse(
         public record CategoryPlaceResponse(
                 Long id,
                 String name,
-                String address,
-                double lat,
-                double lng,
+                String addressName,
+                String roadAddressName,
+                double latitude,
+                double longitude,
                 boolean isRepresentative
         ) {
 
@@ -51,9 +52,10 @@ public record CategoryResponse(
                 return new CategoryPlaceResponse(
                         result.id(),
                         result.name(),
-                        result.address(),
-                        result.lat(),
-                        result.lng(),
+                        result.addressName(),
+                        result.roadAddressName(),
+                        result.latitude(),
+                        result.longitude(),
                         result.isRepresentative()
                 );
             }

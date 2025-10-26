@@ -16,7 +16,7 @@ import courseitda.workspace.ui.dto.request.CategoryPlaceCreateRequest;
 import courseitda.workspace.ui.dto.request.WorkspaceCreateRequest;
 import courseitda.workspace.ui.dto.response.CategoryCreateResponse;
 import courseitda.workspace.ui.dto.response.CategoryPlaceCreateResponse;
-import courseitda.workspace.ui.dto.response.CategoryPlacesResponse;
+import courseitda.workspace.ui.dto.response.CategoryPlacesReadResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceCreateResponse;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,6 +42,91 @@ class CategoryPlaceControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+    }
+
+    private String signUpAndLogin() {
+        final String email = MemberFixture.anyEmail();
+        final String password = MemberFixture.anyPassword();
+        final String nickname = MemberFixture.anyNickname();
+        final SignUpRequest signUpRequest = new SignUpRequest(nickname, email, password);
+
+        given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(signUpRequest)
+                .when()
+                .post("/api/members")
+                .then()
+                .statusCode(HttpStatus.CREATED.value());
+
+        final LoginRequest loginRequest = new LoginRequest(email, password);
+        final LoginResponse loginResponse = given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(loginRequest)
+                .when()
+                .post("/api/auth/login")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .as(LoginResponse.class);
+
+        return loginResponse.tokenType() + " " + loginResponse.accessToken();
+    }
+
+    private String createWorkspace(final String accessToken) {
+        final String title = WorkspaceFixture.anyTitle();
+        final WorkspaceCreateRequest request = new WorkspaceCreateRequest(title);
+
+        return given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .body(request)
+                .when()
+                .post("/api/workspaces")
+                .then()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract()
+                .as(WorkspaceCreateResponse.class)
+                .identifier();
+    }
+
+    private CategoryCreateResponse createCategory(final String accessToken, final String workspaceIdentifier) {
+        final String name = CategoryFixture.anyName();
+        final String color = CategoryFixture.anyColor();
+        final CategoryCreateRequest request = new CategoryCreateRequest(name, color);
+
+        return given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .body(request)
+                .when()
+                .post("/api/workspaces/" + workspaceIdentifier + "/categories")
+                .then()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract()
+                .as(CategoryCreateResponse.class);
+    }
+
+    private CategoryPlaceCreateResponse createCategoryPlace(final String accessToken, final Long categoryId) {
+        final String name = PlaceFixture.anyName();
+        final String roadAddressName = PlaceFixture.anyRoadAddressName();
+        final String addressName = PlaceFixture.anyAddressName();
+        final double lat = PlaceFixture.anyLatitude();
+        final double lng = PlaceFixture.anyLongitude();
+
+        final CategoryPlaceCreateRequest request = new CategoryPlaceCreateRequest(
+                name, roadAddressName, addressName, lat, lng
+        );
+
+        return given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .body(request)
+                .when()
+                .post("/api/categories/" + categoryId + "/places")
+                .then()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract()
+                .as(CategoryPlaceCreateResponse.class);
     }
 
     @Nested
@@ -155,7 +240,7 @@ class CategoryPlaceControllerTest {
             createCategoryPlace(accessToken, categoryId);
 
             // when
-            final CategoryPlacesResponse response = given()
+            final CategoryPlacesReadResponse response = given()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .when()
@@ -163,7 +248,7 @@ class CategoryPlaceControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .extract()
-                    .as(CategoryPlacesResponse.class);
+                    .as(CategoryPlacesReadResponse.class);
 
             // then
             assertThat(response.categoryPlaceResponses()).hasSize(2);
@@ -178,7 +263,7 @@ class CategoryPlaceControllerTest {
             final Long categoryId = createCategory(accessToken, workspaceIdentifier).id();
 
             // when
-            final CategoryPlacesResponse response = given()
+            final CategoryPlacesReadResponse response = given()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .when()
@@ -186,7 +271,7 @@ class CategoryPlaceControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .extract()
-                    .as(CategoryPlacesResponse.class);
+                    .as(CategoryPlacesReadResponse.class);
 
             // then
             assertThat(response.categoryPlaceResponses()).isEmpty();
@@ -327,90 +412,5 @@ class CategoryPlaceControllerTest {
                     .statusCode(HttpStatus.FORBIDDEN.value())
                     .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.PLACE_NOT_BELONG_TO_CATEGORY.getCode()));
         }
-    }
-
-    private String signUpAndLogin() {
-        final String email = MemberFixture.anyEmail();
-        final String password = MemberFixture.anyPassword();
-        final String nickname = MemberFixture.anyNickname();
-        final SignUpRequest signUpRequest = new SignUpRequest(nickname, email, password);
-
-        given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(signUpRequest)
-                .when()
-                .post("/api/members")
-                .then()
-                .statusCode(HttpStatus.CREATED.value());
-
-        final LoginRequest loginRequest = new LoginRequest(email, password);
-        final LoginResponse loginResponse = given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(loginRequest)
-                .when()
-                .post("/api/auth/login")
-                .then()
-                .statusCode(HttpStatus.OK.value())
-                .extract()
-                .as(LoginResponse.class);
-
-        return loginResponse.tokenType() + " " + loginResponse.accessToken();
-    }
-
-    private String createWorkspace(final String accessToken) {
-        final String title = WorkspaceFixture.anyTitle();
-        final WorkspaceCreateRequest request = new WorkspaceCreateRequest(title);
-
-        return given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, accessToken)
-                .body(request)
-                .when()
-                .post("/api/workspaces")
-                .then()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract()
-                .as(WorkspaceCreateResponse.class)
-                .identifier();
-    }
-
-    private CategoryCreateResponse createCategory(final String accessToken, final String workspaceIdentifier) {
-        final String name = CategoryFixture.anyName();
-        final String color = CategoryFixture.anyColor();
-        final CategoryCreateRequest request = new CategoryCreateRequest(name, color);
-
-        return given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, accessToken)
-                .body(request)
-                .when()
-                .post("/api/workspaces/" + workspaceIdentifier + "/categories")
-                .then()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract()
-                .as(CategoryCreateResponse.class);
-    }
-
-    private CategoryPlaceCreateResponse createCategoryPlace(final String accessToken, final Long categoryId) {
-        final String name = PlaceFixture.anyName();
-        final String roadAddressName = PlaceFixture.anyRoadAddressName();
-        final String addressName = PlaceFixture.anyAddressName();
-        final double lat = PlaceFixture.anyLatitude();
-        final double lng = PlaceFixture.anyLongitude();
-
-        final CategoryPlaceCreateRequest request = new CategoryPlaceCreateRequest(
-                name, roadAddressName, addressName, lat, lng
-        );
-
-        return given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, accessToken)
-                .body(request)
-                .when()
-                .post("/api/categories/" + categoryId + "/places")
-                .then()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract()
-                .as(CategoryPlaceCreateResponse.class);
     }
 }

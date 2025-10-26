@@ -16,9 +16,10 @@ import courseitda.workspace.ui.dto.request.CategoryReorderRequest;
 import courseitda.workspace.ui.dto.request.CategoryReorderRequest.CategorySequenceRequest;
 import courseitda.workspace.ui.dto.request.WorkspaceCreateRequest;
 import courseitda.workspace.ui.dto.request.WorkspaceUpdateRequest;
-import courseitda.workspace.ui.dto.response.CategoriesResponse;
+import courseitda.workspace.ui.dto.response.CategoriesReadResponse;
 import courseitda.workspace.ui.dto.response.CategoryCreateResponse;
-import courseitda.workspace.ui.dto.response.CategoryReorderResponse;
+import courseitda.workspace.ui.dto.response.CategorySequenceUpdateResponse;
+import courseitda.workspace.ui.dto.response.CheckTitleDuplicateResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceCreateResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceReadResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceUpdateResponse;
@@ -46,6 +47,68 @@ class WorkspaceControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+    }
+
+    private String signUpAndLogin() {
+        final String email = MemberFixture.anyEmail();
+        final String password = MemberFixture.anyPassword();
+        final String nickname = MemberFixture.anyNickname();
+        final SignUpRequest signUpRequest = new SignUpRequest(nickname, email, password);
+
+        given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(signUpRequest)
+                .when()
+                .post("/api/members")
+                .then()
+                .statusCode(HttpStatus.CREATED.value());
+
+        final LoginRequest loginRequest = new LoginRequest(email, password);
+        final LoginResponse loginResponse = given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(loginRequest)
+                .when()
+                .post("/api/auth/login")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .as(LoginResponse.class);
+
+        return loginResponse.tokenType() + " " + loginResponse.accessToken();
+    }
+
+    private String createWorkspace(final String accessToken) {
+        final String title = WorkspaceFixture.anyTitle();
+        final WorkspaceCreateRequest request = new WorkspaceCreateRequest(title);
+
+        return given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .body(request)
+                .when()
+                .post("/api/workspaces")
+                .then()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract()
+                .as(WorkspaceCreateResponse.class)
+                .identifier();
+    }
+
+    private CategoryCreateResponse createCategory(final String accessToken, final String workspaceIdentifier) {
+        final String name = CategoryFixture.anyName();
+        final String color = CategoryFixture.anyColor();
+        final CategoryCreateRequest request = new CategoryCreateRequest(name, color);
+
+        return given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .body(request)
+                .when()
+                .post("/api/workspaces/" + workspaceIdentifier + "/categories")
+                .then()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract()
+                .as(CategoryCreateResponse.class);
     }
 
     @Nested
@@ -329,68 +392,6 @@ class WorkspaceControllerTest {
         }
     }
 
-    private String signUpAndLogin() {
-        final String email = MemberFixture.anyEmail();
-        final String password = MemberFixture.anyPassword();
-        final String nickname = MemberFixture.anyNickname();
-        final SignUpRequest signUpRequest = new SignUpRequest(nickname, email, password);
-
-        given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(signUpRequest)
-                .when()
-                .post("/api/members")
-                .then()
-                .statusCode(HttpStatus.CREATED.value());
-
-        final LoginRequest loginRequest = new LoginRequest(email, password);
-        final LoginResponse loginResponse = given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(loginRequest)
-                .when()
-                .post("/api/auth/login")
-                .then()
-                .statusCode(HttpStatus.OK.value())
-                .extract()
-                .as(LoginResponse.class);
-
-        return loginResponse.tokenType() + " " + loginResponse.accessToken();
-    }
-
-    private String createWorkspace(final String accessToken) {
-        final String title = WorkspaceFixture.anyTitle();
-        final WorkspaceCreateRequest request = new WorkspaceCreateRequest(title);
-
-        return given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, accessToken)
-                .body(request)
-                .when()
-                .post("/api/workspaces")
-                .then()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract()
-                .as(WorkspaceCreateResponse.class)
-                .identifier();
-    }
-
-    private CategoryCreateResponse createCategory(final String accessToken, final String workspaceIdentifier) {
-        final String name = CategoryFixture.anyName();
-        final String color = CategoryFixture.anyColor();
-        final CategoryCreateRequest request = new CategoryCreateRequest(name, color);
-
-        return given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, accessToken)
-                .body(request)
-                .when()
-                .post("/api/workspaces/" + workspaceIdentifier + "/categories")
-                .then()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract()
-                .as(CategoryCreateResponse.class);
-    }
-
     @Nested
     @DisplayName("카테고리 생성 성공 시나리오")
     class CreateCategorySuccessScenarios {
@@ -499,7 +500,7 @@ class WorkspaceControllerTest {
             final CategoryReorderRequest request = new CategoryReorderRequest(sequenceRequests);
 
             // when
-            final CategoryReorderResponse response = given()
+            final CategorySequenceUpdateResponse response = given()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .body(request)
@@ -508,7 +509,7 @@ class WorkspaceControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .extract()
-                    .as(CategoryReorderResponse.class);
+                    .as(CategorySequenceUpdateResponse.class);
 
             // then
             assertThat(response.categorySequenceResponses()).hasSize(2);
@@ -588,7 +589,7 @@ class WorkspaceControllerTest {
             createCategory(accessToken, workspaceIdentifier);
 
             // when
-            final CategoriesResponse response = given()
+            final CategoriesReadResponse response = given()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .when()
@@ -596,7 +597,7 @@ class WorkspaceControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .extract()
-                    .as(CategoriesResponse.class);
+                    .as(CategoriesReadResponse.class);
 
             // then
             assertThat(response.categoryResponses()).hasSize(3);
@@ -610,7 +611,7 @@ class WorkspaceControllerTest {
             final String workspaceIdentifier = createWorkspace(accessToken);
 
             // when
-            final CategoriesResponse response = given()
+            final CategoriesReadResponse response = given()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .when()
@@ -618,7 +619,7 @@ class WorkspaceControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .extract()
-                    .as(CategoriesResponse.class);
+                    .as(CategoriesReadResponse.class);
 
             // then
             assertThat(response.categoryResponses()).isEmpty();
@@ -665,6 +666,143 @@ class WorkspaceControllerTest {
                     .then()
                     .statusCode(HttpStatus.FORBIDDEN.value())
                     .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.WORKSPACE_MODIFY_FORBIDDEN.getCode()));
+        }
+    }
+
+    @Nested
+    @DisplayName("워크스페이스 제목 중복 검증 성공 시나리오")
+    class CheckTitleDuplicateSuccessScenarios {
+
+        @Test
+        @DisplayName("중복되지 않은 제목을 검증한다")
+        void checkTitleDuplicate_success_notDuplicated() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String title = WorkspaceFixture.anyTitle();
+
+            // when
+            final CheckTitleDuplicateResponse response = given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .queryParam("value", title)
+                    .when()
+                    .get("/api/workspaces/validations/title")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .as(CheckTitleDuplicateResponse.class);
+
+            // then
+            assertThat(response.isDuplicate()).isFalse();
+        }
+
+        @Test
+        @DisplayName("중복된 제목을 검증한다")
+        void checkTitleDuplicate_success_duplicated() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String title = WorkspaceFixture.anyTitle();
+            final WorkspaceCreateRequest request = new WorkspaceCreateRequest(title);
+
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .body(request)
+                    .when()
+                    .post("/api/workspaces")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value());
+
+            // when
+            final CheckTitleDuplicateResponse response = given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .queryParam("value", title)
+                    .when()
+                    .get("/api/workspaces/validations/title")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .as(CheckTitleDuplicateResponse.class);
+
+            // then
+            assertThat(response.isDuplicate()).isTrue();
+        }
+
+        @Test
+        @DisplayName("다른 사용자의 동일한 제목은 중복이 아니다")
+        void checkTitleDuplicate_success_notDuplicatedForDifferentUser() {
+            // given
+            final String user1 = signUpAndLogin();
+            final String title = WorkspaceFixture.anyTitle();
+            final WorkspaceCreateRequest request = new WorkspaceCreateRequest(title);
+
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, user1)
+                    .body(request)
+                    .when()
+                    .post("/api/workspaces")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value());
+
+            final String user2 = signUpAndLogin();
+
+            // when
+            final CheckTitleDuplicateResponse response = given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, user2)
+                    .queryParam("value", title)
+                    .when()
+                    .get("/api/workspaces/validations/title")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .as(CheckTitleDuplicateResponse.class);
+
+            // then
+            assertThat(response.isDuplicate()).isFalse();
+        }
+    }
+
+    @Nested
+    @DisplayName("워크스페이스 제목 중복 검증 실패 시나리오")
+    class CheckTitleDuplicateFailureScenarios {
+
+        @Test
+        @DisplayName("제목이 null인 경우 검증에 실패한다")
+        void checkTitleDuplicate_fail_nullTitle() {
+            // given
+            final String accessToken = signUpAndLogin();
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .when()
+                    .get("/api/workspaces/validations/title")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.WORKSPACE_TITLE_EMPTY.getCode()));
+        }
+
+        @Test
+        @DisplayName("제목이 빈 문자열인 경우 검증에 실패한다")
+        void checkTitleDuplicate_fail_emptyTitle() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String emptyTitle = "";
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .queryParam("value", emptyTitle)
+                    .when()
+                    .get("/api/workspaces/validations/title")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.WORKSPACE_TITLE_EMPTY.getCode()));
         }
     }
 }

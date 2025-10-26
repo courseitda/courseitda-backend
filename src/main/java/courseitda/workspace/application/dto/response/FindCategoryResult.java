@@ -54,9 +54,10 @@ public record FindCategoryResult(
         public record CategoryPlaceResult(
                 Long id,
                 String name,
-                String address,
-                double lat,
-                double lng,
+                String addressName,
+                String roadAddressName,
+                double latitude,
+                double longitude,
                 boolean isRepresentative
         ) {
 
@@ -68,6 +69,7 @@ public record FindCategoryResult(
                         categoryPlace.getId(),
                         categoryPlace.getPlace().getName(),
                         categoryPlace.getPlace().getAddressName(),
+                        categoryPlace.getPlace().getRoadAddressName(),
                         categoryPlace.getPlace().getLatitude(),
                         categoryPlace.getPlace().getLongitude(),
                         isRepresentative

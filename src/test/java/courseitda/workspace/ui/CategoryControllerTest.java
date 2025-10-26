@@ -14,21 +14,16 @@ import courseitda.workspace.domain.CategoryFixture;
 import courseitda.workspace.domain.WorkspaceFixture;
 import courseitda.workspace.ui.dto.request.CategoryCreateRequest;
 import courseitda.workspace.ui.dto.request.CategoryPlaceCreateRequest;
-import courseitda.workspace.ui.dto.request.CategoryReorderRequest;
-import courseitda.workspace.ui.dto.request.CategoryReorderRequest.CategorySequenceRequest;
 import courseitda.workspace.ui.dto.request.CategoryUpdateRequest;
 import courseitda.workspace.ui.dto.request.RepresentativeCategoryPlaceUpdateRequest;
 import courseitda.workspace.ui.dto.request.WorkspaceCreateRequest;
-import courseitda.workspace.ui.dto.response.CategoriesResponse;
 import courseitda.workspace.ui.dto.response.CategoryCreateResponse;
 import courseitda.workspace.ui.dto.response.CategoryPlaceCreateResponse;
-import courseitda.workspace.ui.dto.response.CategoryReorderResponse;
-import courseitda.workspace.ui.dto.response.CategoryResponse;
+import courseitda.workspace.ui.dto.response.CategoryReadResponse;
 import courseitda.workspace.ui.dto.response.CategoryUpdateResponse;
 import courseitda.workspace.ui.dto.response.RepresentativeCategoryPlaceUpdateResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceCreateResponse;
 import io.restassured.RestAssured;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -308,7 +303,7 @@ class CategoryControllerTest {
             final CategoryCreateResponse category = createCategory(accessToken, workspaceIdentifier);
 
             // when
-            final CategoryResponse response = given()
+            final CategoryReadResponse response = given()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .when()
@@ -316,7 +311,7 @@ class CategoryControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .extract()
-                    .as(CategoryResponse.class);
+                    .as(CategoryReadResponse.class);
 
             // then
             assertThat(response.id()).isEqualTo(category.id());

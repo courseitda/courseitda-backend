@@ -4,12 +4,12 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class MemberFixture {
 
-    public static AtomicLong sequenceNickName = new AtomicLong(0L);
+    public static AtomicLong sequenceNickname = new AtomicLong(0L);
     public static AtomicLong sequenceEmail = new AtomicLong(0L);
     public static AtomicLong sequenceLoginAuthenticationIdentifier = new AtomicLong(0L);
 
     public static String anyNickname() {
-        return "nickname" + sequenceNickName.incrementAndGet();
+        return "nickname" + sequenceNickname.incrementAndGet();
     }
 
     public static String anyEmail() {

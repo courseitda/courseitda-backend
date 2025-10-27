@@ -1,6 +1,6 @@
 package courseitda.member.application.dto.response;
 
-public record IsEmailDuplicateResult(
+public record CheckNicknameDuplicateResult(
         boolean isDuplicated
 ) {
 }

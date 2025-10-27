@@ -1,8 +1,8 @@
 package courseitda.member.ui;
 
 import courseitda.member.application.MemberService;
-import courseitda.member.application.dto.request.IsEmailDuplicateCommand;
-import courseitda.member.application.dto.request.IsNicknameDuplicateCommand;
+import courseitda.member.application.dto.request.CheckEmailDuplicateCommand;
+import courseitda.member.application.dto.request.CheckNicknameDuplicateCommand;
 import courseitda.member.ui.dto.request.SignUpRequest;
 import courseitda.member.ui.dto.response.CheckEmailDuplicateResponse;
 import courseitda.member.ui.dto.response.CheckNicknameDuplicateResponse;
@@ -39,7 +39,7 @@ public class MemberController {
     public ResponseEntity<CheckNicknameDuplicateResponse> checkNicknameDuplicate(
             @RequestParam(required = false) final String value
     ) {
-        final var result = memberService.isNicknameDuplicate(new IsNicknameDuplicateCommand(value));
+        final var result = memberService.checkNicknameDuplicate(new CheckNicknameDuplicateCommand(value));
 
         return ResponseEntity.ok(CheckNicknameDuplicateResponse.from(result));
     }
@@ -48,7 +48,7 @@ public class MemberController {
     public ResponseEntity<CheckEmailDuplicateResponse> checkEmailDuplicate(
             @RequestParam(required = false) final String value
     ) {
-        final var result = memberService.isEmailDuplicate(new IsEmailDuplicateCommand(value));
+        final var result = memberService.checkEmailDuplicate(new CheckEmailDuplicateCommand(value));
 
         return ResponseEntity.ok(CheckEmailDuplicateResponse.from(result));
     }

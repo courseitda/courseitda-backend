@@ -1,6 +1,6 @@
 package courseitda.workspace.application.dto.response;
 
-public record IsTitleDuplicateResult(
+public record CheckTitleDuplicateResult(
         boolean isDuplicate
 ) {
 }

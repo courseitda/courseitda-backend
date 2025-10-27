@@ -1,6 +1,6 @@
 package courseitda.member.application.dto.request;
 
-public record IsNicknameDuplicateCommand(
+public record CheckNicknameDuplicateCommand(
         String nickname
 ) {
 }

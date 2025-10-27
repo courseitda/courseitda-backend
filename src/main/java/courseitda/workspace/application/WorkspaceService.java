@@ -2,16 +2,16 @@ package courseitda.workspace.application;
 
 import courseitda.common.exception.BusinessException;
 import courseitda.common.exception.ErrorCode;
+import courseitda.workspace.application.dto.request.CheckWorkspaceTitleDuplicateCommand;
 import courseitda.workspace.application.dto.request.CreateWorkspaceCommand;
 import courseitda.workspace.application.dto.request.DeleteWorkspaceCommand;
 import courseitda.workspace.application.dto.request.FindWorkspaceCommand;
 import courseitda.workspace.application.dto.request.FindWorkspacesByMemberIdCommand;
-import courseitda.workspace.application.dto.request.IsWorkspaceTitleDuplicateCommand;
 import courseitda.workspace.application.dto.request.UpdateWorkspaceCommand;
+import courseitda.workspace.application.dto.response.CheckTitleDuplicateResult;
 import courseitda.workspace.application.dto.response.CreateWorkspaceResult;
 import courseitda.workspace.application.dto.response.FindWorkspaceResult;
 import courseitda.workspace.application.dto.response.FindWorkspacesByMemberIdResult;
-import courseitda.workspace.application.dto.response.IsTitleDuplicateResult;
 import courseitda.workspace.application.dto.response.UpdateWorkspaceResult;
 import courseitda.workspace.domain.Workspace;
 import courseitda.workspace.domain.WorkspaceRepository;
@@ -73,7 +73,7 @@ public class WorkspaceService {
         return FindWorkspaceResult.from(workspace);
     }
 
-    public IsTitleDuplicateResult isTitleDuplicate(final IsWorkspaceTitleDuplicateCommand command) {
+    public CheckTitleDuplicateResult checkTitleDuplicate(final CheckWorkspaceTitleDuplicateCommand command) {
         validateTitleNotEmpty(command.title());
 
         final var isDuplicate = workspaceRepository.existsByOwnerIdAndTitle(
@@ -81,7 +81,7 @@ public class WorkspaceService {
                 command.title()
         );
 
-        return new IsTitleDuplicateResult(isDuplicate);
+        return new CheckTitleDuplicateResult(isDuplicate);
     }
 
     private Workspace getByIdentifier(final String identifier) {

@@ -6,10 +6,10 @@ import courseitda.auth.domain.RequiresRole;
 import courseitda.member.domain.Member;
 import courseitda.workspace.application.CategoryService;
 import courseitda.workspace.application.WorkspaceService;
+import courseitda.workspace.application.dto.request.CheckWorkspaceTitleDuplicateCommand;
 import courseitda.workspace.application.dto.request.DeleteWorkspaceCommand;
 import courseitda.workspace.application.dto.request.FindAllCategoriesCommand;
 import courseitda.workspace.application.dto.request.FindWorkspaceCommand;
-import courseitda.workspace.application.dto.request.IsWorkspaceTitleDuplicateCommand;
 import courseitda.workspace.ui.dto.request.CategoryCreateRequest;
 import courseitda.workspace.ui.dto.request.CategoryReorderRequest;
 import courseitda.workspace.ui.dto.request.WorkspaceCreateRequest;
@@ -147,8 +147,8 @@ public class WorkspaceController {
             final MemberAuthInfo memberAuthInfo,
             @RequestParam(required = false) final String value
     ) {
-        final var result = workspaceService.isTitleDuplicate(
-                new IsWorkspaceTitleDuplicateCommand(memberAuthInfo, value));
+        final var result = workspaceService.checkTitleDuplicate(
+                new CheckWorkspaceTitleDuplicateCommand(memberAuthInfo, value));
 
         return ResponseEntity.ok(CheckTitleDuplicateResponse.from(result));
     }

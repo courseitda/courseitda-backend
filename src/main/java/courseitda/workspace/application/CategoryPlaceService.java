@@ -78,8 +78,8 @@ public class CategoryPlaceService {
                             command.name(),
                             command.roadAddressName(),
                             command.addressName(),
-                            command.lat(),
-                            command.lng()
+                            command.latitude(),
+                            command.longitude()
                     );
                     return placeRepository.save(newPlace);
                 });

@@ -5,12 +5,12 @@ import static courseitda.auth.domain.AuthRole.MEMBER;
 import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.auth.domain.RequiresRole;
 import courseitda.member.domain.Member;
-import courseitda.member.ui.dto.response.MemberDropdownReadResponse;
-import courseitda.member.ui.dto.response.MemberNavigatorReadResponse;
-import courseitda.member.ui.dto.response.MemberProfileReadResponse;
-import courseitda.member.ui.dto.response.MyWorkspacesReadResponse;
+import courseitda.member.ui.dto.response.MemberDropdownResponse;
+import courseitda.member.ui.dto.response.MemberNavigatorResponse;
+import courseitda.member.ui.dto.response.MemberProfileResponse;
+import courseitda.member.ui.dto.response.MyWorkspacesResponse;
 import courseitda.workspace.application.WorkspaceService;
-import courseitda.workspace.application.dto.request.ReadWorkspacesByMemberIdCommand;
+import courseitda.workspace.application.dto.request.FindWorkspacesByMemberIdCommand;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,30 +26,30 @@ public class MeController {
     private final WorkspaceService workspaceService;
 
     @GetMapping("/navigator")
-    public ResponseEntity<MemberNavigatorReadResponse> readMemberNavigator(
+    public ResponseEntity<MemberNavigatorResponse> readMemberNavigator(
             final Member member
     ) {
-        final var response = MemberNavigatorReadResponse.from(member);
+        final var response = MemberNavigatorResponse.from(member);
 
         return ResponseEntity.ok()
                 .body(response);
     }
 
     @GetMapping("/dropdown")
-    public ResponseEntity<MemberDropdownReadResponse> readMemberDropdown(
+    public ResponseEntity<MemberDropdownResponse> readMemberDropdown(
             final Member member
     ) {
-        final var response = MemberDropdownReadResponse.from(member);
+        final var response = MemberDropdownResponse.from(member);
 
         return ResponseEntity.ok()
                 .body(response);
     }
 
     @GetMapping("/profile")
-    public ResponseEntity<MemberProfileReadResponse> readMemberProfile(
+    public ResponseEntity<MemberProfileResponse> readMemberProfile(
             final Member member
     ) {
-        final var response = MemberProfileReadResponse.from(member);
+        final var response = MemberProfileResponse.from(member);
 
         return ResponseEntity.ok()
                 .body(response);
@@ -57,13 +57,13 @@ public class MeController {
 
     @GetMapping("/workspaces")
     // TODO: 페이징 고려 필요
-    public ResponseEntity<MyWorkspacesReadResponse> readMyWorkspaces(
+    public ResponseEntity<MyWorkspacesResponse> readMyWorkspaces(
             final MemberAuthInfo memberAuthInfo
     ) {
         final var response = workspaceService.readWorkspacesByMemberId(
-                new ReadWorkspacesByMemberIdCommand(memberAuthInfo.id())
+                new FindWorkspacesByMemberIdCommand(memberAuthInfo.id())
         );
 
-        return ResponseEntity.ok(MyWorkspacesReadResponse.from(response));
+        return ResponseEntity.ok(MyWorkspacesResponse.from(response));
     }
 }

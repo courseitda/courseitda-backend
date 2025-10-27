@@ -4,12 +4,12 @@ import courseitda.workspace.application.dto.response.FindCategoryPlacesResult;
 import courseitda.workspace.application.dto.response.FindCategoryPlacesResult.CategoryPlaceResult;
 import java.util.List;
 
-public record CategoryPlacesReadResponse(
+public record CategoryPlacesFindResponse(
         List<CategoryPlaceResponse> categoryPlaceResponses
 ) {
 
-    public static CategoryPlacesReadResponse from(final FindCategoryPlacesResult result) {
-        return new CategoryPlacesReadResponse(
+    public static CategoryPlacesFindResponse from(final FindCategoryPlacesResult result) {
+        return new CategoryPlacesFindResponse(
                 result.categoryPlaceResults().stream()
                         .map(CategoryPlaceResponse::from)
                         .toList()

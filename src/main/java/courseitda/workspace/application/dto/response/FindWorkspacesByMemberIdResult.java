@@ -5,16 +5,16 @@ import courseitda.workspace.domain.Workspace;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record ReadWorkspacesByMemberIdResult(
+public record FindWorkspacesByMemberIdResult(
         List<WorkspaceResult> workspaceResults
 ) {
 
-    public static ReadWorkspacesByMemberIdResult from(final List<Workspace> workspaces) {
+    public static FindWorkspacesByMemberIdResult from(final List<Workspace> workspaces) {
         final List<WorkspaceResult> workspaceResults = workspaces.stream()
                 .map(WorkspaceResult::from)
                 .toList();
 
-        return new ReadWorkspacesByMemberIdResult(workspaceResults);
+        return new FindWorkspacesByMemberIdResult(workspaceResults);
     }
 
     public record WorkspaceResult(

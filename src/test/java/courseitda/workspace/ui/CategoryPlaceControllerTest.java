@@ -16,7 +16,7 @@ import courseitda.workspace.ui.dto.request.CategoryPlaceCreateRequest;
 import courseitda.workspace.ui.dto.request.WorkspaceCreateRequest;
 import courseitda.workspace.ui.dto.response.CategoryCreateResponse;
 import courseitda.workspace.ui.dto.response.CategoryPlaceCreateResponse;
-import courseitda.workspace.ui.dto.response.CategoryPlacesReadResponse;
+import courseitda.workspace.ui.dto.response.CategoryPlacesFindResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceCreateResponse;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
@@ -240,7 +240,7 @@ class CategoryPlaceControllerTest {
             createCategoryPlace(accessToken, categoryId);
 
             // when
-            final CategoryPlacesReadResponse response = given()
+            final CategoryPlacesFindResponse response = given()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .when()
@@ -248,7 +248,7 @@ class CategoryPlaceControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .extract()
-                    .as(CategoryPlacesReadResponse.class);
+                    .as(CategoryPlacesFindResponse.class);
 
             // then
             assertThat(response.categoryPlaceResponses()).hasSize(2);
@@ -263,7 +263,7 @@ class CategoryPlaceControllerTest {
             final Long categoryId = createCategory(accessToken, workspaceIdentifier).id();
 
             // when
-            final CategoryPlacesReadResponse response = given()
+            final CategoryPlacesFindResponse response = given()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .when()
@@ -271,7 +271,7 @@ class CategoryPlaceControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .extract()
-                    .as(CategoryPlacesReadResponse.class);
+                    .as(CategoryPlacesFindResponse.class);
 
             // then
             assertThat(response.categoryPlaceResponses()).isEmpty();

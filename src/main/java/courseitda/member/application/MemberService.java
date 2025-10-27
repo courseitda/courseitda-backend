@@ -3,12 +3,12 @@ package courseitda.member.application;
 import courseitda.auth.domain.AuthRole;
 import courseitda.common.exception.BusinessException;
 import courseitda.common.exception.ErrorCode;
-import courseitda.member.application.dto.request.IsEmailDuplicateCommand;
-import courseitda.member.application.dto.request.IsNicknameDuplicateCommand;
+import courseitda.member.application.dto.request.CheckEmailDuplicateCommand;
+import courseitda.member.application.dto.request.CheckNicknameDuplicateCommand;
 import courseitda.member.application.dto.request.SignUpCommand;
-import courseitda.member.application.dto.response.CreateMemberResult;
-import courseitda.member.application.dto.response.IsEmailDuplicateResult;
-import courseitda.member.application.dto.response.IsNicknameDuplicateResult;
+import courseitda.member.application.dto.response.CheckEmailDuplicateResult;
+import courseitda.member.application.dto.response.CheckNicknameDuplicateResult;
+import courseitda.member.application.dto.response.SignUpResult;
 import courseitda.member.domain.Member;
 import courseitda.member.domain.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public CreateMemberResult create(final SignUpCommand command) {
+    public SignUpResult create(final SignUpCommand command) {
         validateDuplicateEmail(command.email());
         validateDuplicateNickname(command.nickname());
 
@@ -36,7 +36,7 @@ public class MemberService {
                 .build();
         final Member createdMember = memberRepository.save(member);
 
-        return CreateMemberResult.from(createdMember);
+        return SignUpResult.from(createdMember);
     }
 
     public Member findById(final Long id) {
@@ -44,21 +44,21 @@ public class MemberService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
-    public IsNicknameDuplicateResult isNicknameDuplicate(final IsNicknameDuplicateCommand command) {
+    public CheckNicknameDuplicateResult checkNicknameDuplicate(final CheckNicknameDuplicateCommand command) {
         validateNicknameNotEmpty(command.nickname());
 
         final boolean isDuplicated = memberRepository.existsByNickname(command.nickname());
 
-        return new IsNicknameDuplicateResult(isDuplicated);
+        return new CheckNicknameDuplicateResult(isDuplicated);
     }
 
-    public IsEmailDuplicateResult isEmailDuplicate(final IsEmailDuplicateCommand command) {
+    public CheckEmailDuplicateResult checkEmailDuplicate(final CheckEmailDuplicateCommand command) {
         validateEmailNotEmpty(command.email());
         validateEmailFormat(command.email());
 
         final boolean isDuplicated = memberRepository.existsByEmail(command.email());
 
-        return new IsEmailDuplicateResult(isDuplicated);
+        return new CheckEmailDuplicateResult(isDuplicated);
     }
 
     private void validateNicknameNotEmpty(final String nickname) {

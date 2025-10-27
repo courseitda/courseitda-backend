@@ -1,21 +1,21 @@
 package courseitda.member.ui.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import courseitda.workspace.application.dto.response.ReadWorkspacesByMemberIdResult;
-import courseitda.workspace.application.dto.response.ReadWorkspacesByMemberIdResult.WorkspaceResult;
+import courseitda.workspace.application.dto.response.FindWorkspacesByMemberIdResult;
+import courseitda.workspace.application.dto.response.FindWorkspacesByMemberIdResult.WorkspaceResult;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record MyWorkspacesReadResponse(
+public record MyWorkspacesResponse(
         List<WorkspaceResponse> workspaces
 ) {
 
-    public static MyWorkspacesReadResponse from(final ReadWorkspacesByMemberIdResult result) {
+    public static MyWorkspacesResponse from(final FindWorkspacesByMemberIdResult result) {
         final List<WorkspaceResponse> workspaceResponses = result.workspaceResults().stream()
                 .map(WorkspaceResponse::from)
                 .toList();
 
-        return new MyWorkspacesReadResponse(workspaceResponses);
+        return new MyWorkspacesResponse(workspaceResponses);
     }
 
     public record WorkspaceResponse(

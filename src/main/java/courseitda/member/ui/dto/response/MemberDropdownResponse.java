@@ -2,13 +2,13 @@ package courseitda.member.ui.dto.response;
 
 import courseitda.member.domain.Member;
 
-public record MemberDropdownReadResponse(
+public record MemberDropdownResponse(
         String nickname,
         String email
 ) {
 
-    public static MemberDropdownReadResponse from(final Member member) {
-        return new MemberDropdownReadResponse(
+    public static MemberDropdownResponse from(final Member member) {
+        return new MemberDropdownResponse(
                 member.getNickname(),
                 member.getEmail()
         );

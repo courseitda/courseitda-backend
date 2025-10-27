@@ -1,6 +1,6 @@
 package courseitda.member.ui.dto.response;
 
-import courseitda.member.application.dto.response.CreateMemberResult;
+import courseitda.member.application.dto.response.SignUpResult;
 
 public record SignUpResponse(
         Long id,
@@ -8,7 +8,7 @@ public record SignUpResponse(
         String email
 ) {
 
-    public static SignUpResponse from(final CreateMemberResult result) {
+    public static SignUpResponse from(final SignUpResult result) {
         return new SignUpResponse(
                 result.id(),
                 result.nickname(),

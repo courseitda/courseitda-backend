@@ -2,13 +2,13 @@ package courseitda.member.ui.dto.response;
 
 import courseitda.member.domain.Member;
 
-public record MemberProfileReadResponse(
+public record MemberProfileResponse(
         String nickname,
         String email
 ) {
 
-    public static MemberProfileReadResponse from(final Member member) {
-        return new MemberProfileReadResponse(
+    public static MemberProfileResponse from(final Member member) {
+        return new MemberProfileResponse(
                 member.getNickname(),
                 member.getEmail()
         );

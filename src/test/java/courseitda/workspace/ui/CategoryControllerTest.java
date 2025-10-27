@@ -18,8 +18,8 @@ import courseitda.workspace.ui.dto.request.CategoryUpdateRequest;
 import courseitda.workspace.ui.dto.request.RepresentativeCategoryPlaceUpdateRequest;
 import courseitda.workspace.ui.dto.request.WorkspaceCreateRequest;
 import courseitda.workspace.ui.dto.response.CategoryCreateResponse;
+import courseitda.workspace.ui.dto.response.CategoryFindResponse;
 import courseitda.workspace.ui.dto.response.CategoryPlaceCreateResponse;
-import courseitda.workspace.ui.dto.response.CategoryReadResponse;
 import courseitda.workspace.ui.dto.response.CategoryUpdateResponse;
 import courseitda.workspace.ui.dto.response.RepresentativeCategoryPlaceUpdateResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceCreateResponse;
@@ -303,7 +303,7 @@ class CategoryControllerTest {
             final CategoryCreateResponse category = createCategory(accessToken, workspaceIdentifier);
 
             // when
-            final CategoryReadResponse response = given()
+            final CategoryFindResponse response = given()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .when()
@@ -311,7 +311,7 @@ class CategoryControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .extract()
-                    .as(CategoryReadResponse.class);
+                    .as(CategoryFindResponse.class);
 
             // then
             assertThat(response.id()).isEqualTo(category.id());

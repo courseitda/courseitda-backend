@@ -9,7 +9,7 @@ import courseitda.workspace.application.dto.request.DeleteRepresentativeCategory
 import courseitda.workspace.application.dto.request.FindCategoryCommand;
 import courseitda.workspace.ui.dto.request.CategoryUpdateRequest;
 import courseitda.workspace.ui.dto.request.RepresentativeCategoryPlaceUpdateRequest;
-import courseitda.workspace.ui.dto.response.CategoryReadResponse;
+import courseitda.workspace.ui.dto.response.CategoryFindResponse;
 import courseitda.workspace.ui.dto.response.CategoryUpdateResponse;
 import courseitda.workspace.ui.dto.response.RepresentativeCategoryPlaceUpdateResponse;
 import jakarta.validation.Valid;
@@ -88,7 +88,7 @@ public class CategoryController {
 
     // 카테고리 단건 조회
     @GetMapping("/{categoryId}")
-    public ResponseEntity<CategoryReadResponse> readCategory(
+    public ResponseEntity<CategoryFindResponse> readCategory(
             final MemberAuthInfo memberAuthInfo,
             @PathVariable final Long categoryId
     ) {
@@ -96,6 +96,6 @@ public class CategoryController {
                 new FindCategoryCommand(memberAuthInfo, categoryId)
         );
 
-        return ResponseEntity.ok(CategoryReadResponse.from(response));
+        return ResponseEntity.ok(CategoryFindResponse.from(response));
     }
 }

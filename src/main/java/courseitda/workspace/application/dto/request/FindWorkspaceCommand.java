@@ -2,8 +2,8 @@ package courseitda.workspace.application.dto.request;
 
 import courseitda.auth.domain.MemberAuthInfo;
 
-public record IsTitleDuplicateCommand(
+public record FindWorkspaceCommand(
         MemberAuthInfo memberAuthInfo,
-        String title
+        String workspaceIdentifier
 ) {
 }

@@ -4,14 +4,14 @@ import courseitda.common.exception.BusinessException;
 import courseitda.common.exception.ErrorCode;
 import courseitda.workspace.application.dto.request.CreateWorkspaceCommand;
 import courseitda.workspace.application.dto.request.DeleteWorkspaceCommand;
-import courseitda.workspace.application.dto.request.IsTitleDuplicateCommand;
-import courseitda.workspace.application.dto.request.ReadWorkspaceCommand;
-import courseitda.workspace.application.dto.request.ReadWorkspacesByMemberIdCommand;
+import courseitda.workspace.application.dto.request.FindWorkspaceCommand;
+import courseitda.workspace.application.dto.request.FindWorkspacesByMemberIdCommand;
+import courseitda.workspace.application.dto.request.IsWorkspaceTitleDuplicateCommand;
 import courseitda.workspace.application.dto.request.UpdateWorkspaceCommand;
 import courseitda.workspace.application.dto.response.CreateWorkspaceResult;
+import courseitda.workspace.application.dto.response.FindWorkspaceResult;
+import courseitda.workspace.application.dto.response.FindWorkspacesByMemberIdResult;
 import courseitda.workspace.application.dto.response.IsTitleDuplicateResult;
-import courseitda.workspace.application.dto.response.ReadWorkspaceResult;
-import courseitda.workspace.application.dto.response.ReadWorkspacesByMemberIdResult;
 import courseitda.workspace.application.dto.response.UpdateWorkspaceResult;
 import courseitda.workspace.domain.Workspace;
 import courseitda.workspace.domain.WorkspaceRepository;
@@ -61,19 +61,19 @@ public class WorkspaceService {
     }
 
     @Transactional(readOnly = true)
-    public ReadWorkspacesByMemberIdResult readWorkspacesByMemberId(final ReadWorkspacesByMemberIdCommand command) {
-        return ReadWorkspacesByMemberIdResult.from(workspaceRepository.findAllByOwnerId(command.memberId()));
+    public FindWorkspacesByMemberIdResult readWorkspacesByMemberId(final FindWorkspacesByMemberIdCommand command) {
+        return FindWorkspacesByMemberIdResult.from(workspaceRepository.findAllByOwnerId(command.memberId()));
     }
 
     @Transactional(readOnly = true)
-    public ReadWorkspaceResult readWorkspace(final ReadWorkspaceCommand command) {
+    public FindWorkspaceResult readWorkspace(final FindWorkspaceCommand command) {
         final var workspace = getByIdentifier(command.workspaceIdentifier());
         workspace.validateOwnership(command.memberAuthInfo().id());
 
-        return ReadWorkspaceResult.from(workspace);
+        return FindWorkspaceResult.from(workspace);
     }
 
-    public IsTitleDuplicateResult isTitleDuplicate(final IsTitleDuplicateCommand command) {
+    public IsTitleDuplicateResult isTitleDuplicate(final IsWorkspaceTitleDuplicateCommand command) {
         validateTitleNotEmpty(command.title());
 
         final var isDuplicate = workspaceRepository.existsByOwnerIdAndTitle(

@@ -8,18 +8,18 @@ import courseitda.workspace.application.CategoryService;
 import courseitda.workspace.application.WorkspaceService;
 import courseitda.workspace.application.dto.request.DeleteWorkspaceCommand;
 import courseitda.workspace.application.dto.request.FindAllCategoriesCommand;
-import courseitda.workspace.application.dto.request.IsTitleDuplicateCommand;
-import courseitda.workspace.application.dto.request.ReadWorkspaceCommand;
+import courseitda.workspace.application.dto.request.FindWorkspaceCommand;
+import courseitda.workspace.application.dto.request.IsWorkspaceTitleDuplicateCommand;
 import courseitda.workspace.ui.dto.request.CategoryCreateRequest;
 import courseitda.workspace.ui.dto.request.CategoryReorderRequest;
 import courseitda.workspace.ui.dto.request.WorkspaceCreateRequest;
 import courseitda.workspace.ui.dto.request.WorkspaceUpdateRequest;
-import courseitda.workspace.ui.dto.response.CategoriesReadResponse;
+import courseitda.workspace.ui.dto.response.CategoriesFindResponse;
 import courseitda.workspace.ui.dto.response.CategoryCreateResponse;
 import courseitda.workspace.ui.dto.response.CategorySequenceUpdateResponse;
 import courseitda.workspace.ui.dto.response.CheckTitleDuplicateResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceCreateResponse;
-import courseitda.workspace.ui.dto.response.WorkspaceReadResponse;
+import courseitda.workspace.ui.dto.response.WorkspaceFindResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceUpdateResponse;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -117,20 +117,20 @@ public class WorkspaceController {
 
     // 워크스페이스 조회
     @GetMapping("/{workspaceIdentifier}")
-    public ResponseEntity<WorkspaceReadResponse> readWorkspace(
+    public ResponseEntity<WorkspaceFindResponse> readWorkspace(
             final MemberAuthInfo memberAuthInfo,
             @PathVariable final String workspaceIdentifier
     ) {
         final var response = workspaceService.readWorkspace(
-                new ReadWorkspaceCommand(memberAuthInfo, workspaceIdentifier)
+                new FindWorkspaceCommand(memberAuthInfo, workspaceIdentifier)
         );
 
-        return ResponseEntity.ok(WorkspaceReadResponse.from(response));
+        return ResponseEntity.ok(WorkspaceFindResponse.from(response));
     }
 
     // 카테고리 목록 전체 조회 - 워크스페이스 상세 페이지
     @GetMapping("/{workspaceIdentifier}/categories")
-    public ResponseEntity<CategoriesReadResponse> readAllCategories(
+    public ResponseEntity<CategoriesFindResponse> readAllCategories(
             final MemberAuthInfo memberAuthInfo,
             @PathVariable final String workspaceIdentifier
     ) {
@@ -138,7 +138,7 @@ public class WorkspaceController {
                 new FindAllCategoriesCommand(memberAuthInfo, workspaceIdentifier)
         );
 
-        return ResponseEntity.ok(CategoriesReadResponse.from(response));
+        return ResponseEntity.ok(CategoriesFindResponse.from(response));
     }
 
     // 워크스페이스 타이틀 중복 검증
@@ -147,7 +147,8 @@ public class WorkspaceController {
             final MemberAuthInfo memberAuthInfo,
             @RequestParam(required = false) final String value
     ) {
-        final var result = workspaceService.isTitleDuplicate(new IsTitleDuplicateCommand(memberAuthInfo, value));
+        final var result = workspaceService.isTitleDuplicate(
+                new IsWorkspaceTitleDuplicateCommand(memberAuthInfo, value));
 
         return ResponseEntity.ok(CheckTitleDuplicateResponse.from(result));
     }

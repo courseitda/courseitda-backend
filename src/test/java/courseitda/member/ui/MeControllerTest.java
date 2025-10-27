@@ -8,10 +8,10 @@ import courseitda.auth.ui.dto.request.LoginRequest;
 import courseitda.auth.ui.dto.response.LoginResponse;
 import courseitda.member.domain.MemberFixture;
 import courseitda.member.ui.dto.request.SignUpRequest;
-import courseitda.member.ui.dto.response.MemberDropdownReadResponse;
-import courseitda.member.ui.dto.response.MemberNavigatorReadResponse;
-import courseitda.member.ui.dto.response.MemberProfileReadResponse;
-import courseitda.member.ui.dto.response.MyWorkspacesReadResponse;
+import courseitda.member.ui.dto.response.MemberDropdownResponse;
+import courseitda.member.ui.dto.response.MemberNavigatorResponse;
+import courseitda.member.ui.dto.response.MemberProfileResponse;
+import courseitda.member.ui.dto.response.MyWorkspacesResponse;
 import courseitda.workspace.domain.WorkspaceFixture;
 import courseitda.workspace.ui.dto.request.WorkspaceCreateRequest;
 import courseitda.workspace.ui.dto.response.WorkspaceCreateResponse;
@@ -96,7 +96,7 @@ class MeControllerTest {
             final String accessToken = signUpAndLogin();
 
             // when
-            final MemberNavigatorReadResponse response = given()
+            final MemberNavigatorResponse response = given()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .when()
@@ -104,7 +104,7 @@ class MeControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .extract()
-                    .as(MemberNavigatorReadResponse.class);
+                    .as(MemberNavigatorResponse.class);
 
             // then
             assertThat(response.nickname()).isNotNull();
@@ -122,7 +122,7 @@ class MeControllerTest {
             final String accessToken = signUpAndLogin();
 
             // when
-            final MemberDropdownReadResponse response = given()
+            final MemberDropdownResponse response = given()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .when()
@@ -130,7 +130,7 @@ class MeControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .extract()
-                    .as(MemberDropdownReadResponse.class);
+                    .as(MemberDropdownResponse.class);
 
             // then
             assertThat(response.nickname()).isNotNull();
@@ -149,7 +149,7 @@ class MeControllerTest {
             final String accessToken = signUpAndLogin();
 
             // when
-            final MemberProfileReadResponse response = given()
+            final MemberProfileResponse response = given()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .when()
@@ -157,7 +157,7 @@ class MeControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .extract()
-                    .as(MemberProfileReadResponse.class);
+                    .as(MemberProfileResponse.class);
 
             // then
             assertThat(response.nickname()).isNotNull();
@@ -178,7 +178,7 @@ class MeControllerTest {
             createWorkspace(accessToken);
 
             // when
-            final MyWorkspacesReadResponse response = given()
+            final MyWorkspacesResponse response = given()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .when()
@@ -186,7 +186,7 @@ class MeControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .extract()
-                    .as(MyWorkspacesReadResponse.class);
+                    .as(MyWorkspacesResponse.class);
 
             // then
             assertThat(response.workspaces()).hasSize(2);
@@ -199,7 +199,7 @@ class MeControllerTest {
             final String accessToken = signUpAndLogin();
 
             // when
-            final MyWorkspacesReadResponse response = given()
+            final MyWorkspacesResponse response = given()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .when()
@@ -207,7 +207,7 @@ class MeControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .extract()
-                    .as(MyWorkspacesReadResponse.class);
+                    .as(MyWorkspacesResponse.class);
 
             // then
             assertThat(response.workspaces()).isEmpty();

@@ -16,12 +16,12 @@ import courseitda.workspace.ui.dto.request.CategoryReorderRequest;
 import courseitda.workspace.ui.dto.request.CategoryReorderRequest.CategorySequenceRequest;
 import courseitda.workspace.ui.dto.request.WorkspaceCreateRequest;
 import courseitda.workspace.ui.dto.request.WorkspaceUpdateRequest;
-import courseitda.workspace.ui.dto.response.CategoriesReadResponse;
+import courseitda.workspace.ui.dto.response.CategoriesFindResponse;
 import courseitda.workspace.ui.dto.response.CategoryCreateResponse;
 import courseitda.workspace.ui.dto.response.CategorySequenceUpdateResponse;
 import courseitda.workspace.ui.dto.response.CheckTitleDuplicateResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceCreateResponse;
-import courseitda.workspace.ui.dto.response.WorkspaceReadResponse;
+import courseitda.workspace.ui.dto.response.WorkspaceFindResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceUpdateResponse;
 import io.restassured.RestAssured;
 import java.util.List;
@@ -187,7 +187,7 @@ class WorkspaceControllerTest {
             final String workspaceIdentifier = createWorkspace(accessToken);
 
             // when
-            final WorkspaceReadResponse response = given()
+            final WorkspaceFindResponse response = given()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .when()
@@ -195,7 +195,7 @@ class WorkspaceControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .extract()
-                    .as(WorkspaceReadResponse.class);
+                    .as(WorkspaceFindResponse.class);
 
             // then
             assertThat(response.identifier()).isEqualTo(workspaceIdentifier);
@@ -589,7 +589,7 @@ class WorkspaceControllerTest {
             createCategory(accessToken, workspaceIdentifier);
 
             // when
-            final CategoriesReadResponse response = given()
+            final CategoriesFindResponse response = given()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .when()
@@ -597,7 +597,7 @@ class WorkspaceControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .extract()
-                    .as(CategoriesReadResponse.class);
+                    .as(CategoriesFindResponse.class);
 
             // then
             assertThat(response.categoryResponses()).hasSize(3);
@@ -611,7 +611,7 @@ class WorkspaceControllerTest {
             final String workspaceIdentifier = createWorkspace(accessToken);
 
             // when
-            final CategoriesReadResponse response = given()
+            final CategoriesFindResponse response = given()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, accessToken)
                     .when()
@@ -619,7 +619,7 @@ class WorkspaceControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .extract()
-                    .as(CategoriesReadResponse.class);
+                    .as(CategoriesFindResponse.class);
 
             // then
             assertThat(response.categoryResponses()).isEmpty();

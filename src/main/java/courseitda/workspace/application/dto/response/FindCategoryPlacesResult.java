@@ -32,6 +32,8 @@ public record FindCategoryPlacesResult(
             String name,
             String addressName,
             String roadAddressName,
+            double latitude,
+            double longitude,
             boolean isRepresentative
     ) {
 
@@ -44,6 +46,8 @@ public record FindCategoryPlacesResult(
                     categoryPlace.getPlace().getName(),
                     categoryPlace.getPlace().getAddressName(),
                     categoryPlace.getPlace().getRoadAddressName(),
+                    categoryPlace.getPlace().getLatitude(),
+                    categoryPlace.getPlace().getLongitude(),
                     isRepresentative
             );
         }

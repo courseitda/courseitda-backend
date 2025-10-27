@@ -21,6 +21,8 @@ public record CategoryPlacesReadResponse(
             String name,
             String addressName,
             String roadAddressName,
+            double latitude,
+            double longitude,
             boolean isRepresentative
     ) {
 
@@ -30,6 +32,8 @@ public record CategoryPlacesReadResponse(
                     result.name(),
                     result.addressName(),
                     result.roadAddressName(),
+                    result.latitude(),
+                    result.longitude(),
                     result.isRepresentative()
             );
         }

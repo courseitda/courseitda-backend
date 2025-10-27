@@ -6,9 +6,9 @@ import courseitda.common.exception.ErrorCode;
 import courseitda.member.application.dto.request.IsEmailDuplicateCommand;
 import courseitda.member.application.dto.request.IsNicknameDuplicateCommand;
 import courseitda.member.application.dto.request.SignUpCommand;
-import courseitda.member.application.dto.response.CreateMemberResult;
 import courseitda.member.application.dto.response.IsEmailDuplicateResult;
 import courseitda.member.application.dto.response.IsNicknameDuplicateResult;
+import courseitda.member.application.dto.response.SignUpResult;
 import courseitda.member.domain.Member;
 import courseitda.member.domain.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public CreateMemberResult create(final SignUpCommand command) {
+    public SignUpResult create(final SignUpCommand command) {
         validateDuplicateEmail(command.email());
         validateDuplicateNickname(command.nickname());
 
@@ -36,7 +36,7 @@ public class MemberService {
                 .build();
         final Member createdMember = memberRepository.save(member);
 
-        return CreateMemberResult.from(createdMember);
+        return SignUpResult.from(createdMember);
     }
 
     public Member findById(final Long id) {

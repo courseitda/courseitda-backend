@@ -76,12 +76,12 @@ public class WorkspaceService {
     public CheckTitleDuplicateResult checkTitleDuplicate(final CheckWorkspaceTitleDuplicateCommand command) {
         validateTitleNotEmpty(command.title());
 
-        final var isDuplicate = workspaceRepository.existsByOwnerIdAndTitle(
+        final var isDuplicated = workspaceRepository.existsByOwnerIdAndTitle(
                 command.memberAuthInfo().id(),
                 command.title()
         );
 
-        return new CheckTitleDuplicateResult(isDuplicate);
+        return new CheckTitleDuplicateResult(isDuplicated);
     }
 
     private Workspace getByIdentifier(final String identifier) {

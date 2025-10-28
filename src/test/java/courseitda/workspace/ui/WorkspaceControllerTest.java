@@ -693,7 +693,7 @@ class WorkspaceControllerTest {
                     .as(CheckTitleDuplicateResponse.class);
 
             // then
-            assertThat(response.isDuplicate()).isFalse();
+            assertThat(response.isDuplicated()).isFalse();
         }
 
         @Test
@@ -726,7 +726,7 @@ class WorkspaceControllerTest {
                     .as(CheckTitleDuplicateResponse.class);
 
             // then
-            assertThat(response.isDuplicate()).isTrue();
+            assertThat(response.isDuplicated()).isTrue();
         }
 
         @Test
@@ -761,7 +761,7 @@ class WorkspaceControllerTest {
                     .as(CheckTitleDuplicateResponse.class);
 
             // then
-            assertThat(response.isDuplicate()).isFalse();
+            assertThat(response.isDuplicated()).isFalse();
         }
     }
 

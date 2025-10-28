@@ -26,6 +26,12 @@ public enum ErrorCode {
             HttpStatus.INTERNAL_SERVER_ERROR // 500
     ),
 
+    REQUEST_VALIDATION_FAILED(
+            "0001",
+            "요청 데이터 검증에 실패했습니다.",
+            HttpStatus.BAD_REQUEST // 400
+    ),
+
     // 1000 Series: Authentication and Authorization Errors
     MISSING_AUTH_HEADER(
             "1001",

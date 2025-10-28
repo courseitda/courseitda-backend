@@ -16,6 +16,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,6 +29,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 public class Category extends Timestamp {
+
+    private static final Pattern CATEGORY_COLOR_PATTERN = Pattern.compile("^#[0-9A-Fa-f]{6}$");
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -64,6 +67,9 @@ public class Category extends Timestamp {
             final Integer sequence,
             final CategoryPlace representativePlace
     ) {
+        validateName(name);
+        validateColor(color);
+
         this.workspace = workspace;
         this.categoryPlaces = categoryPlaces;
         this.name = name;
@@ -126,7 +132,7 @@ public class Category extends Timestamp {
         if (color == null || color.isBlank()) {
             throw new BusinessException(ErrorCode.CATEGORY_COLOR_EMPTY);
         }
-        if (!color.matches("^#[0-9A-Fa-f]{6}$")) {
+        if (!CATEGORY_COLOR_PATTERN.matcher(color).matches()) {
             throw new BusinessException(ErrorCode.INVALID_CATEGORY_COLOR_FORMAT);
         }
     }

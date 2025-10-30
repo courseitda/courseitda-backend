@@ -11,7 +11,7 @@ import courseitda.workspace.application.dto.request.UpdateCategoryCommand;
 import courseitda.workspace.application.dto.request.UpdateCategorySequenceCommand;
 import courseitda.workspace.application.dto.request.UpdateRepresentativeCategoryPlaceCommand;
 import courseitda.workspace.application.dto.response.CreateCategoryResult;
-import courseitda.workspace.application.dto.response.FindAllCategoriesResult;
+import courseitda.workspace.application.dto.response.FindCategoriesResult;
 import courseitda.workspace.application.dto.response.FindCategoryResult;
 import courseitda.workspace.application.dto.response.UpdateCategoryResult;
 import courseitda.workspace.application.dto.response.UpdateCategorySequenceResult;
@@ -141,14 +141,14 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = true)
-    public FindAllCategoriesResult findAllCategories(
+    public FindCategoriesResult findAllCategories(
             final FindAllCategoriesCommand command
     ) {
         final var workspace = getWorkspaceByIdentifier(command.workspaceIdentifier());
         workspace.validateOwnership(command.memberAuthInfo().id());
 
         final var categories = workspace.getCategories();
-        return FindAllCategoriesResult.from(categories);
+        return FindCategoriesResult.from(categories);
     }
 
     private void validateAllCategoriesExist(final List<Category> categories, final List<Long> categoryIds) {

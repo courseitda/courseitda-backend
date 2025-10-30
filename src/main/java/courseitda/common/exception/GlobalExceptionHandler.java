@@ -39,7 +39,6 @@ public class GlobalExceptionHandler {
      *     "fieldErrors": {
      *         "nickname": "공백일 수 없습니다",
      *         "email": "공백일 수 없습니다",
-     *         "password": "비밀번호는 6자 이상 20자 이하이어야 합니다."
      *     }
      *  }
      * */

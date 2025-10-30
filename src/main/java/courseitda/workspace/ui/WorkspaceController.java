@@ -14,12 +14,12 @@ import courseitda.workspace.ui.dto.request.CategoryCreateRequest;
 import courseitda.workspace.ui.dto.request.CategoryReorderRequest;
 import courseitda.workspace.ui.dto.request.WorkspaceCreateRequest;
 import courseitda.workspace.ui.dto.request.WorkspaceUpdateRequest;
-import courseitda.workspace.ui.dto.response.CategoriesFindResponse;
+import courseitda.workspace.ui.dto.response.CategoriesReadResponse;
 import courseitda.workspace.ui.dto.response.CategoryCreateResponse;
 import courseitda.workspace.ui.dto.response.CategorySequenceUpdateResponse;
 import courseitda.workspace.ui.dto.response.CheckTitleDuplicateResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceCreateResponse;
-import courseitda.workspace.ui.dto.response.WorkspaceFindResponse;
+import courseitda.workspace.ui.dto.response.WorkspaceReadResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceUpdateResponse;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -117,7 +117,7 @@ public class WorkspaceController {
 
     // 워크스페이스 조회
     @GetMapping("/{workspaceIdentifier}")
-    public ResponseEntity<WorkspaceFindResponse> readWorkspace(
+    public ResponseEntity<WorkspaceReadResponse> readWorkspace(
             final MemberAuthInfo memberAuthInfo,
             @PathVariable final String workspaceIdentifier
     ) {
@@ -125,12 +125,12 @@ public class WorkspaceController {
                 new FindWorkspaceCommand(memberAuthInfo, workspaceIdentifier)
         );
 
-        return ResponseEntity.ok(WorkspaceFindResponse.from(response));
+        return ResponseEntity.ok(WorkspaceReadResponse.from(response));
     }
 
     // 카테고리 목록 전체 조회 - 워크스페이스 상세 페이지
     @GetMapping("/{workspaceIdentifier}/categories")
-    public ResponseEntity<CategoriesFindResponse> readAllCategories(
+    public ResponseEntity<CategoriesReadResponse> readAllCategories(
             final MemberAuthInfo memberAuthInfo,
             @PathVariable final String workspaceIdentifier
     ) {
@@ -138,7 +138,7 @@ public class WorkspaceController {
                 new FindAllCategoriesCommand(memberAuthInfo, workspaceIdentifier)
         );
 
-        return ResponseEntity.ok(CategoriesFindResponse.from(response));
+        return ResponseEntity.ok(CategoriesReadResponse.from(response));
     }
 
     // 워크스페이스 타이틀 중복 검증

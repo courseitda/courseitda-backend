@@ -1,18 +1,18 @@
 package courseitda.workspace.ui.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import courseitda.workspace.application.dto.response.FindAllCategoriesResult;
-import courseitda.workspace.application.dto.response.FindAllCategoriesResult.CategoryResult;
-import courseitda.workspace.application.dto.response.FindAllCategoriesResult.CategoryResult.CategoryPlacesResult;
-import courseitda.workspace.application.dto.response.FindAllCategoriesResult.CategoryResult.CategoryPlacesResult.CategoryPlaceResult;
+import courseitda.workspace.application.dto.response.FindCategoriesResult;
+import courseitda.workspace.application.dto.response.FindCategoriesResult.CategoryResult;
+import courseitda.workspace.application.dto.response.FindCategoriesResult.CategoryResult.CategoryPlacesResult;
+import courseitda.workspace.application.dto.response.FindCategoriesResult.CategoryResult.CategoryPlacesResult.CategoryPlaceResult;
 import java.util.List;
 
-public record CategoriesFindResponse(
+public record CategoriesReadResponse(
         @JsonProperty("categories") List<CategoryResponse> categoryResponses
 ) {
 
-    public static CategoriesFindResponse from(final FindAllCategoriesResult result) {
-        return new CategoriesFindResponse(
+    public static CategoriesReadResponse from(final FindCategoriesResult result) {
+        return new CategoriesReadResponse(
                 result.categoryResults().stream()
                         .map(CategoryResponse::from)
                         .toList());

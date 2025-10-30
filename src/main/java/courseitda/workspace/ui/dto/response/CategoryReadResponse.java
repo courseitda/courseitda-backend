@@ -5,7 +5,7 @@ import courseitda.workspace.application.dto.response.FindCategoryResult;
 import courseitda.workspace.application.dto.response.FindCategoryResult.CategoryPlacesResult;
 import java.util.List;
 
-public record CategoryFindResponse(
+public record CategoryReadResponse(
         Long id,
         String name,
         String color,
@@ -14,8 +14,8 @@ public record CategoryFindResponse(
         @JsonProperty("categoryPlaces") CategoryPlacesResponse categoryPlacesResponse
 ) {
 
-    public static CategoryFindResponse from(final FindCategoryResult result) {
-        return new CategoryFindResponse(
+    public static CategoryReadResponse from(final FindCategoryResult result) {
+        return new CategoryReadResponse(
                 result.id(),
                 result.name(),
                 result.color(),

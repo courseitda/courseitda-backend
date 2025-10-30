@@ -19,6 +19,7 @@ public record NaverPlaceSearchResponse(
             @JsonProperty("mapx") String longitude,              // 업체, 기관이 위치한 장소의 x 좌표(WGS84 좌표계 기준).
             @JsonProperty("mapy") String latitude                // 업체, 기관이 위치한 장소의 y 좌표(WGS84 좌표계 기준)
     ) {
+
         private static final double COORDINATE_SCALE = 10000000.0;
         private static final String HTML_TAG_REGEX = "<[^>]*>";
 

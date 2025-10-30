@@ -14,9 +14,6 @@ public record NaverPlaceSearchResponse(
     public record NaverPlaceItem(
             @JsonProperty("title") String name,                  // 업체, 기관의 이름
             @JsonProperty("link") String url,                    // 업체, 기관의 상세 정보 URL
-            @JsonProperty("category") String category,           // 업체, 기관의 분류 정보
-            @JsonProperty("description") String description,     // 업체, 기관에 대한 설명
-            @JsonProperty("telephone") String telephone,         // 값을 반환하지 않는 요소. 하위 호환성을 유지하기 위해 있는 요소입니다
             @JsonProperty("address") String addressName,         // 업체, 기관명의 지번 주소
             @JsonProperty("roadAddress") String roadAddressName, // 업체, 기관명의 도로명 주소
             @JsonProperty("mapx") String longitude,              // 업체, 기관이 위치한 장소의 x 좌표(WGS84 좌표계 기준).

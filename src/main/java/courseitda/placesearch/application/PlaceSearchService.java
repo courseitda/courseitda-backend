@@ -16,16 +16,16 @@ public class PlaceSearchService {
     private static final int SEARCH_SIZE = 5;
     private final PlaceSearcher placeSearcher;
 
-    public SearchedPlacesResponse search(final String query) {
-        validateQuery(query);
+    public SearchedPlacesResponse search(final String keyword) {
+        validateKeyword(keyword);
 
-        final List<SearchedPlace> searchedPlaces = placeSearcher.searchPlaces(query, SEARCH_SIZE);
+        final List<SearchedPlace> searchedPlaces = placeSearcher.searchPlaces(keyword, SEARCH_SIZE);
 
         return SearchedPlacesResponse.from(searchedPlaces);
     }
 
-    private void validateQuery(final String query) {
-        if (query == null || query.isBlank()) {
+    private void validateKeyword(final String keyword) {
+        if (keyword == null || keyword.isBlank()) {
             throw new BusinessException(ErrorCode.PLACE_SEARCH_KEYWORD_EMPTY);
         }
     }

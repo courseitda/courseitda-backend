@@ -20,9 +20,8 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(
             @RequestBody @Valid final LoginRequest request
     ) {
-        final String authToken = authService.login(request.toCommand());
-        final LoginResponse loginResponse = new LoginResponse("Bearer", authToken);
+        final var response = authService.login(request);
 
-        return ResponseEntity.ok(loginResponse);
+        return ResponseEntity.ok(response);
     }
 }

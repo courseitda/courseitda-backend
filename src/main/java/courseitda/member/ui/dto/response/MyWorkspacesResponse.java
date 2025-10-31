@@ -1,8 +1,7 @@
 package courseitda.member.ui.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import courseitda.workspace.application.dto.response.FindWorkspacesByMemberIdResult;
-import courseitda.workspace.application.dto.response.FindWorkspacesByMemberIdResult.WorkspaceResult;
+import courseitda.workspace.domain.Workspace;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -10,8 +9,8 @@ public record MyWorkspacesResponse(
         List<WorkspaceResponse> workspaces
 ) {
 
-    public static MyWorkspacesResponse from(final FindWorkspacesByMemberIdResult result) {
-        final List<WorkspaceResponse> workspaceResponses = result.workspaceResults().stream()
+    public static MyWorkspacesResponse from(final List<Workspace> workspaces) {
+        final List<WorkspaceResponse> workspaceResponses = workspaces.stream()
                 .map(WorkspaceResponse::from)
                 .toList();
 
@@ -24,11 +23,11 @@ public record MyWorkspacesResponse(
             @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime modifiedAt
     ) {
 
-        public static WorkspaceResponse from(final WorkspaceResult result) {
+        public static WorkspaceResponse from(final Workspace workspace) {
             return new WorkspaceResponse(
-                    result.identifier(),
-                    result.title(),
-                    result.modifiedAt()
+                    workspace.getIdentifier(),
+                    workspace.getTitle(),
+                    workspace.getModifiedAt()
             );
         }
     }

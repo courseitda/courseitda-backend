@@ -1,17 +1,22 @@
 package courseitda.workspace.ui.dto.response;
 
-import courseitda.workspace.application.dto.response.FindCategoryPlacesResult;
-import courseitda.workspace.application.dto.response.FindCategoryPlacesResult.CategoryPlaceResult;
+import courseitda.workspace.domain.CategoryPlace;
 import java.util.List;
 
 public record CategoryPlacesFindResponse(
         List<CategoryPlaceResponse> categoryPlaceResponses
 ) {
 
-    public static CategoryPlacesFindResponse from(final FindCategoryPlacesResult result) {
+    public static CategoryPlacesFindResponse of(
+            final List<CategoryPlace> categoryPlaces,
+            final CategoryPlace representativePlace
+    ) {
         return new CategoryPlacesFindResponse(
-                result.categoryPlaceResults().stream()
-                        .map(CategoryPlaceResponse::from)
+                categoryPlaces.stream()
+                        .map(place -> CategoryPlaceResponse.from(
+                                place,
+                                representativePlace != null && place.getId().equals(representativePlace.getId())
+                        ))
                         .toList()
         );
     }
@@ -26,15 +31,18 @@ public record CategoryPlacesFindResponse(
             boolean isRepresentative
     ) {
 
-        public static CategoryPlaceResponse from(final CategoryPlaceResult result) {
+        public static CategoryPlaceResponse from(
+                final CategoryPlace categoryPlace,
+                final boolean isRepresentative
+        ) {
             return new CategoryPlaceResponse(
-                    result.id(),
-                    result.name(),
-                    result.addressName(),
-                    result.roadAddressName(),
-                    result.latitude(),
-                    result.longitude(),
-                    result.isRepresentative()
+                    categoryPlace.getId(),
+                    categoryPlace.getPlace().getName(),
+                    categoryPlace.getPlace().getAddressName(),
+                    categoryPlace.getPlace().getRoadAddressName(),
+                    categoryPlace.getPlace().getLatitude(),
+                    categoryPlace.getPlace().getLongitude(),
+                    isRepresentative
             );
         }
     }

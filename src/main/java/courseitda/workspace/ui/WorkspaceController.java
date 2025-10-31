@@ -6,10 +6,6 @@ import courseitda.auth.domain.RequiresRole;
 import courseitda.member.domain.Member;
 import courseitda.workspace.application.CategoryService;
 import courseitda.workspace.application.WorkspaceService;
-import courseitda.workspace.application.dto.request.CheckWorkspaceTitleDuplicateCommand;
-import courseitda.workspace.application.dto.request.DeleteWorkspaceCommand;
-import courseitda.workspace.application.dto.request.FindAllCategoriesCommand;
-import courseitda.workspace.application.dto.request.FindWorkspaceCommand;
 import courseitda.workspace.ui.dto.request.CategoryCreateRequest;
 import courseitda.workspace.ui.dto.request.CategoryReorderRequest;
 import courseitda.workspace.ui.dto.request.WorkspaceCreateRequest;
@@ -50,11 +46,10 @@ public class WorkspaceController {
             final Member member,
             @Valid @RequestBody final WorkspaceCreateRequest request
     ) {
-        final var response = workspaceService.createWorkspace(
-                request.toCommandWith(member)
-        );
+        final var response = workspaceService.createWorkspace(request, member);
+
         return ResponseEntity.created(URI.create("/api/workspaces/" + response.identifier()))
-                .body(WorkspaceCreateResponse.from(response));
+                .body(response);
     }
 
     // 카테고리 생성
@@ -64,15 +59,14 @@ public class WorkspaceController {
             @PathVariable final String workspaceIdentifier,
             @Valid @RequestBody final CategoryCreateRequest request
     ) {
-        final var response = categoryService.createCategory(
-                request.toCommandWith(memberAuthInfo, workspaceIdentifier)
-        );
+        final var response = categoryService.createCategory(request, memberAuthInfo, workspaceIdentifier);
+
         return ResponseEntity.created(
                 URI.create("/api/workspaces/"
                         + workspaceIdentifier + "/categories/"
                         + response.id()
                 )
-        ).body(CategoryCreateResponse.from(response));
+        ).body(response);
     }
 
     // 워크스페이스 제목 수정
@@ -82,11 +76,9 @@ public class WorkspaceController {
             @PathVariable final String workspaceIdentifier,
             @Valid @RequestBody final WorkspaceUpdateRequest request
     ) {
-        final var response = workspaceService.updateWorkspace(
-                request.toCommandWith(memberAuthInfo, workspaceIdentifier)
-        );
+        final var response = workspaceService.updateWorkspace(request, memberAuthInfo, workspaceIdentifier);
 
-        return ResponseEntity.ok(WorkspaceUpdateResponse.from(response));
+        return ResponseEntity.ok(response);
     }
 
     // 카테고리 순서 변경
@@ -96,10 +88,9 @@ public class WorkspaceController {
             @PathVariable final String workspaceIdentifier,
             @Valid @RequestBody final CategoryReorderRequest request
     ) {
-        final var response = categoryService.updateCategorySequence(
-                request.toCommandWith(memberAuthInfo, workspaceIdentifier)
-        );
-        return ResponseEntity.ok(CategorySequenceUpdateResponse.from(response));
+        final var response = categoryService.updateCategorySequence(request, memberAuthInfo, workspaceIdentifier);
+
+        return ResponseEntity.ok(response);
     }
 
     // 워크스페이스 삭제
@@ -108,9 +99,7 @@ public class WorkspaceController {
             final MemberAuthInfo memberAuthInfo,
             @PathVariable final String workspaceIdentifier
     ) {
-        workspaceService.deleteWorkspace(
-                new DeleteWorkspaceCommand(memberAuthInfo, workspaceIdentifier)
-        );
+        workspaceService.deleteWorkspace(memberAuthInfo, workspaceIdentifier);
 
         return ResponseEntity.noContent().build();
     }
@@ -121,11 +110,9 @@ public class WorkspaceController {
             final MemberAuthInfo memberAuthInfo,
             @PathVariable final String workspaceIdentifier
     ) {
-        final var response = workspaceService.readWorkspace(
-                new FindWorkspaceCommand(memberAuthInfo, workspaceIdentifier)
-        );
+        final var response = workspaceService.readWorkspace(memberAuthInfo, workspaceIdentifier);
 
-        return ResponseEntity.ok(WorkspaceReadResponse.from(response));
+        return ResponseEntity.ok(response);
     }
 
     // 카테고리 목록 전체 조회 - 워크스페이스 상세 페이지
@@ -134,11 +121,9 @@ public class WorkspaceController {
             final MemberAuthInfo memberAuthInfo,
             @PathVariable final String workspaceIdentifier
     ) {
-        final var response = categoryService.findAllCategories(
-                new FindAllCategoriesCommand(memberAuthInfo, workspaceIdentifier)
-        );
+        final var response = categoryService.findAllCategories(memberAuthInfo, workspaceIdentifier);
 
-        return ResponseEntity.ok(CategoriesReadResponse.from(response));
+        return ResponseEntity.ok(response);
     }
 
     // 워크스페이스 타이틀 중복 검증
@@ -147,9 +132,8 @@ public class WorkspaceController {
             final MemberAuthInfo memberAuthInfo,
             @RequestParam(required = false) final String value
     ) {
-        final var result = workspaceService.checkTitleDuplicate(
-                new CheckWorkspaceTitleDuplicateCommand(memberAuthInfo, value));
+        final var response = workspaceService.checkTitleDuplicate(memberAuthInfo, value);
 
-        return ResponseEntity.ok(CheckTitleDuplicateResponse.from(result));
+        return ResponseEntity.ok(response);
     }
 }

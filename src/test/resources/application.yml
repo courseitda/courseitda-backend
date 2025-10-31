@@ -32,3 +32,8 @@ security:
 kakao:
   api:
     key: kakao-api-key-for-test
+
+naver:
+  api:
+    client-id: naver-client-id-for-test
+    client-secret: naver-client-secret-for-test

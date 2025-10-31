@@ -30,3 +30,8 @@ security:
 kakao:
   api:
     key: ${KAKAO_API_KEY}
+
+naver:
+  api:
+    client-id: ${NAVER_CLIENT_ID}
+    client-secret: ${NAVER_CLIENT_SECRET}

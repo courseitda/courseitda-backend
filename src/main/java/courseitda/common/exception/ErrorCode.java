@@ -306,6 +306,24 @@ public enum ErrorCode {
             "카카오 장소 검색 API 호출 중 오류가 발생했습니다.",
             HttpStatus.BAD_GATEWAY // 502
     ),
+
+    NAVER_PLACE_SEARCH_RESPONSE_NULL(
+            "6010",
+            "네이버 장소 검색 API 응답이 null입니다.",
+            HttpStatus.BAD_GATEWAY // 502
+    ),
+
+    NAVER_PLACE_SEARCH_STATUS_CHECK_ERROR(
+            "6011",
+            "네이버 장소 검색 API 응답 상태 확인 중 오류가 발생했습니다.",
+            HttpStatus.BAD_GATEWAY // 502
+    ),
+
+    NAVER_PLACE_SEARCH_ERROR(
+            "6012",
+            "네이버 장소 검색 API 호출 중 오류가 발생했습니다.",
+            HttpStatus.BAD_GATEWAY // 502
+    ),
     ;
 
     private final String code;

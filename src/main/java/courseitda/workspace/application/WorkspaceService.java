@@ -1,20 +1,17 @@
 package courseitda.workspace.application;
 
+import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.common.exception.BusinessException;
 import courseitda.common.exception.ErrorCode;
-import courseitda.workspace.application.dto.request.CheckWorkspaceTitleDuplicateCommand;
-import courseitda.workspace.application.dto.request.CreateWorkspaceCommand;
-import courseitda.workspace.application.dto.request.DeleteWorkspaceCommand;
-import courseitda.workspace.application.dto.request.FindWorkspaceCommand;
-import courseitda.workspace.application.dto.request.FindWorkspacesByMemberIdCommand;
-import courseitda.workspace.application.dto.request.UpdateWorkspaceCommand;
-import courseitda.workspace.application.dto.response.CheckTitleDuplicateResult;
-import courseitda.workspace.application.dto.response.CreateWorkspaceResult;
-import courseitda.workspace.application.dto.response.FindWorkspaceResult;
-import courseitda.workspace.application.dto.response.FindWorkspacesByMemberIdResult;
-import courseitda.workspace.application.dto.response.UpdateWorkspaceResult;
+import courseitda.member.domain.Member;
 import courseitda.workspace.domain.Workspace;
 import courseitda.workspace.domain.WorkspaceRepository;
+import courseitda.workspace.ui.dto.request.WorkspaceCreateRequest;
+import courseitda.workspace.ui.dto.request.WorkspaceUpdateRequest;
+import courseitda.workspace.ui.dto.response.CheckTitleDuplicateResponse;
+import courseitda.workspace.ui.dto.response.WorkspaceCreateResponse;
+import courseitda.workspace.ui.dto.response.WorkspaceReadResponse;
+import courseitda.workspace.ui.dto.response.WorkspaceUpdateResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,62 +23,59 @@ public class WorkspaceService {
     private final WorkspaceRepository workspaceRepository;
 
     @Transactional
-    public CreateWorkspaceResult createWorkspace(final CreateWorkspaceCommand command) {
-        validateDuplicatedTitle(command.member().getId(), command.title());
+    public WorkspaceCreateResponse createWorkspace(final WorkspaceCreateRequest request, final Member member) {
+        validateDuplicatedTitle(member.getId(), request.title());
 
-        final var workspace = Workspace.createNew(command.member(), command.title());
+        final var workspace = Workspace.createNew(member, request.title());
         final var savedWorkspace = workspaceRepository.save(workspace);
 
-        return CreateWorkspaceResult.from(savedWorkspace);
+        return WorkspaceCreateResponse.from(savedWorkspace);
     }
 
     @Transactional
-    public UpdateWorkspaceResult updateWorkspace(
-            final UpdateWorkspaceCommand command
+    public WorkspaceUpdateResponse updateWorkspace(
+            final WorkspaceUpdateRequest request,
+            final MemberAuthInfo memberAuthInfo,
+            final String workspaceIdentifier
     ) {
-        final var workspace = getByIdentifier(command.workspaceIdentifier());
-        final var newTitle = Workspace.formatTitle(command.title());
+        final var workspace = getByIdentifier(workspaceIdentifier);
+        final var newTitle = Workspace.formatTitle(request.title());
 
-        workspace.validateOwnership(command.memberAuthInfo().id());
+        workspace.validateOwnership(memberAuthInfo.id());
         // 제목이 변경되는 경우에만 중복 검증
         if (!workspace.getTitle().equals(newTitle)) {
-            validateDuplicatedTitle(command.memberAuthInfo().id(), newTitle);
+            validateDuplicatedTitle(memberAuthInfo.id(), newTitle);
         }
         workspace.rename(newTitle);
 
-        return UpdateWorkspaceResult.from(workspace);
+        return WorkspaceUpdateResponse.from(workspace);
     }
 
     @Transactional
-    public void deleteWorkspace(final DeleteWorkspaceCommand command) {
-        final var workspace = getByIdentifier(command.workspaceIdentifier());
-        workspace.validateOwnership(command.memberAuthInfo().id());
+    public void deleteWorkspace(final MemberAuthInfo memberAuthInfo, final String workspaceIdentifier) {
+        final var workspace = getByIdentifier(workspaceIdentifier);
+        workspace.validateOwnership(memberAuthInfo.id());
 
         workspaceRepository.deleteById(workspace.getId());
     }
 
     @Transactional(readOnly = true)
-    public FindWorkspacesByMemberIdResult readWorkspacesByMemberId(final FindWorkspacesByMemberIdCommand command) {
-        return FindWorkspacesByMemberIdResult.from(workspaceRepository.findAllByOwnerId(command.memberId()));
+    public WorkspaceReadResponse readWorkspace(final MemberAuthInfo memberAuthInfo, final String workspaceIdentifier) {
+        final var workspace = getByIdentifier(workspaceIdentifier);
+        workspace.validateOwnership(memberAuthInfo.id());
+
+        return WorkspaceReadResponse.from(workspace);
     }
 
-    @Transactional(readOnly = true)
-    public FindWorkspaceResult readWorkspace(final FindWorkspaceCommand command) {
-        final var workspace = getByIdentifier(command.workspaceIdentifier());
-        workspace.validateOwnership(command.memberAuthInfo().id());
-
-        return FindWorkspaceResult.from(workspace);
-    }
-
-    public CheckTitleDuplicateResult checkTitleDuplicate(final CheckWorkspaceTitleDuplicateCommand command) {
-        validateTitleNotEmpty(command.title());
+    public CheckTitleDuplicateResponse checkTitleDuplicate(final MemberAuthInfo memberAuthInfo, final String title) {
+        validateTitleNotEmpty(title);
 
         final var isDuplicated = workspaceRepository.existsByOwnerIdAndTitle(
-                command.memberAuthInfo().id(),
-                command.title()
+                memberAuthInfo.id(),
+                title
         );
 
-        return new CheckTitleDuplicateResult(isDuplicated);
+        return new CheckTitleDuplicateResponse(isDuplicated);
     }
 
     private Workspace getByIdentifier(final String identifier) {

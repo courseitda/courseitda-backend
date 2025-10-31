@@ -3,14 +3,12 @@ package courseitda.member.application;
 import courseitda.auth.domain.AuthRole;
 import courseitda.common.exception.BusinessException;
 import courseitda.common.exception.ErrorCode;
-import courseitda.member.application.dto.request.CheckEmailDuplicateCommand;
-import courseitda.member.application.dto.request.CheckNicknameDuplicateCommand;
-import courseitda.member.application.dto.request.SignUpCommand;
-import courseitda.member.application.dto.response.CheckEmailDuplicateResult;
-import courseitda.member.application.dto.response.CheckNicknameDuplicateResult;
-import courseitda.member.application.dto.response.SignUpResult;
 import courseitda.member.domain.Member;
 import courseitda.member.domain.MemberRepository;
+import courseitda.member.ui.dto.request.SignUpRequest;
+import courseitda.member.ui.dto.response.CheckEmailDuplicateResponse;
+import courseitda.member.ui.dto.response.CheckNicknameDuplicateResponse;
+import courseitda.member.ui.dto.response.SignUpResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,21 +20,24 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public SignUpResult create(final SignUpCommand command) {
-        validateDuplicateEmail(command.email());
-        validateDuplicateNickname(command.nickname());
+    public SignUpResponse signUp(final SignUpRequest request) {
+        validateDuplicateEmail(request.email());
+        validateDuplicateNickname(request.nickname());
 
-        final String encodedPassword = passwordEncoder.encode(command.password());
-
+        final String encodedPassword = passwordEncoder.encode(request.password());
         final Member member = Member.builder()
-                .nickname(command.nickname())
-                .email(command.email())
+                .nickname(request.nickname())
+                .email(request.email())
                 .password(encodedPassword)
                 .authRole(AuthRole.MEMBER)
                 .build();
         final Member createdMember = memberRepository.save(member);
 
-        return SignUpResult.from(createdMember);
+        return SignUpResponse.from(
+                createdMember.getId(),
+                createdMember.getNickname(),
+                createdMember.getEmail()
+        );
     }
 
     public Member findById(final Long id) {
@@ -44,21 +45,21 @@ public class MemberService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
-    public CheckNicknameDuplicateResult checkNicknameDuplicate(final CheckNicknameDuplicateCommand command) {
-        validateNicknameNotEmpty(command.nickname());
+    public CheckNicknameDuplicateResponse checkNicknameDuplicate(final String nickname) {
+        validateNicknameNotEmpty(nickname);
 
-        final boolean isDuplicated = memberRepository.existsByNickname(command.nickname());
+        final boolean isDuplicated = memberRepository.existsByNickname(nickname);
 
-        return new CheckNicknameDuplicateResult(isDuplicated);
+        return new CheckNicknameDuplicateResponse(isDuplicated);
     }
 
-    public CheckEmailDuplicateResult checkEmailDuplicate(final CheckEmailDuplicateCommand command) {
-        validateEmailNotEmpty(command.email());
-        validateEmailFormat(command.email());
+    public CheckEmailDuplicateResponse checkEmailDuplicate(final String email) {
+        validateEmailNotEmpty(email);
+        validateEmailFormat(email);
 
-        final boolean isDuplicated = memberRepository.existsByEmail(command.email());
+        final boolean isDuplicated = memberRepository.existsByEmail(email);
 
-        return new CheckEmailDuplicateResult(isDuplicated);
+        return new CheckEmailDuplicateResponse(isDuplicated);
     }
 
     private void validateNicknameNotEmpty(final String nickname) {

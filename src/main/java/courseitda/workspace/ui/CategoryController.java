@@ -4,9 +4,6 @@ import courseitda.auth.domain.AuthRole;
 import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.auth.domain.RequiresRole;
 import courseitda.workspace.application.CategoryService;
-import courseitda.workspace.application.dto.request.DeleteCategoryCommand;
-import courseitda.workspace.application.dto.request.DeleteRepresentativeCategoryPlaceCommand;
-import courseitda.workspace.application.dto.request.FindCategoryCommand;
 import courseitda.workspace.ui.dto.request.CategoryUpdateRequest;
 import courseitda.workspace.ui.dto.request.RepresentativeCategoryPlaceUpdateRequest;
 import courseitda.workspace.ui.dto.response.CategoryReadResponse;
@@ -39,11 +36,9 @@ public class CategoryController {
             @PathVariable final Long categoryId,
             @Valid @RequestBody final RepresentativeCategoryPlaceUpdateRequest request
     ) {
-        final var result = categoryService.updateRepresentativeCategoryPlace(
-                request.toCommandWith(memberAuthInfo, categoryId)
-        );
+        final var response = categoryService.updateRepresentativeCategoryPlace(request, memberAuthInfo, categoryId);
 
-        return ResponseEntity.ok(RepresentativeCategoryPlaceUpdateResponse.from(result));
+        return ResponseEntity.ok(response);
     }
 
     // 카테고리 (이름/색상) 수정
@@ -53,11 +48,9 @@ public class CategoryController {
             @PathVariable final Long categoryId,
             @Valid @RequestBody final CategoryUpdateRequest request
     ) {
-        final var response = categoryService.updateCategory(
-                request.toCommandWith(memberAuthInfo, categoryId)
-        );
+        final var response = categoryService.updateCategory(request, memberAuthInfo, categoryId);
 
-        return ResponseEntity.ok(CategoryUpdateResponse.from(response));
+        return ResponseEntity.ok(response);
     }
 
     // 카테고리 대표 장소 해제
@@ -66,9 +59,7 @@ public class CategoryController {
             final MemberAuthInfo memberAuthInfo,
             @PathVariable final Long categoryId
     ) {
-        categoryService.deleteRepresentativeCategoryPlace(
-                new DeleteRepresentativeCategoryPlaceCommand(memberAuthInfo, categoryId)
-        );
+        categoryService.deleteRepresentativeCategoryPlace(memberAuthInfo, categoryId);
 
         return ResponseEntity.noContent().build();
     }
@@ -79,9 +70,7 @@ public class CategoryController {
             final MemberAuthInfo memberAuthInfo,
             @PathVariable final Long categoryId
     ) {
-        categoryService.deleteCategory(
-                new DeleteCategoryCommand(memberAuthInfo, categoryId)
-        );
+        categoryService.deleteCategory(memberAuthInfo, categoryId);
 
         return ResponseEntity.noContent().build();
     }
@@ -92,10 +81,8 @@ public class CategoryController {
             final MemberAuthInfo memberAuthInfo,
             @PathVariable final Long categoryId
     ) {
-        final var response = categoryService.findCategory(
-                new FindCategoryCommand(memberAuthInfo, categoryId)
-        );
+        final var response = categoryService.findCategory(memberAuthInfo, categoryId);
 
-        return ResponseEntity.ok(CategoryReadResponse.from(response));
+        return ResponseEntity.ok(response);
     }
 }

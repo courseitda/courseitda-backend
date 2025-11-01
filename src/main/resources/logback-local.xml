@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<included>
+    <!-- 요청 로그 전용 Appender: REQUEST Marker가 있는 로그만 저장 -->
+    <appender name="REQUEST_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 요청 전용 파일: logs/request.log -->
+        <file>${LOG_DIR}/request.log</file>
+
+        <!-- Marker 필터: REQUEST Marker가 있는 로그만 기록 -->
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator class="ch.qos.logback.classic.boolex.OnMarkerEvaluator">
+                <marker>REQUEST</marker>
+            </evaluator>
+            <onMismatch>DENY</onMismatch>
+            <onMatch>ACCEPT</onMatch>
+        </filter>
+
+        <!-- JSON 형식으로 출력: log.md 명세에 정의된 필드만 출력 -->
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <timeZone>UTC</timeZone>
+            <timestampPattern>yyyy-MM-dd'T'HH:mm:ss.SSSX</timestampPattern>
+            <fieldNames>
+                <timestamp>timestamp</timestamp>
+            </fieldNames>
+            <!-- 불필요한 기본 필드 제거 -->
+            <includeContext>false</includeContext>                <!-- 로깅 컨텍스트 정보 제외 -->
+            <includeMdc>false</includeMdc>                        <!-- MDC(Map Diagnostic Context) 데이터 제외 -->
+            <includeStructuredArguments>true</includeStructuredArguments>  <!-- keyValue(...)로 넘긴 구조화된 인자 포함 -->
+            <includeTags>false</includeTags>                      <!-- Marker 외의 태그 정보 제외 -->
+            <includeCallerData>false</includeCallerData>          <!-- 호출 클래스/메서드/라인 번호 제외 -->
+            <includeLoggerName>false</includeLoggerName>          <!-- 로거 이름 제외 -->
+            <includeThreadName>false</includeThreadName>          <!-- 스레드 이름 제외 -->
+            <includeLevel>true</includeLevel>                    <!-- 로그 레벨(INFO/ERROR 등) 포함 -->
+            <includeFormattedMessage>false</includeFormattedMessage>  <!-- 포맷된 메시지 문자열 제외 -->
+            <includeMessage>false</includeMessage>                <!-- 원본 메시지 문자열 제외 -->
+            <includeArguments>false</includeArguments>            <!-- 인자로 전달된 메시지 변수들 제외 -->
+            <includeContextName>false</includeContextName>        <!-- contextName (로거 컨텍스트 이름) 제외 -->
+            <includeRawMessage>false</includeRawMessage>          <!-- 인코딩되지 않은 원본 메시지 제외 -->
+            <includeTimestamp>true</includeTimestamp>             <!-- 타임스탬프는 유지 -->
+        </encoder>
+
+        <!-- 로그 파일 로테이션: 하루 단위로 자동 분할 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/request-%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <maxHistory>7</maxHistory>           <!-- 7일 보관 -->
+        </rollingPolicy>
+    </appender>
+
+    <!-- 응답 로그 전용 Appender: RESPONSE Marker가 있는 로그만 저장 -->
+    <appender name="RESPONSE_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 응답 전용 파일: logs/response.log -->
+        <file>${LOG_DIR}/response.log</file>
+
+        <!-- Marker 필터: RESPONSE Marker가 있는 로그만 기록 -->
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator class="ch.qos.logback.classic.boolex.OnMarkerEvaluator">
+                <marker>RESPONSE</marker>
+            </evaluator>
+            <onMismatch>DENY</onMismatch>
+            <onMatch>ACCEPT</onMatch>
+        </filter>
+
+        <!-- JSON 형식으로 출력: log.md 명세에 정의된 필드만 출력 -->
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <timeZone>UTC</timeZone>
+            <timestampPattern>yyyy-MM-dd'T'HH:mm:ss.SSSX</timestampPattern>
+            <fieldNames>
+                <timestamp>timestamp</timestamp>
+            </fieldNames>
+            <!-- 불필요한 기본 필드 제거 -->
+            <includeContext>false</includeContext>                <!-- 로깅 컨텍스트 정보 제외 -->
+            <includeMdc>false</includeMdc>                        <!-- MDC(Map Diagnostic Context) 데이터 제외 -->
+            <includeStructuredArguments>true</includeStructuredArguments>  <!-- keyValue(...)로 넘긴 구조화된 인자 포함 -->
+            <includeTags>false</includeTags>                      <!-- Marker 외의 태그 정보 제외 -->
+            <includeCallerData>false</includeCallerData>          <!-- 호출 클래스/메서드/라인 번호 제외 -->
+            <includeLoggerName>false</includeLoggerName>          <!-- 로거 이름 제외 -->
+            <includeThreadName>false</includeThreadName>          <!-- 스레드 이름 제외 -->
+            <includeLevel>true</includeLevel>                    <!-- 로그 레벨(INFO/ERROR 등) 포함 -->
+            <includeFormattedMessage>false</includeFormattedMessage>  <!-- 포맷된 메시지 문자열 제외 -->
+            <includeMessage>false</includeMessage>                <!-- 원본 메시지 문자열 제외 -->
+            <includeArguments>false</includeArguments>            <!-- 인자로 전달된 메시지 변수들 제외 -->
+            <includeContextName>false</includeContextName>        <!-- contextName (로거 컨텍스트 이름) 제외 -->
+            <includeRawMessage>false</includeRawMessage>          <!-- 인코딩되지 않은 원본 메시지 제외 -->
+            <includeTimestamp>true</includeTimestamp>             <!-- 타임스탬프는 유지 -->
+        </encoder>
+
+        <!-- 로그 파일 로테이션: 하루 단위로 자동 분할 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/response-%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 에러 로그 전용 Appender: ERROR Marker가 있는 로그만 저장 -->
+    <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 에러 전용 파일: logs/error.log -->
+        <file>${LOG_DIR}/error.log</file>
+
+        <!-- Marker 필터: ERROR Marker가 있는 로그만 기록 -->
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator class="ch.qos.logback.classic.boolex.OnMarkerEvaluator">
+                <marker>ERROR</marker>
+            </evaluator>
+            <onMismatch>DENY</onMismatch>
+            <onMatch>ACCEPT</onMatch>
+        </filter>
+
+        <!-- JSON 형식으로 출력: log.md 명세에 정의된 필드만 출력 -->
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <timeZone>UTC</timeZone>
+            <timestampPattern>yyyy-MM-dd'T'HH:mm:ss.SSSX</timestampPattern>
+            <fieldNames>
+                <timestamp>timestamp</timestamp>
+            </fieldNames>
+            <!-- 불필요한 기본 필드 제거 -->
+            <includeContext>false</includeContext>                <!-- 로깅 컨텍스트 정보 제외 -->
+            <includeMdc>false</includeMdc>                        <!-- MDC(Map Diagnostic Context) 데이터 제외 -->
+            <includeStructuredArguments>true</includeStructuredArguments>  <!-- keyValue(...)로 넘긴 구조화된 인자 포함 -->
+            <includeTags>false</includeTags>                      <!-- Marker 외의 태그 정보 제외 -->
+            <includeCallerData>false</includeCallerData>          <!-- 호출 클래스/메서드/라인 번호 제외 -->
+            <includeLoggerName>false</includeLoggerName>          <!-- 로거 이름 제외 -->
+            <includeThreadName>false</includeThreadName>          <!-- 스레드 이름 제외 -->
+            <includeLevel>true</includeLevel>                    <!-- 로그 레벨(INFO/ERROR 등) 포함 -->
+            <includeFormattedMessage>false</includeFormattedMessage>  <!-- 포맷된 메시지 문자열 제외 -->
+            <includeMessage>false</includeMessage>                <!-- 원본 메시지 문자열 제외 -->
+            <includeArguments>false</includeArguments>            <!-- 인자로 전달된 메시지 변수들 제외 -->
+            <includeContextName>false</includeContextName>        <!-- contextName (로거 컨텍스트 이름) 제외 -->
+            <includeRawMessage>false</includeRawMessage>          <!-- 인코딩되지 않은 원본 메시지 제외 -->
+            <includeTimestamp>true</includeTimestamp>             <!-- 타임스탬프는 유지 -->
+        </encoder>
+
+        <!-- 에러 로그 로테이션: 하루 단위로 자동 분할, 에러는 더 오래 보관 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/error-%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <maxHistory>30</maxHistory>          <!-- 에러 로그는 30일 보관 -->
+        </rollingPolicy>
+    </appender>
+
+    <!-- 시스템/애플리케이션 로그 전용 Appender: API 로그를 제외한 일반 로그만 저장 -->
+    <appender name="APP_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 시스템 로그 전용 파일: logs/app.log -->
+        <file>${LOG_DIR}/app.log</file>
+
+        <!-- Marker 필터: REQUEST, RESPONSE, ERROR Marker가 없는 로그만 기록 -->
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator class="ch.qos.logback.classic.boolex.OnMarkerEvaluator">
+                <marker>REQUEST</marker>
+            </evaluator>
+            <onMatch>DENY</onMatch>
+        </filter>
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator class="ch.qos.logback.classic.boolex.OnMarkerEvaluator">
+                <marker>RESPONSE</marker>
+            </evaluator>
+            <onMatch>DENY</onMatch>
+        </filter>
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator class="ch.qos.logback.classic.boolex.OnMarkerEvaluator">
+                <marker>ERROR</marker>
+            </evaluator>
+            <onMatch>DENY</onMatch>
+        </filter>
+
+        <!-- JSON 형식으로 출력: 시스템 로그는 기본 필드 포함 -->
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <timeZone>UTC</timeZone>
+            <timestampPattern>yyyy-MM-dd'T'HH:mm:ss.SSSX</timestampPattern>
+            <fieldNames>
+                <timestamp>timestamp</timestamp>
+                <logger>logger_name</logger>
+                <thread>thread_name</thread>
+            </fieldNames>
+            <!-- app.log는 시스템 로그이므로 기본 필드 유지 -->
+            <includeContext>false</includeContext>
+            <includeMdc>true</includeMdc>
+            <includeMessage>false</includeMessage>
+        </encoder>
+
+        <!-- 로그 파일 로테이션: 하루 단위로 자동 분할 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/app-%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <maxHistory>7</maxHistory>           <!-- 7일 보관 -->
+        </rollingPolicy>
+    </appender>
+
+    <!-- 루트 로거: 모든 로그의 기본 설정 -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>        <!-- 콘솔에 출력 (터미널에서 실시간 확인용) -->
+        <appender-ref ref="REQUEST_FILE"/>   <!-- 요청 로그 별도 파일 -->
+        <appender-ref ref="RESPONSE_FILE"/>  <!-- 응답 로그 별도 파일 -->
+        <appender-ref ref="ERROR_FILE"/>     <!-- 에러 로그 별도 파일 -->
+        <appender-ref ref="APP_FILE"/>       <!-- 시스템/애플리케이션 로그 -->
+    </root>
+
+    <!-- 애플리케이션 코드 로그는 DEBUG 레벨 (개발 시 상세 로그) -->
+    <logger name="courseitda" level="DEBUG"/>
+
+    <!-- Hibernate SQL 로그는 현재 사용중이지 않음 -->
+
+    <!-- 프레임워크 로그: WARN 이상만 (노이즈 감소) -->
+    <logger name="org.springframework" level="WARN"/>
+    <logger name="org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver"
+            level="ERROR"/>
+    <logger name="org.springframework.boot.devtools" level="WARN"/>
+    <logger name="org.apache.catalina" level="WARN"/>
+    <logger name="org.apache.coyote" level="WARN"/>
+    <logger name="org.apache.tomcat" level="WARN"/>
+    <logger name="org.hibernate" level="WARN"/>
+    <logger name="com.zaxxer.hikari" level="WARN"/>
+</included>

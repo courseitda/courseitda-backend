@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true">
+    <!-- 로그 디렉토리 설정 (환경 변수 또는 기본값) -->
+    <property name="LOG_DIR" value="${LOG_PATH:-logs}"/>
+
+    <!-- Spring Boot 기본 설정 포함 -->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+    <!-- 기본 루트 로거 (콘솔만) -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+    <!-- 로컬 개발 환경 (local) -->
+    <springProfile name="local">
+        <include resource="logback-local.xml"/>
+    </springProfile>
+
+</configuration>

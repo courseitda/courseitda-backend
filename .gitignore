@@ -95,6 +95,8 @@ fabric.properties
 
 # Log file
 *.log
+logs/
+!logs/.gitkeep
 
 # BlueJ files
 *.ctxt

@@ -25,9 +25,9 @@
                     <fieldName>timestamp</fieldName>
                 </timestamp>
                 <!-- 로그 레벨 -->
-                <level>
+                <logLevel>
                     <fieldName>level</fieldName>
-                </level>
+                </logLevel>
                 <!-- keyValue(...)로 넘긴 구조화된 인자만 기록 -->
                 <arguments/>
             </providers>
@@ -65,9 +65,9 @@
                     <fieldName>timestamp</fieldName>
                 </timestamp>
                 <!-- 로그 레벨 -->
-                <level>
+                <logLevel>
                     <fieldName>level</fieldName>
-                </level>
+                </logLevel>
                 <!-- keyValue(...)로 넘긴 구조화된 인자만 기록 -->
                 <arguments/>
             </providers>
@@ -105,9 +105,9 @@
                     <fieldName>timestamp</fieldName>
                 </timestamp>
                 <!-- 로그 레벨 -->
-                <level>
+                <logLevel>
                     <fieldName>level</fieldName>
-                </level>
+                </logLevel>
                 <!-- keyValue(...)로 넘긴 구조화된 인자만 기록 -->
                 <arguments/>
             </providers>

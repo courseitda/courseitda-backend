@@ -12,7 +12,7 @@ import org.springframework.util.StringUtils;
 
 @Component
 public class ApiLogWriter {
-    private static final Logger log = LoggerFactory.getLogger(ApiLogWriter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ApiLogWriter.class);
 
     private static final Marker REQUEST = MarkerFactory.getMarker("REQUEST");
     private static final Marker RESPONSE = MarkerFactory.getMarker("RESPONSE");
@@ -22,7 +22,7 @@ public class ApiLogWriter {
             final HttpServletRequest req,
             final String traceId
     ) {
-        log.info(
+        LOG.info(
                 REQUEST,
                 "API 요청 로그",
                 keyValue("traceId", traceId),
@@ -37,7 +37,7 @@ public class ApiLogWriter {
             final int httpStatus,
             final long durationMs
     ) {
-        log.info(
+        LOG.info(
                 RESPONSE,
                 "API 응답 로그",
                 keyValue("traceId", traceId),
@@ -51,7 +51,7 @@ public class ApiLogWriter {
             final int status,
             final String reason
     ) {
-        log.error(
+        LOG.error(
                 ERROR,
                 "API 에러 로그",
                 keyValue("traceId", traceId),
@@ -65,7 +65,7 @@ public class ApiLogWriter {
             final int status,
             final String message
     ) {
-        log.error(
+        LOG.error(
                 ERROR,
                 "API 미처리 에러 로그",
                 keyValue("traceId", traceId),

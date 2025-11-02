@@ -21,6 +21,20 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
     show-sql: true
 
+# Spring Actuator 및 메트릭 설정
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics  # 노출할 엔드포인트
+  endpoint:
+    health:
+      show-details: never  # 헬스체크 세부정보 비공개
+  metrics:
+    tags:
+      application: ${spring.application.name}  # 메트릭에 애플리케이션 이름 태그 추가
+    # Spring Boot 3.x에서는 micrometer-registry-prometheus 의존성만 있으면 자동 활성화
+
 security:
   jwt:
     access-token:

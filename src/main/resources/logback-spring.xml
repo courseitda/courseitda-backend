@@ -17,4 +17,9 @@
         <include resource="logback-local.xml"/>
     </springProfile>
 
+    <!-- 개발 서버 환경 (dev) -->
+    <springProfile name="dev">
+        <include resource="logback-dev.xml"/>
+    </springProfile>
+
 </configuration>

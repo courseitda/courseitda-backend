@@ -29,7 +29,7 @@ management:
         include: health,info,prometheus,metrics  # 노출할 엔드포인트
   endpoint:
     health:
-      show-details: never  # 헬스체크 세부정보 비공개
+      show-details: always  # 헬스체크 세부정보 공개
   metrics:
     tags:
       application: ${spring.application.name}  # 메트릭에 애플리케이션 이름 태그 추가

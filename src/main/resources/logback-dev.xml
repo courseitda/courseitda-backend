@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<included>
+    <!-- Dev 환경 로그 디렉토리: 환경변수 LOG_PATH 사용 (docker-compose.yml에서 설정) -->
+    <property name="DEV_LOG_DIR" value="${LOG_PATH:-/app/logs}"/>
+
+    <!-- 요청 로그 전용 Appender: REQUEST Marker가 있는 로그만 저장 -->
+    <appender name="REQUEST_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${DEV_LOG_DIR}/request.log</file>
+
+        <!-- Marker 필터: REQUEST Marker가 있는 로그만 기록 -->
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator class="ch.qos.logback.classic.boolex.OnMarkerEvaluator">
+                <marker>REQUEST</marker>
+            </evaluator>
+            <onMismatch>DENY</onMismatch>
+            <onMatch>ACCEPT</onMatch>
+        </filter>
+
+        <!-- JSON 형식으로 출력 -->
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp>
+                    <timeZone>UTC</timeZone>
+                    <pattern>yyyy-MM-dd'T'HH:mm:ss.SSSX</pattern>
+                    <fieldName>timestamp</fieldName>
+                </timestamp>
+                <logLevel>
+                    <fieldName>level</fieldName>
+                </logLevel>
+                <arguments/>
+            </providers>
+        </encoder>
+
+        <!-- 로그 파일 로테이션: 하루 단위로 자동 분할 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${DEV_LOG_DIR}/request-%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 응답 로그 전용 Appender: RESPONSE Marker가 있는 로그만 저장 -->
+    <appender name="RESPONSE_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${DEV_LOG_DIR}/response.log</file>
+
+        <!-- Marker 필터: RESPONSE Marker가 있는 로그만 기록 -->
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator class="ch.qos.logback.classic.boolex.OnMarkerEvaluator">
+                <marker>RESPONSE</marker>
+            </evaluator>
+            <onMismatch>DENY</onMismatch>
+            <onMatch>ACCEPT</onMatch>
+        </filter>
+
+        <!-- JSON 형식으로 출력 -->
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp>
+                    <timeZone>UTC</timeZone>
+                    <pattern>yyyy-MM-dd'T'HH:mm:ss.SSSX</pattern>
+                    <fieldName>timestamp</fieldName>
+                </timestamp>
+                <logLevel>
+                    <fieldName>level</fieldName>
+                </logLevel>
+                <arguments/>
+            </providers>
+        </encoder>
+
+        <!-- 로그 파일 로테이션: 하루 단위로 자동 분할 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${DEV_LOG_DIR}/response-%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 에러 로그 전용 Appender: ERROR Marker가 있는 로그만 저장 -->
+    <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${DEV_LOG_DIR}/error.log</file>
+
+        <!-- Marker 필터: ERROR Marker가 있는 로그만 기록 -->
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator class="ch.qos.logback.classic.boolex.OnMarkerEvaluator">
+                <marker>ERROR</marker>
+            </evaluator>
+            <onMismatch>DENY</onMismatch>
+            <onMatch>ACCEPT</onMatch>
+        </filter>
+
+        <!-- JSON 형식으로 출력 -->
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp>
+                    <timeZone>UTC</timeZone>
+                    <pattern>yyyy-MM-dd'T'HH:mm:ss.SSSX</pattern>
+                    <fieldName>timestamp</fieldName>
+                </timestamp>
+                <logLevel>
+                    <fieldName>level</fieldName>
+                </logLevel>
+                <arguments/>
+            </providers>
+        </encoder>
+
+        <!-- 에러 로그 로테이션: 하루 단위로 자동 분할, 에러는 더 오래 보관 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${DEV_LOG_DIR}/error-%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 시스템/애플리케이션 로그 전용 Appender: API 로그를 제외한 일반 로그만 저장 -->
+    <appender name="APP_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${DEV_LOG_DIR}/app.log</file>
+
+        <!-- Marker 필터: REQUEST, RESPONSE, ERROR Marker가 없는 로그만 기록 -->
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator class="ch.qos.logback.classic.boolex.OnMarkerEvaluator">
+                <marker>REQUEST</marker>
+            </evaluator>
+            <onMatch>DENY</onMatch>
+        </filter>
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator class="ch.qos.logback.classic.boolex.OnMarkerEvaluator">
+                <marker>RESPONSE</marker>
+            </evaluator>
+            <onMatch>DENY</onMatch>
+        </filter>
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator class="ch.qos.logback.classic.boolex.OnMarkerEvaluator">
+                <marker>ERROR</marker>
+            </evaluator>
+            <onMatch>DENY</onMatch>
+        </filter>
+
+        <!-- JSON 형식으로 출력: 시스템 로그는 기본 필드 포함 -->
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <timeZone>UTC</timeZone>
+            <timestampPattern>yyyy-MM-dd'T'HH:mm:ss.SSSX</timestampPattern>
+            <fieldNames>
+                <timestamp>timestamp</timestamp>
+                <logger>logger_name</logger>
+                <thread>thread_name</thread>
+            </fieldNames>
+            <includeContext>false</includeContext>
+            <includeMdc>true</includeMdc>
+            <includeMessage>false</includeMessage>
+        </encoder>
+
+        <!-- 로그 파일 로테이션: 하루 단위로 자동 분할 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${DEV_LOG_DIR}/app-%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 루트 로거: 모든 로그의 기본 설정 -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="REQUEST_FILE"/>
+        <appender-ref ref="RESPONSE_FILE"/>
+        <appender-ref ref="ERROR_FILE"/>
+        <appender-ref ref="APP_FILE"/>
+    </root>
+
+    <!-- 애플리케이션 코드 로그는 DEBUG 레벨 (개발 환경) -->
+    <logger name="courseitda" level="DEBUG"/>
+
+    <!-- 프레임워크 로그: WARN 이상만 -->
+    <logger name="org.springframework" level="WARN"/>
+    <logger name="org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver" level="ERROR"/>
+    <logger name="org.apache.catalina" level="WARN"/>
+    <logger name="org.apache.coyote" level="WARN"/>
+    <logger name="org.apache.tomcat" level="WARN"/>
+    <logger name="org.hibernate" level="WARN"/>
+    <logger name="com.zaxxer.hikari" level="WARN"/>
+</included>

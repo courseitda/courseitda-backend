@@ -23,13 +23,18 @@ spring:
 
 # Spring Actuator 및 메트릭 설정
 management:
+  server:
+    port: ${MANAGEMENT_PORT:8080}  # Actuator 전용 포트 (기본값: 8080, 분리 시 9090 권장)
   endpoints:
     web:
       exposure:
         include: health,info,prometheus,metrics  # 노출할 엔드포인트
+    ip-filter:
+      enabled: ${ACTUATOR_IP_FILTER_ENABLED:false}  # IP 필터 활성화 여부 (기본값: false)
+      allowed-ips: ${ACTUATOR_ALLOWED_IPS:}  # 허용할 IP 목록 (쉼표 구분)
   endpoint:
     health:
-      show-details: never  # 헬스체크 세부정보 비공개
+      show-details: ${HEALTH_SHOW_DETAILS:never}  # 헬스체크 세부정보 (기본값: never)
   metrics:
     tags:
       application: ${spring.application.name}  # 메트릭에 애플리케이션 이름 태그 추가

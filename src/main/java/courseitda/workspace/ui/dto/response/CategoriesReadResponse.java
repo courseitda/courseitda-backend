@@ -1,19 +1,17 @@
 package courseitda.workspace.ui.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import courseitda.workspace.application.dto.response.FindCategoriesResult;
-import courseitda.workspace.application.dto.response.FindCategoriesResult.CategoryResult;
-import courseitda.workspace.application.dto.response.FindCategoriesResult.CategoryResult.CategoryPlacesResult;
-import courseitda.workspace.application.dto.response.FindCategoriesResult.CategoryResult.CategoryPlacesResult.CategoryPlaceResult;
+import courseitda.workspace.domain.Category;
+import courseitda.workspace.domain.CategoryPlace;
 import java.util.List;
 
 public record CategoriesReadResponse(
         @JsonProperty("categories") List<CategoryResponse> categoryResponses
 ) {
 
-    public static CategoriesReadResponse from(final FindCategoriesResult result) {
+    public static CategoriesReadResponse from(final List<Category> categories) {
         return new CategoriesReadResponse(
-                result.categoryResults().stream()
+                categories.stream()
                         .map(CategoryResponse::from)
                         .toList());
     }
@@ -27,14 +25,14 @@ public record CategoriesReadResponse(
             @JsonProperty("categoryPlaces") CategoryPlacesResponse categoryPlacesResponse
     ) {
 
-        public static CategoryResponse from(final CategoryResult result) {
+        public static CategoryResponse from(final Category category) {
             return new CategoryResponse(
-                    result.id(),
-                    result.name(),
-                    result.color(),
-                    result.sequence(),
-                    result.representativePlaceId(),
-                    CategoryPlacesResponse.from(result.categoryPlacesResult())
+                    category.getId(),
+                    category.getName(),
+                    category.getColor(),
+                    category.getSequence(),
+                    category.getRepresentativePlace() != null ? category.getRepresentativePlace().getId() : null,
+                    CategoryPlacesResponse.from(category.getCategoryPlaces(), category.getRepresentativePlace())
             );
         }
 
@@ -43,10 +41,15 @@ public record CategoriesReadResponse(
         ) {
 
             public static CategoryPlacesResponse from(
-                    final CategoryPlacesResult result) {
+                    final List<CategoryPlace> categoryPlaces,
+                    final CategoryPlace representativePlace
+            ) {
                 return new CategoryPlacesResponse(
-                        result.categoryPlaceResults().stream()
-                                .map(CategoryPlaceResponse::from)
+                        categoryPlaces.stream()
+                                .map(place -> CategoryPlaceResponse.from(
+                                        place,
+                                        representativePlace != null && place.getId().equals(representativePlace.getId())
+                                ))
                                 .toList()
                 );
             }
@@ -62,15 +65,17 @@ public record CategoriesReadResponse(
             ) {
 
                 public static CategoryPlaceResponse from(
-                        final CategoryPlaceResult result) {
+                        final CategoryPlace categoryPlace,
+                        final boolean isRepresentative
+                ) {
                     return new CategoryPlaceResponse(
-                            result.id(),
-                            result.name(),
-                            result.addressName(),
-                            result.roadAddressName(),
-                            result.latitude(),
-                            result.longitude(),
-                            result.isRepresentative()
+                            categoryPlace.getId(),
+                            categoryPlace.getPlace().getName(),
+                            categoryPlace.getPlace().getAddressName(),
+                            categoryPlace.getPlace().getRoadAddressName(),
+                            categoryPlace.getPlace().getLatitude(),
+                            categoryPlace.getPlace().getLongitude(),
+                            isRepresentative
                     );
                 }
             }

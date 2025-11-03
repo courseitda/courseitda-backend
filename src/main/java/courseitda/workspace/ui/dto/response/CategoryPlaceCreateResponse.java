@@ -1,6 +1,6 @@
 package courseitda.workspace.ui.dto.response;
 
-import courseitda.workspace.application.dto.response.CreateCategoryPlaceResult;
+import courseitda.workspace.domain.CategoryPlace;
 
 public record CategoryPlaceCreateResponse(
         Long id,
@@ -12,15 +12,15 @@ public record CategoryPlaceCreateResponse(
         double longitude
 ) {
 
-    public static CategoryPlaceCreateResponse from(final CreateCategoryPlaceResult result) {
+    public static CategoryPlaceCreateResponse from(final CategoryPlace categoryPlace) {
         return new CategoryPlaceCreateResponse(
-                result.id(),
-                result.place().getId(),
-                result.place().getName(),
-                result.place().getRoadAddressName(),
-                result.place().getAddressName(),
-                result.place().getLatitude(),
-                result.place().getLongitude()
+                categoryPlace.getId(),
+                categoryPlace.getPlace().getId(),
+                categoryPlace.getPlace().getName(),
+                categoryPlace.getPlace().getRoadAddressName(),
+                categoryPlace.getPlace().getAddressName(),
+                categoryPlace.getPlace().getLatitude(),
+                categoryPlace.getPlace().getLongitude()
         );
     }
 }

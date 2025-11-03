@@ -1,8 +1,6 @@
 package courseitda.member.ui;
 
 import courseitda.member.application.MemberService;
-import courseitda.member.application.dto.request.CheckEmailDuplicateCommand;
-import courseitda.member.application.dto.request.CheckNicknameDuplicateCommand;
 import courseitda.member.ui.dto.request.SignUpRequest;
 import courseitda.member.ui.dto.response.CheckEmailDuplicateResponse;
 import courseitda.member.ui.dto.response.CheckNicknameDuplicateResponse;
@@ -29,27 +27,27 @@ public class MemberController {
     public ResponseEntity<SignUpResponse> signup(
             @RequestBody @Valid final SignUpRequest request
     ) {
-        final var result = memberService.create(request.toCommand());
+        final var response = memberService.signUp(request);
 
-        return ResponseEntity.created(URI.create("/api/members/" + result.id()))
-                .body(SignUpResponse.from(result));
+        return ResponseEntity.created(URI.create("/api/members/" + response.id()))
+                .body(response);
     }
 
     @GetMapping("/validations/nickname")
     public ResponseEntity<CheckNicknameDuplicateResponse> checkNicknameDuplicate(
             @RequestParam(required = false) final String value
     ) {
-        final var result = memberService.checkNicknameDuplicate(new CheckNicknameDuplicateCommand(value));
+        final var response = memberService.checkNicknameDuplicate(value);
 
-        return ResponseEntity.ok(CheckNicknameDuplicateResponse.from(result));
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/validations/email")
     public ResponseEntity<CheckEmailDuplicateResponse> checkEmailDuplicate(
             @RequestParam(required = false) final String value
     ) {
-        final var result = memberService.checkEmailDuplicate(new CheckEmailDuplicateCommand(value));
+        final var response = memberService.checkEmailDuplicate(value);
 
-        return ResponseEntity.ok(CheckEmailDuplicateResponse.from(result));
+        return ResponseEntity.ok(response);
     }
 }

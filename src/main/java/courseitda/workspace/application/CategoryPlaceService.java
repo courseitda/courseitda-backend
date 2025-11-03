@@ -1,18 +1,17 @@
 package courseitda.workspace.application;
 
+import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.common.exception.BusinessException;
 import courseitda.common.exception.ErrorCode;
 import courseitda.place.domain.Place;
 import courseitda.place.domain.PlaceRepository;
-import courseitda.workspace.application.dto.request.CreateCategoryPlaceCommand;
-import courseitda.workspace.application.dto.request.DeleteCategoryPlaceCommand;
-import courseitda.workspace.application.dto.request.FindCategoryPlacesCommand;
-import courseitda.workspace.application.dto.response.CreateCategoryPlaceResult;
-import courseitda.workspace.application.dto.response.FindCategoryPlacesResult;
 import courseitda.workspace.domain.Category;
 import courseitda.workspace.domain.CategoryPlace;
 import courseitda.workspace.domain.CategoryPlaceRepository;
 import courseitda.workspace.domain.CategoryRepository;
+import courseitda.workspace.ui.dto.request.CategoryPlaceCreateRequest;
+import courseitda.workspace.ui.dto.response.CategoryPlaceCreateResponse;
+import courseitda.workspace.ui.dto.response.CategoryPlacesFindResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,29 +25,37 @@ public class CategoryPlaceService {
     private final PlaceRepository placeRepository;
 
     @Transactional
-    public CreateCategoryPlaceResult createCategoryPlace(final CreateCategoryPlaceCommand command) {
-        final var category = getCategoryById(command.categoryId());
-        category.validateOwnership(command.memberAuthInfo().id());
+    public CategoryPlaceCreateResponse createCategoryPlace(
+            final CategoryPlaceCreateRequest request,
+            final MemberAuthInfo memberAuthInfo,
+            final Long categoryId
+    ) {
+        final var category = getCategoryById(categoryId);
+        category.validateOwnership(memberAuthInfo.id());
 
-        final var place = findOrCreatePlace(command);
+        final var place = findOrCreatePlace(request);
 
         final var categoryPlace = CategoryPlace.createNew(category, place);
         final var savedCategoryPlace = categoryPlaceRepository.save(categoryPlace);
 
-        return CreateCategoryPlaceResult.from(savedCategoryPlace);
+        return CategoryPlaceCreateResponse.from(savedCategoryPlace);
     }
 
     @Transactional
-    public void deleteCategoryPlace(final DeleteCategoryPlaceCommand command) {
-        final var category = getCategoryById(command.categoryId());
-        final var categoryPlace = getCategoryPlaceById(command.categoryPlaceId());
+    public void deleteCategoryPlace(
+            final MemberAuthInfo memberAuthInfo,
+            final Long categoryId,
+            final Long categoryPlaceId
+    ) {
+        final var category = getCategoryById(categoryId);
+        final var categoryPlace = getCategoryPlaceById(categoryPlaceId);
 
-        categoryPlace.validateOwnership(command.memberAuthInfo().id());
-        validateCategoryOwnership(command.categoryId(), categoryPlace);
+        categoryPlace.validateOwnership(memberAuthInfo.id());
+        validateCategoryOwnership(categoryId, categoryPlace);
 
         // 대표 장소인 경우 먼저 해제
         if (category.getRepresentativePlace() != null &&
-                category.getRepresentativePlace().getId().equals(command.categoryPlaceId())) {
+                category.getRepresentativePlace().getId().equals(categoryPlaceId)) {
             category.updateRepresentativePlaceTo(null);
         }
 
@@ -56,14 +63,14 @@ public class CategoryPlaceService {
     }
 
     @Transactional(readOnly = true)
-    public FindCategoryPlacesResult findCategoryPlaces(final FindCategoryPlacesCommand command) {
-        final var category = getCategoryById(command.categoryId());
-        category.validateOwnership(command.memberAuthInfo().id());
+    public CategoryPlacesFindResponse findCategoryPlaces(final MemberAuthInfo memberAuthInfo, final Long categoryId) {
+        final var category = getCategoryById(categoryId);
+        category.validateOwnership(memberAuthInfo.id());
 
         final var categoryPlaces = category.getCategoryPlaces();
         final var representativePlace = category.getRepresentativePlace();
 
-        return FindCategoryPlacesResult.of(categoryPlaces, representativePlace);
+        return CategoryPlacesFindResponse.of(categoryPlaces, representativePlace);
     }
 
     private Category getCategoryById(final Long categoryId) {
@@ -71,15 +78,15 @@ public class CategoryPlaceService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
     }
 
-    private Place findOrCreatePlace(final CreateCategoryPlaceCommand command) {
-        return placeRepository.findPlaceByNameAndAddressName(command.name(), command.addressName())
+    private Place findOrCreatePlace(final CategoryPlaceCreateRequest request) {
+        return placeRepository.findPlaceByNameAndAddressName(request.name(), request.addressName())
                 .orElseGet(() -> {
                     final Place newPlace = Place.createNew(
-                            command.name(),
-                            command.roadAddressName(),
-                            command.addressName(),
-                            command.latitude(),
-                            command.longitude()
+                            request.name(),
+                            request.roadAddressName(),
+                            request.addressName(),
+                            request.latitude(),
+                            request.longitude()
                     );
                     return placeRepository.save(newPlace);
                 });

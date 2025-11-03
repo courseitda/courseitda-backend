@@ -1,6 +1,6 @@
 package courseitda.workspace.ui.dto.response;
 
-import courseitda.workspace.application.dto.response.UpdateRepresentativeCategoryPlaceResult;
+import courseitda.workspace.domain.CategoryPlace;
 
 public record RepresentativeCategoryPlaceUpdateResponse(
         Long id, // 카테고리 아이디
@@ -8,10 +8,10 @@ public record RepresentativeCategoryPlaceUpdateResponse(
 ) {
 
     public static RepresentativeCategoryPlaceUpdateResponse from(
-            final UpdateRepresentativeCategoryPlaceResult result) {
+            final CategoryPlace categoryPlace) {
         return new RepresentativeCategoryPlaceUpdateResponse(
-                result.id(),
-                result.representativeCategoryPlaceId()
+                categoryPlace.getCategory().getId(),
+                categoryPlace.getId()
         );
     }
 }

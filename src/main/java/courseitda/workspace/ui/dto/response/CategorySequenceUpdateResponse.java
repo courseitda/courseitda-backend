@@ -1,17 +1,16 @@
 package courseitda.workspace.ui.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import courseitda.workspace.application.dto.response.UpdateCategorySequenceResult;
-import courseitda.workspace.application.dto.response.UpdateCategorySequenceResult.CategorySequenceResult;
+import courseitda.workspace.domain.Category;
 import java.util.List;
 
 public record CategorySequenceUpdateResponse(
         @JsonProperty("categories") List<CategorySequenceResponse> categorySequenceResponses
 ) {
 
-    public static CategorySequenceUpdateResponse from(final UpdateCategorySequenceResult result) {
+    public static CategorySequenceUpdateResponse from(final List<Category> categories) {
         return new CategorySequenceUpdateResponse(
-                result.categorySequenceResults().stream()
+                categories.stream()
                         .map(CategorySequenceResponse::from)
                         .toList()
         );
@@ -22,10 +21,10 @@ public record CategorySequenceUpdateResponse(
             Integer sequence
     ) {
 
-        public static CategorySequenceResponse from(final CategorySequenceResult result) {
+        public static CategorySequenceResponse from(final Category category) {
             return new CategorySequenceResponse(
-                    result.id(),
-                    result.sequence()
+                    category.getId(),
+                    category.getSequence()
             );
         }
     }

@@ -4,8 +4,6 @@ import courseitda.auth.domain.AuthRole;
 import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.auth.domain.RequiresRole;
 import courseitda.workspace.application.CategoryPlaceService;
-import courseitda.workspace.application.dto.request.DeleteCategoryPlaceCommand;
-import courseitda.workspace.application.dto.request.FindCategoryPlacesCommand;
 import courseitda.workspace.ui.dto.request.CategoryPlaceCreateRequest;
 import courseitda.workspace.ui.dto.response.CategoryPlaceCreateResponse;
 import courseitda.workspace.ui.dto.response.CategoryPlacesFindResponse;
@@ -36,14 +34,10 @@ public class CategoryPlaceController {
             @PathVariable final Long categoryId,
             @Valid @RequestBody final CategoryPlaceCreateRequest request
     ) {
+        final var response = categoryPlaceService.createCategoryPlace(request, memberAuthInfo, categoryId);
 
-        // ✅ 201 Created	카테고리 장소 생성 성공
-        final var result = categoryPlaceService.createCategoryPlace(
-                request.toCommandWith(memberAuthInfo, categoryId)
-        );
-
-        return ResponseEntity.created(URI.create("/api/categories/" + categoryId + "/category-places/" + result.id()))
-                .body(CategoryPlaceCreateResponse.from(result));
+        return ResponseEntity.created(URI.create("/api/categories/" + categoryId + "/category-places/" + response.id()))
+                .body(response);
     }
 
     // 카테고리 장소 삭제
@@ -53,12 +47,7 @@ public class CategoryPlaceController {
             @PathVariable final Long categoryId,
             @PathVariable final Long categoryPlaceId
     ) {
-
-        // ✅ 204 No Content	카테고리 장소 삭제 성공
-        // ✅ 403 Forbidden 카테고리 안의 장소가 아닐때
-        categoryPlaceService.deleteCategoryPlace(
-                new DeleteCategoryPlaceCommand(memberAuthInfo, categoryId, categoryPlaceId)
-        );
+        categoryPlaceService.deleteCategoryPlace(memberAuthInfo, categoryId, categoryPlaceId);
 
         return ResponseEntity.noContent().build();
     }
@@ -69,12 +58,8 @@ public class CategoryPlaceController {
             final MemberAuthInfo memberAuthInfo,
             @PathVariable final Long categoryId
     ) {
+        final var response = categoryPlaceService.findCategoryPlaces(memberAuthInfo, categoryId);
 
-        // ✅ 200 OK	카테고리 장소 목록 조회 성공
-        final var result = categoryPlaceService.findCategoryPlaces(
-                new FindCategoryPlacesCommand(memberAuthInfo, categoryId)
-        );
-
-        return ResponseEntity.ok(CategoryPlacesFindResponse.from(result));
+        return ResponseEntity.ok(response);
     }
 }

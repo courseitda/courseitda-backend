@@ -6,6 +6,9 @@ services:
       - "3001:3000"
     volumes:
       - grafana-data:/var/lib/grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER}      # Grafana 관리자 계정
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}  # Grafana 관리자 비밀번호
     networks:
       - courseitda-network
     restart: unless-stopped

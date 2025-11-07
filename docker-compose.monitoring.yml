@@ -36,14 +36,12 @@ services:
     environment:
       SPRING_SERVER_IP: spring-app   # Spring 컨테이너 호스트명
       SPRING_SERVER_PORT: 8080       # Spring 포트
-      LBRACE: '{'                    # sed 패턴용 중괄호
-      RBRACE: '}'                    # sed 패턴용 중괄호
     entrypoint:
       - /bin/sh
       - -c
       - |
         # sed를 사용하여 환경변수 치환
-        sed "s/\$${LBRACE}SPRING_SERVER_IP${RBRACE}/${SPRING_SERVER_IP}/g; s/\$${LBRACE}SPRING_SERVER_PORT${RBRACE}/${SPRING_SERVER_PORT}/g" \
+        sed "s/\$${SPRING_SERVER_IP}/${SPRING_SERVER_IP}/g; s/\$${SPRING_SERVER_PORT}/${SPRING_SERVER_PORT}/g" \
           /etc/prometheus/prometheus-template.yml > /etc/prometheus/prometheus.yml
         # Prometheus 실행
         /bin/prometheus --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus

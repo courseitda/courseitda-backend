@@ -20,4 +20,4 @@ volumes:
 
 networks:
   courseitda-network:
-    driver: bridge
+    external: true  # 기존에 생성된 네트워크 사용

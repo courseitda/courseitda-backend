@@ -2,7 +2,7 @@ services:
   spring-app:
     build:
       context: .
-      dockerfile: courseitda-backend-config/dev/Dockerfile
+      dockerfile: Dockerfile.local  # 로컬 전용 Dockerfile 사용 (dev와 분리)
     container_name: courseitda-spring-app
     ports:
       - "8080:8080"

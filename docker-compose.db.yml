@@ -11,7 +11,13 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - courseitda-mysql-data:/var/lib/mysql
+    networks:
+      - courseitda-network
     restart: unless-stopped
 
 volumes:
   courseitda-mysql-data:
+
+networks:
+  courseitda-network:
+    driver: bridge

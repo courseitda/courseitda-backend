@@ -21,9 +21,9 @@ services:
       LOG_PATH: /app/logs  # logback이 사용할 로그 디렉토리 지정
     networks:
       - courseitda-network
-    depends_on:
-      - mysql
     restart: unless-stopped
+    # depends_on은 같은 compose 파일 내 서비스만 인식 가능
+    # mysql은 docker-compose.db.yml에 정의되어 있으므로 실행 순서로 관리
 
   promtail:
     image: grafana/promtail:latest
@@ -38,9 +38,8 @@ services:
     command: -config.file=/etc/promtail/promtail-config.yml -config.expand-env=true
     networks:
       - courseitda-network
-    depends_on:
-      - spring-app
     restart: unless-stopped
+    # spring-app이 같은 파일에 있지만, 실행 순서는 수동으로 관리
 
 networks:
   courseitda-network:

@@ -8,10 +8,8 @@ services:
       - grafana-data:/var/lib/grafana
     networks:
       - courseitda-network
-    depends_on:
-      - loki
-      - prometheus
     restart: unless-stopped
+    # loki, prometheus와 같은 파일에 있지만, 실행 순서는 수동으로 관리
 
   loki:
     image: grafana/loki:latest

@@ -1,0 +1,46 @@
+name: Monitoring Server Deploy (Manual)
+
+on:
+  workflow_dispatch:  # GitHub UI에서 수동 실행
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-monitoring-on-ec2:
+    name: Deploy Monitoring Server on EC2 (dev environment)
+    runs-on: [ self-hosted, monitoring-dev ]
+    env:
+      SPRING_SERVER_IP: ${{ secrets.SPRING_SERVER_IP }}
+      SPRING_SERVER_PORT: ${{ secrets.SPRING_SERVER_PORT }}
+      GRAFANA_ADMIN_USER: ${{ secrets.GRAFANA_ADMIN_USER }}
+      GRAFANA_ADMIN_PASSWORD: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
+
+    steps:
+      # 모니터링 서버 설정 파일 및 docker-compose.yml을 불러오기 위함
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # 서브모듈 불러오기
+          submodules: true
+          # 전체 히스토리 가져오기 (서브모듈 안정성 위해 권장)
+          fetch-depth: 0
+          # 중첩된 서브모듈까지 불러오기
+          recursive: true
+          token: ${{ secrets.PAT_FOR_SUBMODULE }}
+
+      # 기존 컨테이너 종료 및 제거
+      - name: Stop and Remove Old Containers
+        run: docker compose -f courseitda-backend-config/monitoring/docker-compose.yml down
+
+      # 최신 docker 이미지 pull
+      - name: Pull docker images
+        run: docker compose -f courseitda-backend-config/monitoring/docker-compose.yml pull
+
+      # 새 docker 컨테이너 실행
+      - name: Start Containers
+        run: docker compose -f courseitda-backend-config/monitoring/docker-compose.yml up -d
+
+      # dangling 이미지(아무 태그도 붙어 있지 않은 이미지) 삭제
+      - name: Cleanup old docker images
+        run: docker image prune -f

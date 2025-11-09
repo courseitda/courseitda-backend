@@ -36,8 +36,8 @@ module "application" {
   environment  = var.environment
 
   instance_type = "t4g.small"
-  volume_type   = "gp2"
-  volume_size   = 20
+  volume_type   = "gp3"
+  volume_size   = 100
 
   vpc_id = module.network.vpc_id
   # AZ-a의 public subnet에서 실행

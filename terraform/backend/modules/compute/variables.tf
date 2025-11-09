@@ -13,6 +13,7 @@ variable "base_tags" {
   description = "Base tags to apply to resources"
 }
 
+# infracost test
 variable "s3_bucket_name" {
   type        = string
   description = "S3 bucket name for storing private key"

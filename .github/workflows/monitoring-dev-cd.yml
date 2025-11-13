@@ -37,8 +37,6 @@ jobs:
           SPRING_SERVER_PORT=${{ env.SPRING_SERVER_PORT }}
           GRAFANA_ADMIN_USER=${{ env.GRAFANA_ADMIN_USER }}
           GRAFANA_ADMIN_PASSWORD=${{ env.GRAFANA_ADMIN_PASSWORD }}
-          LBRACE={
-          RBRACE=}
           EOF
 
       # 기존 컨테이너 종료 및 제거

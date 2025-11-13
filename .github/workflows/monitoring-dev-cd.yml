@@ -29,6 +29,18 @@ jobs:
           recursive: true
           token: ${{ secrets.PAT_FOR_SUBMODULE }}
 
+      # docker-compose가 사용할 환경 변수 파일 생성
+      - name: Create .env file
+        run: |
+          cat > courseitda-backend-config/monitoring/.env << EOF
+          SPRING_SERVER_IP=${{ env.SPRING_SERVER_IP }}
+          SPRING_SERVER_PORT=${{ env.SPRING_SERVER_PORT }}
+          GRAFANA_ADMIN_USER=${{ env.GRAFANA_ADMIN_USER }}
+          GRAFANA_ADMIN_PASSWORD=${{ env.GRAFANA_ADMIN_PASSWORD }}
+          LBRACE={
+          RBRACE=}
+          EOF
+
       # 기존 컨테이너 종료 및 제거
       - name: Stop and Remove Old Containers
         run: docker compose -f courseitda-backend-config/monitoring/docker-compose.yml down

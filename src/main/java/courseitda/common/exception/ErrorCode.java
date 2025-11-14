@@ -95,6 +95,12 @@ public enum ErrorCode {
             HttpStatus.UNPROCESSABLE_ENTITY // 422
     ),
 
+    WORKSPACE_LAST_ACTIVITY_AT_NULL(
+            "2006",
+            "워크스페이스의 마지막 활동 시간은 null 일 수 없습니다. (내부 오류)",
+            HttpStatus.INTERNAL_SERVER_ERROR // 500
+    ),
+
     //-----------------------------------------------------------------------------------
     // 3000 Series: Category Errors
     CATEGORY_NAME_EMPTY(

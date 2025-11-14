@@ -47,6 +47,7 @@ public class WorkspaceService {
             validateDuplicatedTitle(memberAuthInfo.id(), newTitle);
         }
         workspace.rename(newTitle);
+        workspace.updateLastActivityAt();
 
         return WorkspaceUpdateResponse.from(workspace);
     }

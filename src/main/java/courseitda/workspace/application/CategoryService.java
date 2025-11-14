@@ -47,6 +47,7 @@ public class CategoryService {
         final var nextSequence = categoryRepository.countByWorkspaceId(workspace.getId()) + 1;
         final var category = Category.createNew(workspace, request.name(), request.color(), nextSequence);
         final var savedCategory = categoryRepository.save(category);
+        savedCategory.updateWorkspaceLastActivityAt();
 
         return CategoryCreateResponse.from(savedCategory);
     }
@@ -61,6 +62,7 @@ public class CategoryService {
         category.validateOwnership(memberAuthInfo.id());
 
         category.updateNameAndColor(request.name(), request.color());
+        category.updateWorkspaceLastActivityAt();
 
         return CategoryUpdateResponse.from(category);
     }
@@ -77,6 +79,7 @@ public class CategoryService {
         final var candidatePlace = getCategoryPlaceById(request.categoryPlaceId());
 
         category.updateRepresentativePlaceTo(candidatePlace);
+        category.updateWorkspaceLastActivityAt();
 
         return RepresentativeCategoryPlaceUpdateResponse.from(category.getRepresentativePlace());
     }
@@ -114,6 +117,7 @@ public class CategoryService {
             validateCategoryBelongsToWorkspace(workspace, category);
             category.updateSequence(sequenceCommand.sequence());
         }
+        workspace.updateLastActivityAt();
 
         return CategorySequenceUpdateResponse.from(categories);
     }
@@ -124,6 +128,7 @@ public class CategoryService {
         category.validateOwnership(memberAuthInfo.id());
 
         category.updateRepresentativePlaceTo(null);
+        category.updateWorkspaceLastActivityAt();
     }
 
     @Transactional
@@ -131,6 +136,7 @@ public class CategoryService {
         final var category = getCategoryById(categoryId);
         category.validateOwnership(memberAuthInfo.id());
 
+        category.updateWorkspaceLastActivityAt();
         categoryRepository.delete(category);
     }
 
@@ -143,8 +149,10 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = true)
-    public CategoriesReadResponse findAllCategories(final MemberAuthInfo memberAuthInfo,
-            final String workspaceIdentifier) {
+    public CategoriesReadResponse findAllCategories(
+            final MemberAuthInfo memberAuthInfo,
+            final String workspaceIdentifier
+    ) {
         final var workspace = getWorkspaceByIdentifier(workspaceIdentifier);
         workspace.validateOwnership(memberAuthInfo.id());
         final var categories = workspace.getCategories();

@@ -18,6 +18,7 @@ import courseitda.workspace.ui.dto.response.CategoryCreateResponse;
 import courseitda.workspace.ui.dto.response.CategoryPlaceCreateResponse;
 import courseitda.workspace.ui.dto.response.CategoryPlacesFindResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceCreateResponse;
+import courseitda.workspace.ui.dto.response.WorkspaceReadResponse;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -411,6 +412,96 @@ class CategoryPlaceControllerTest {
                     .then()
                     .statusCode(HttpStatus.FORBIDDEN.value())
                     .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.PLACE_NOT_BELONG_TO_CATEGORY.getCode()));
+        }
+    }
+
+    @Nested
+    @DisplayName("카테고리 장소 작업 시 워크스페이스 마지막 활동 시간 업데이트 시나리오")
+    class CategoryPlaceWorkspaceLastActivityAtUpdateScenarios {
+
+        @Test
+        @DisplayName("카테고리 장소 생성 시 워크스페이스 lastActivityAt이 업데이트된다")
+        void createCategoryPlace_updatesWorkspaceLastActivityAt() throws InterruptedException {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(accessToken);
+            final Long categoryId = createCategory(accessToken, workspaceIdentifier).id();
+
+            Thread.sleep(1000);
+
+            final WorkspaceReadResponse beforeCreate = given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .when()
+                    .get("/api/workspaces/" + workspaceIdentifier)
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .as(WorkspaceReadResponse.class);
+
+            Thread.sleep(1000);
+
+            // when
+            createCategoryPlace(accessToken, categoryId);
+
+            final WorkspaceReadResponse afterCreate = given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .when()
+                    .get("/api/workspaces/" + workspaceIdentifier)
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .as(WorkspaceReadResponse.class);
+
+            // then
+            assertThat(afterCreate.lastActivityAt()).isAfter(beforeCreate.lastActivityAt());
+        }
+
+        @Test
+        @DisplayName("카테고리 장소 삭제 시 워크스페이스 lastActivityAt이 업데이트된다")
+        void deleteCategoryPlace_updatesWorkspaceLastActivityAt() throws InterruptedException {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(accessToken);
+            final Long categoryId = createCategory(accessToken, workspaceIdentifier).id();
+            final Long categoryPlaceId = createCategoryPlace(accessToken, categoryId).id();
+
+            Thread.sleep(1000);
+
+            final WorkspaceReadResponse beforeDelete = given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .when()
+                    .get("/api/workspaces/" + workspaceIdentifier)
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .as(WorkspaceReadResponse.class);
+
+            Thread.sleep(1000);
+
+            // when
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .when()
+                    .delete("/api/categories/" + categoryId + "/places/" + categoryPlaceId)
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
+
+            final WorkspaceReadResponse afterDelete = given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .when()
+                    .get("/api/workspaces/" + workspaceIdentifier)
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .as(WorkspaceReadResponse.class);
+
+            // then
+            assertThat(afterDelete.lastActivityAt()).isAfter(beforeDelete.lastActivityAt());
         }
     }
 }

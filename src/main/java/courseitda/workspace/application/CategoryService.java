@@ -150,7 +150,7 @@ public class CategoryService {
 
     @Transactional(readOnly = true)
     public CategoriesReadResponse findAllCategories(final MemberAuthInfo memberAuthInfo,
-                                                    final String workspaceIdentifier) {
+            final String workspaceIdentifier) {
         final var workspace = getWorkspaceByIdentifier(workspaceIdentifier);
         workspace.validateOwnership(memberAuthInfo.id());
         final var categories = workspace.getCategories();

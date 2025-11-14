@@ -37,6 +37,7 @@ public class CategoryPlaceService {
 
         final var categoryPlace = CategoryPlace.createNew(category, place);
         final var savedCategoryPlace = categoryPlaceRepository.save(categoryPlace);
+        savedCategoryPlace.updateLastActivityAt();
 
         return CategoryPlaceCreateResponse.from(savedCategoryPlace);
     }
@@ -59,6 +60,7 @@ public class CategoryPlaceService {
             category.updateRepresentativePlaceTo(null);
         }
 
+        categoryPlace.updateLastActivityAt();
         categoryPlaceRepository.delete(categoryPlace);
     }
 

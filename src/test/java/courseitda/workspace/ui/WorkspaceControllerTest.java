@@ -805,4 +805,136 @@ class WorkspaceControllerTest {
                     .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.WORKSPACE_TITLE_EMPTY.getCode()));
         }
     }
+
+    @Nested
+    @DisplayName("워크스페이스 마지막 활동 시간 업데이트 시나리오")
+    class WorkspaceLastActivityAtUpdateScenarios {
+
+        @Test
+        @DisplayName("워크스페이스 수정 시 lastActivityAt이 업데이트된다")
+        void updateWorkspace_updatesLastActivityAt() throws InterruptedException {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(accessToken);
+
+            final WorkspaceReadResponse beforeUpdate = given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .when()
+                    .get("/api/workspaces/" + workspaceIdentifier)
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .as(WorkspaceReadResponse.class);
+
+            Thread.sleep(1000);
+
+            final String newTitle = WorkspaceFixture.anyTitle();
+            final WorkspaceUpdateRequest updateRequest = new WorkspaceUpdateRequest(newTitle);
+
+            // when
+            final WorkspaceUpdateResponse updateResponse = given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .body(updateRequest)
+                    .when()
+                    .patch("/api/workspaces/" + workspaceIdentifier)
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .as(WorkspaceUpdateResponse.class);
+
+            // then
+            assertThat(updateResponse.lastActivityAt()).isAfter(beforeUpdate.lastActivityAt());
+        }
+
+        @Test
+        @DisplayName("카테고리 생성 시 워크스페이스 lastActivityAt이 업데이트된다")
+        void createCategory_updatesWorkspaceLastActivityAt() throws InterruptedException {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(accessToken);
+
+            final WorkspaceReadResponse beforeCreate = given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .when()
+                    .get("/api/workspaces/" + workspaceIdentifier)
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .as(WorkspaceReadResponse.class);
+
+            Thread.sleep(1000);
+
+            // when
+            createCategory(accessToken, workspaceIdentifier);
+
+            final WorkspaceReadResponse afterCreate = given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .when()
+                    .get("/api/workspaces/" + workspaceIdentifier)
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .as(WorkspaceReadResponse.class);
+
+            // then
+            assertThat(afterCreate.lastActivityAt()).isAfter(beforeCreate.lastActivityAt());
+        }
+
+        @Test
+        @DisplayName("카테고리 순서 변경 시 워크스페이스 lastActivityAt이 업데이트된다")
+        void updateCategorySequence_updatesWorkspaceLastActivityAt() throws InterruptedException {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(accessToken);
+            final CategoryCreateResponse category1 = createCategory(accessToken, workspaceIdentifier);
+            final CategoryCreateResponse category2 = createCategory(accessToken, workspaceIdentifier);
+
+            Thread.sleep(1000);
+
+            final WorkspaceReadResponse beforeUpdate = given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .when()
+                    .get("/api/workspaces/" + workspaceIdentifier)
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .as(WorkspaceReadResponse.class);
+
+            Thread.sleep(1000);
+
+            final List<CategorySequenceRequest> sequenceRequests = List.of(
+                    new CategorySequenceRequest(category1.id(), 2),
+                    new CategorySequenceRequest(category2.id(), 1)
+            );
+            final CategoryReorderRequest request = new CategoryReorderRequest(sequenceRequests);
+
+            // when
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .body(request)
+                    .when()
+                    .post("/api/workspaces/" + workspaceIdentifier + "/categories/sequence")
+                    .then()
+                    .statusCode(HttpStatus.OK.value());
+
+            final WorkspaceReadResponse afterUpdate = given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .when()
+                    .get("/api/workspaces/" + workspaceIdentifier)
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .as(WorkspaceReadResponse.class);
+
+            // then
+            assertThat(afterUpdate.lastActivityAt()).isAfter(beforeUpdate.lastActivityAt());
+        }
+    }
 }

@@ -107,6 +107,10 @@ public class Category extends Timestamp {
         this.color = newColor;
     }
 
+    public void updateLastActivityAt() {
+        workspace.updateLastActivityAt();
+    }
+
     public void validateOwnership(final Long memberId) {
         if (!workspace.isOwnedBy(memberId)) {
             throw new BusinessException(ErrorCode.CATEGORY_MODIFY_FORBIDDEN);

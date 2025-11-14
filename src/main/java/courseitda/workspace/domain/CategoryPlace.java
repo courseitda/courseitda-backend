@@ -46,8 +46,8 @@ public class CategoryPlace extends Timestamp {
         return new CategoryPlace(null, category, place);
     }
 
-    public void updateLastActivityAt() {
-        category.updateLastActivityAt();
+    public void updateWorkspaceLastActivityAt() {
+        category.updateWorkspaceLastActivityAt();
     }
 
     public void validateOwnership(final Long memberId) {

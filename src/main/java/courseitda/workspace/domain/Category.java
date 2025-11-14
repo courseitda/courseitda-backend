@@ -107,7 +107,7 @@ public class Category extends Timestamp {
         this.color = newColor;
     }
 
-    public void updateLastActivityAt() {
+    public void updateWorkspaceLastActivityAt() {
         workspace.updateLastActivityAt();
     }
 

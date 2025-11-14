@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -44,6 +45,9 @@ public class Workspace extends Timestamp {
     @Column(nullable = false)
     private String title;
 
+    @Column(nullable = false)
+    private LocalDateTime lastActivityAt;
+
     @OneToMany(mappedBy = "workspace")
     private List<Category> categories;
 
@@ -52,18 +56,21 @@ public class Workspace extends Timestamp {
             final Member owner,
             final String identifier,
             final String title,
+            final LocalDateTime lastActivityAt,
             final List<Category> categories
     ) {
         validateTitle(title);
+        validateLastActivityAt(lastActivityAt);
 
         this.owner = owner;
         this.identifier = identifier;
         this.title = title;
+        this.lastActivityAt = lastActivityAt;
         this.categories = categories;
     }
 
     public static Workspace createNew(final Member owner, final String title) {
-        return new Workspace(owner, UUID.randomUUID().toString(), title, new ArrayList<>());
+        return new Workspace(owner, UUID.randomUUID().toString(), title, LocalDateTime.now(), new ArrayList<>());
     }
 
     public static String formatTitle(final String unformattedTitle) {
@@ -79,6 +86,10 @@ public class Workspace extends Timestamp {
         this.title = newTitle;
     }
 
+    public void updateLastActivityAt() {
+        this.lastActivityAt = LocalDateTime.now();
+    }
+
     public void validateOwnership(final Long memberId) {
         if (!isOwnedBy(memberId)) {
             throw new BusinessException(ErrorCode.WORKSPACE_MODIFY_FORBIDDEN);
@@ -91,6 +102,12 @@ public class Workspace extends Timestamp {
         }
         if (title.length() > 20) {
             throw new BusinessException(ErrorCode.WORKSPACE_TITLE_LENGTH_EXCEEDED);
+        }
+    }
+
+    private void validateLastActivityAt(final LocalDateTime lastActivityAt) {
+        if (lastActivityAt == null) {
+            throw new BusinessException(ErrorCode.WORKSPACE_LAST_ACTIVITY_AT_NULL);
         }
     }
 }

@@ -11,7 +11,11 @@ public interface CategoryRepository {
 
     List<Category> findAllById(Iterable<Long> categoryIds);
 
+    List<Category> findAllByWorkspaceId(Long workspaceId);
+
     int countByWorkspaceId(Long workspaceId);
 
     void delete(Category category);
+
+    void deleteAllByWorkspaceId(Long workspaceId);
 }

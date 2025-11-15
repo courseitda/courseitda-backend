@@ -29,6 +29,11 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     }
 
     @Override
+    public List<Category> findAllByWorkspaceId(final Long workspaceId) {
+        return jpaCategoryRepository.findAllByWorkspaceId(workspaceId);
+    }
+
+    @Override
     public int countByWorkspaceId(final Long workspaceId) {
         return jpaCategoryRepository.countByWorkspaceId(workspaceId);
     }
@@ -36,5 +41,10 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     @Override
     public void delete(final Category category) {
         jpaCategoryRepository.delete(category);
+    }
+
+    @Override
+    public void deleteAllByWorkspaceId(final Long workspaceId) {
+        jpaCategoryRepository.deleteAllByWorkspaceId(workspaceId);
     }
 }

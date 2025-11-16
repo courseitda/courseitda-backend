@@ -1,5 +1,6 @@
 package courseitda.common.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
@@ -19,8 +20,10 @@ public abstract class Timestamp {
     private static final ZoneId KST = ZoneId.of("Asia/Seoul");
 
     @Column(updatable = false, nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss+09:00")
     private LocalDateTime createdAt;
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss+09:00")
     private LocalDateTime modifiedAt;
 
     @PrePersist

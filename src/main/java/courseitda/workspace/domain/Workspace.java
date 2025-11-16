@@ -1,5 +1,6 @@
 package courseitda.workspace.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import courseitda.common.entity.Timestamp;
 import courseitda.common.exception.BusinessException;
 import courseitda.common.exception.ErrorCode;
@@ -14,6 +15,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -31,6 +33,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 public class Workspace extends Timestamp {
 
+    private static final ZoneId KST = ZoneId.of("Asia/Seoul");
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -46,6 +50,7 @@ public class Workspace extends Timestamp {
     private String title;
 
     @Column(nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss+09:00")
     private LocalDateTime lastActivityAt;
 
     @OneToMany(mappedBy = "workspace")
@@ -70,7 +75,7 @@ public class Workspace extends Timestamp {
     }
 
     public static Workspace createNew(final Member owner, final String title) {
-        return new Workspace(owner, UUID.randomUUID().toString(), title, LocalDateTime.now(), new ArrayList<>());
+        return new Workspace(owner, UUID.randomUUID().toString(), title, LocalDateTime.now(KST), new ArrayList<>());
     }
 
     public static String formatTitle(final String unformattedTitle) {
@@ -87,7 +92,7 @@ public class Workspace extends Timestamp {
     }
 
     public void updateLastActivityAt() {
-        this.lastActivityAt = LocalDateTime.now();
+        this.lastActivityAt = LocalDateTime.now(KST);
     }
 
     public void validateOwnership(final Long memberId) {

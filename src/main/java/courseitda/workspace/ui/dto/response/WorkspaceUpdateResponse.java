@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 public record WorkspaceUpdateResponse(
         String identifier,
         String title,
-        @JsonProperty("modifiedAt") @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime lastActivityAt
+        @JsonProperty("modifiedAt") @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss+09:00") LocalDateTime lastActivityAt
 ) {
 
     public static WorkspaceUpdateResponse from(final Workspace workspace) {

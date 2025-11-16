@@ -20,8 +20,8 @@
         <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
             <providers>
                 <timestamp>
-                    <timeZone>UTC</timeZone>
-                    <pattern>yyyy-MM-dd'T'HH:mm:ss.SSSX</pattern>
+                    <timeZone>Asia/Seoul</timeZone>
+                    <pattern>yyyy-MM-dd'T'HH:mm:ss.SSSXXX</pattern>
                     <fieldName>timestamp</fieldName>
                 </timestamp>
                 <logLevel>
@@ -55,8 +55,8 @@
         <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
             <providers>
                 <timestamp>
-                    <timeZone>UTC</timeZone>
-                    <pattern>yyyy-MM-dd'T'HH:mm:ss.SSSX</pattern>
+                    <timeZone>Asia/Seoul</timeZone>
+                    <pattern>yyyy-MM-dd'T'HH:mm:ss.SSSXXX</pattern>
                     <fieldName>timestamp</fieldName>
                 </timestamp>
                 <logLevel>
@@ -90,8 +90,8 @@
         <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
             <providers>
                 <timestamp>
-                    <timeZone>UTC</timeZone>
-                    <pattern>yyyy-MM-dd'T'HH:mm:ss.SSSX</pattern>
+                    <timeZone>Asia/Seoul</timeZone>
+                    <pattern>yyyy-MM-dd'T'HH:mm:ss.SSSXXX</pattern>
                     <fieldName>timestamp</fieldName>
                 </timestamp>
                 <logLevel>
@@ -134,8 +134,8 @@
 
         <!-- JSON 형식으로 출력: 시스템 로그는 기본 필드 포함 -->
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <timeZone>UTC</timeZone>
-            <timestampPattern>yyyy-MM-dd'T'HH:mm:ss.SSSX</timestampPattern>
+            <timeZone>Asia/Seoul</timeZone>
+            <timestampPattern>yyyy-MM-dd'T'HH:mm:ss.SSSXXX</timestampPattern>
             <fieldNames>
                 <timestamp>timestamp</timestamp>
                 <logger>logger_name</logger>

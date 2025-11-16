@@ -1,6 +1,7 @@
 package courseitda.member.ui.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import courseitda.workspace.domain.Workspace;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,14 +21,14 @@ public record MyWorkspacesResponse(
     public record WorkspaceResponse(
             String identifier,
             String title,
-            @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime modifiedAt
+            @JsonProperty("modifiedAt") @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss+09:00") LocalDateTime lastActivityAt
     ) {
 
         public static WorkspaceResponse from(final Workspace workspace) {
             return new WorkspaceResponse(
                     workspace.getIdentifier(),
                     workspace.getTitle(),
-                    workspace.getModifiedAt()
+                    workspace.getLastActivityAt()
             );
         }
     }

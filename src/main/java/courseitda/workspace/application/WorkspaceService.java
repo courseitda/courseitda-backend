@@ -4,6 +4,9 @@ import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.common.exception.BusinessException;
 import courseitda.common.exception.ErrorCode;
 import courseitda.member.domain.Member;
+import courseitda.workspace.domain.Category;
+import courseitda.workspace.domain.CategoryPlaceRepository;
+import courseitda.workspace.domain.CategoryRepository;
 import courseitda.workspace.domain.Workspace;
 import courseitda.workspace.domain.WorkspaceRepository;
 import courseitda.workspace.ui.dto.request.WorkspaceCreateRequest;
@@ -12,6 +15,7 @@ import courseitda.workspace.ui.dto.response.CheckTitleDuplicateResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceCreateResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceReadResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceUpdateResponse;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class WorkspaceService {
 
     private final WorkspaceRepository workspaceRepository;
+    private final CategoryRepository categoryRepository;
+    private final CategoryPlaceRepository categoryPlaceRepository;
 
     @Transactional
     public WorkspaceCreateResponse createWorkspace(final WorkspaceCreateRequest request, final Member member) {
@@ -57,6 +63,13 @@ public class WorkspaceService {
         final var workspace = getByIdentifier(workspaceIdentifier);
         workspace.validateOwnership(memberAuthInfo.id());
 
+        final List<Category> categories = categoryRepository.findAllByWorkspaceId(workspace.getId());
+        final List<Long> categoryIds = categories.stream()
+                .map(Category::getId)
+                .toList();
+
+        categoryPlaceRepository.deleteAllByCategoryIds(categoryIds);
+        categoryRepository.deleteAllByWorkspaceId(workspace.getId());
         workspaceRepository.deleteById(workspace.getId());
     }
 

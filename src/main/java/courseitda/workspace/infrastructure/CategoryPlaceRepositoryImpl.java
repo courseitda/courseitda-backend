@@ -2,6 +2,7 @@ package courseitda.workspace.infrastructure;
 
 import courseitda.workspace.domain.CategoryPlace;
 import courseitda.workspace.domain.CategoryPlaceRepository;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -20,6 +21,13 @@ public class CategoryPlaceRepositoryImpl implements CategoryPlaceRepository {
     @Override
     public void delete(final CategoryPlace categoryPlace) {
         jpaCategoryPlaceRepository.delete(categoryPlace);
+    }
+
+    @Override
+    public void deleteAllByCategoryIds(final List<Long> categoryIds) {
+        if (!categoryIds.isEmpty()) {
+            jpaCategoryPlaceRepository.deleteAllByCategoryIdIn(categoryIds);
+        }
     }
 
     @Override

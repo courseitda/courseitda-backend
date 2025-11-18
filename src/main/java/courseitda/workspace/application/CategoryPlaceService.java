@@ -85,6 +85,7 @@ public class CategoryPlaceService {
                 .orElseGet(() -> {
                     final Place newPlace = Place.createNew(
                             request.name(),
+                            request.placeUrl(),
                             request.roadAddressName(),
                             request.addressName(),
                             request.latitude(),

@@ -17,6 +17,7 @@ public record SearchedPlacesResponse(
 
     public record SearchedPlaceResponse(
             String name,
+            String url,
             String roadAddressName,
             String addressName,
             Double latitude,
@@ -26,6 +27,7 @@ public record SearchedPlacesResponse(
         public static SearchedPlaceResponse from(final SearchedPlace searchedPlace) {
             return new SearchedPlaceResponse(
                     searchedPlace.name(),
+                    searchedPlace.url(),
                     searchedPlace.roadAddressName(),
                     searchedPlace.addressName(),
                     searchedPlace.latitude(),

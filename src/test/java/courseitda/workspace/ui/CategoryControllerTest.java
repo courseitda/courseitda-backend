@@ -244,6 +244,29 @@ class CategoryControllerTest {
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
         }
+
+        @Test
+        @DisplayName("CategoryPlace가 있는 카테고리 삭제에 성공한다")
+        void deleteCategory_withCategoryPlaces_success() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(accessToken);
+            final CategoryCreateResponse category = createCategory(accessToken, workspaceIdentifier);
+
+            // 카테고리에 장소 여러 개 추가
+            createCategoryPlace(accessToken, category.id());
+            createCategoryPlace(accessToken, category.id());
+            createCategoryPlace(accessToken, category.id());
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .when()
+                    .delete("/api/categories/" + category.id())
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
+        }
     }
 
     @Nested

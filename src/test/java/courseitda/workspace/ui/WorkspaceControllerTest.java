@@ -9,15 +9,18 @@ import courseitda.auth.ui.dto.response.LoginResponse;
 import courseitda.common.exception.ErrorCode;
 import courseitda.member.domain.MemberFixture;
 import courseitda.member.ui.dto.request.SignUpRequest;
+import courseitda.place.domain.PlaceFixture;
 import courseitda.workspace.domain.CategoryFixture;
 import courseitda.workspace.domain.WorkspaceFixture;
 import courseitda.workspace.ui.dto.request.CategoryCreateRequest;
+import courseitda.workspace.ui.dto.request.CategoryPlaceCreateRequest;
 import courseitda.workspace.ui.dto.request.CategoryReorderRequest;
 import courseitda.workspace.ui.dto.request.CategoryReorderRequest.CategorySequenceRequest;
 import courseitda.workspace.ui.dto.request.WorkspaceCreateRequest;
 import courseitda.workspace.ui.dto.request.WorkspaceUpdateRequest;
 import courseitda.workspace.ui.dto.response.CategoriesReadResponse;
 import courseitda.workspace.ui.dto.response.CategoryCreateResponse;
+import courseitda.workspace.ui.dto.response.CategoryPlaceCreateResponse;
 import courseitda.workspace.ui.dto.response.CategorySequenceUpdateResponse;
 import courseitda.workspace.ui.dto.response.CheckTitleDuplicateResponse;
 import courseitda.workspace.ui.dto.response.WorkspaceCreateResponse;
@@ -109,6 +112,29 @@ class WorkspaceControllerTest {
                 .statusCode(HttpStatus.CREATED.value())
                 .extract()
                 .as(CategoryCreateResponse.class);
+    }
+
+    private CategoryPlaceCreateResponse createCategoryPlace(final String accessToken, final Long categoryId) {
+        final String name = PlaceFixture.anyName();
+        final String roadAddressName = PlaceFixture.anyRoadAddressName();
+        final String addressName = PlaceFixture.anyAddressName();
+        final double lat = PlaceFixture.anyLatitude();
+        final double lng = PlaceFixture.anyLongitude();
+
+        final CategoryPlaceCreateRequest request = new CategoryPlaceCreateRequest(
+                name, roadAddressName, addressName, lat, lng
+        );
+
+        return given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .body(request)
+                .when()
+                .post("/api/categories/" + categoryId + "/places")
+                .then()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract()
+                .as(CategoryPlaceCreateResponse.class);
     }
 
     @Nested
@@ -339,6 +365,36 @@ class WorkspaceControllerTest {
             final String workspaceIdentifier = createWorkspace(accessToken);
 
             // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .when()
+                    .delete("/api/workspaces/" + workspaceIdentifier)
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
+        }
+
+        @Test
+        @DisplayName("하위 리소스(카테고리, CategoryPlace)가 있는 워크스페이스 삭제에 성공한다")
+        void deleteWorkspace_withCategoriesAndCategoryPlaces_success() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(accessToken);
+
+            // 카테고리 3개 생성
+            final CategoryCreateResponse category1 = createCategory(accessToken, workspaceIdentifier);
+            final CategoryCreateResponse category2 = createCategory(accessToken, workspaceIdentifier);
+            final CategoryCreateResponse category3 = createCategory(accessToken, workspaceIdentifier);
+
+            // 각 카테고리에 여러 개의 장소 추가
+            createCategoryPlace(accessToken, category1.id());
+            createCategoryPlace(accessToken, category1.id());
+            createCategoryPlace(accessToken, category2.id());
+            createCategoryPlace(accessToken, category2.id());
+            createCategoryPlace(accessToken, category2.id());
+            createCategoryPlace(accessToken, category3.id());
+
+            // when & then - 하위 리소스가 모두 삭제되고 워크스페이스도 삭제됨
             given()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, accessToken)

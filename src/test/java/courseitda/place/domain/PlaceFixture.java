@@ -26,6 +26,10 @@ public class PlaceFixture {
         return 127.0276;
     }
 
+    public static String anyPlaceUrl() {
+        return "https://map.naver.com/v5/entry/place/" + (1000000000L + sequenceName.get());
+    }
+
     public static Place anyPlace() {
         return new PlaceBuilder()
                 .build();

@@ -109,13 +109,14 @@ class CategoryPlaceControllerTest {
 
     private CategoryPlaceCreateResponse createCategoryPlace(final String accessToken, final Long categoryId) {
         final String name = PlaceFixture.anyName();
+        final String placeUrl = PlaceFixture.anyPlaceUrl();
         final String roadAddressName = PlaceFixture.anyRoadAddressName();
         final String addressName = PlaceFixture.anyAddressName();
         final double lat = PlaceFixture.anyLatitude();
         final double lng = PlaceFixture.anyLongitude();
 
         final CategoryPlaceCreateRequest request = new CategoryPlaceCreateRequest(
-                name, roadAddressName, addressName, lat, lng
+                name, placeUrl, roadAddressName, addressName, lat, lng
         );
 
         return given()
@@ -143,13 +144,14 @@ class CategoryPlaceControllerTest {
             final Long categoryId = createCategory(accessToken, workspaceIdentifier).id();
 
             final String name = PlaceFixture.anyName();
+            final String placeUrl = PlaceFixture.anyPlaceUrl();
             final String roadAddressName = PlaceFixture.anyRoadAddressName();
             final String addressName = PlaceFixture.anyAddressName();
             final double lat = PlaceFixture.anyLatitude();
             final double lng = PlaceFixture.anyLongitude();
 
             final CategoryPlaceCreateRequest request = new CategoryPlaceCreateRequest(
-                    name, roadAddressName, addressName, lat, lng
+                    name, placeUrl, roadAddressName, addressName, lat, lng
             );
 
             // when
@@ -182,7 +184,7 @@ class CategoryPlaceControllerTest {
             final Long nonExistentCategoryId = 999999L;
 
             final CategoryPlaceCreateRequest request = new CategoryPlaceCreateRequest(
-                    PlaceFixture.anyName(), PlaceFixture.anyRoadAddressName(),
+                    PlaceFixture.anyName(), PlaceFixture.anyPlaceUrl(), PlaceFixture.anyRoadAddressName(),
                     PlaceFixture.anyAddressName(), PlaceFixture.anyLatitude(), PlaceFixture.anyLongitude()
             );
 
@@ -208,7 +210,7 @@ class CategoryPlaceControllerTest {
 
             final String otherUser = signUpAndLogin();
             final CategoryPlaceCreateRequest request = new CategoryPlaceCreateRequest(
-                    PlaceFixture.anyName(), PlaceFixture.anyRoadAddressName(),
+                    PlaceFixture.anyName(), PlaceFixture.anyPlaceUrl(), PlaceFixture.anyRoadAddressName(),
                     PlaceFixture.anyAddressName(), PlaceFixture.anyLatitude(), PlaceFixture.anyLongitude()
             );
 

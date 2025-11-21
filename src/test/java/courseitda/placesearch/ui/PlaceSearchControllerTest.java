@@ -58,9 +58,12 @@ class PlaceSearchControllerTest {
             // given
             final String accessToken = signUpAndLogin();
             final List<SearchedPlace> mockSearchedPlaces = List.of(
-                    new SearchedPlace("스타벅스 강남점", "서울 강남구 역삼동 123-45", "서울 강남구 테헤란로 123", 37.498095, 127.027610),
-                    new SearchedPlace("스타벅스 역삼점", "서울 강남구 역삼동 678-90", "서울 강남구 테헤란로 456", 37.500123, 127.030456),
-                    new SearchedPlace("스타벅스 선릉점", "서울 강남구 역삼동 234-56", "서울 강남구 테헤란로 789", 37.504567, 127.049123)
+                    new SearchedPlace("스타벅스 강남점", "https://map.naver.com/v5/entry/place/1234567890",
+                            "서울 강남구 역삼동 123-45", "서울 강남구 테헤란로 123", 37.498095, 127.027610),
+                    new SearchedPlace("스타벅스 역삼점", "https://map.naver.com/v5/entry/place/1234567891",
+                            "서울 강남구 역삼동 678-90", "서울 강남구 테헤란로 456", 37.500123, 127.030456),
+                    new SearchedPlace("스타벅스 선릉점", "https://map.naver.com/v5/entry/place/1234567892",
+                            "서울 강남구 역삼동 234-56", "서울 강남구 테헤란로 789", 37.504567, 127.049123)
             );
             given(mockPlaceSearcher.searchPlaces(anyString(), anyInt()))
                     .willReturn(mockSearchedPlaces);

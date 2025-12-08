@@ -61,7 +61,9 @@ public class CategoryPlaceService {
         }
 
         categoryPlace.updateWorkspaceLastActivityAt();
+        final Long placeId = categoryPlace.getPlace().getId();
         categoryPlaceRepository.delete(categoryPlace);
+        placeRepository.deleteById(placeId);
     }
 
     @Transactional(readOnly = true)

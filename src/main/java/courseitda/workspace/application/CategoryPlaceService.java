@@ -33,7 +33,7 @@ public class CategoryPlaceService {
         final var category = getCategoryById(categoryId);
         category.validateOwnership(memberAuthInfo.id());
 
-        final var place = findOrCreatePlace(request);
+        final var place = createPlace(request);
 
         final var categoryPlace = CategoryPlace.createNew(category, place);
         final var savedCategoryPlace = categoryPlaceRepository.save(categoryPlace);
@@ -80,18 +80,15 @@ public class CategoryPlaceService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
     }
 
-    private Place findOrCreatePlace(final CategoryPlaceCreateRequest request) {
-        return placeRepository.findPlaceByNameAndAddressName(request.name(), request.addressName())
-                .orElseGet(() -> {
-                    final Place newPlace = Place.createNew(
-                            request.name(),
-                            request.roadAddressName(),
-                            request.addressName(),
-                            request.latitude(),
-                            request.longitude()
-                    );
-                    return placeRepository.save(newPlace);
-                });
+    private Place createPlace(final CategoryPlaceCreateRequest request) {
+        final Place newPlace = Place.createNew(
+                request.name(),
+                request.roadAddressName(),
+                request.addressName(),
+                request.latitude(),
+                request.longitude()
+        );
+        return placeRepository.save(newPlace);
     }
 
     private CategoryPlace getCategoryPlaceById(final Long categoryPlaceId) {

@@ -1,5 +1,6 @@
 package courseitda.place.domain;
 
+import courseitda.workspace.domain.Place;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class PlaceFixture {

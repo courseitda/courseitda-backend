@@ -1,12 +1,10 @@
-package courseitda.place.infrastructure;
+package courseitda.workspace.infrastructure;
 
+import courseitda.workspace.domain.Place;
+import courseitda.workspace.domain.PlaceRepository;
 import java.util.Optional;
-
-import org.springframework.stereotype.Repository;
-
-import courseitda.place.domain.Place;
-import courseitda.place.domain.PlaceRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor

@@ -1,4 +1,4 @@
-package courseitda.place.domain;
+package courseitda.workspace.domain;
 
 import java.util.Optional;
 

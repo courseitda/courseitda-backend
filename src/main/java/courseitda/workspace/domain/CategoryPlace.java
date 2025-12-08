@@ -1,7 +1,6 @@
 package courseitda.workspace.domain;
 
 import courseitda.common.entity.Timestamp;
-import courseitda.place.domain.Place;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

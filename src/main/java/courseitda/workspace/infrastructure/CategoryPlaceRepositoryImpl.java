@@ -34,4 +34,12 @@ public class CategoryPlaceRepositoryImpl implements CategoryPlaceRepository {
     public Optional<CategoryPlace> findById(final Long categoryPlaceId) {
         return jpaCategoryPlaceRepository.findById(categoryPlaceId);
     }
+
+    @Override
+    public List<CategoryPlace> findAllByCategoryIds(final List<Long> categoryIds) {
+        if (categoryIds.isEmpty()) {
+            return List.of();
+        }
+        return jpaCategoryPlaceRepository.findAllByCategoryIdIn(categoryIds);
+    }
 }

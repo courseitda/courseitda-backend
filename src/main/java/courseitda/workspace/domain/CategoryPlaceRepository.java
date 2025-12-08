@@ -12,4 +12,6 @@ public interface CategoryPlaceRepository {
     void deleteAllByCategoryIds(List<Long> categoryIds);
 
     Optional<CategoryPlace> findById(Long categoryPlaceId);
+
+    List<CategoryPlace> findAllByCategoryIds(List<Long> categoryIds);
 }

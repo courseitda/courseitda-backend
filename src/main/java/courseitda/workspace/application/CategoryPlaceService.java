@@ -3,12 +3,12 @@ package courseitda.workspace.application;
 import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.common.exception.BusinessException;
 import courseitda.common.exception.ErrorCode;
-import courseitda.place.domain.Place;
-import courseitda.place.domain.PlaceRepository;
 import courseitda.workspace.domain.Category;
 import courseitda.workspace.domain.CategoryPlace;
 import courseitda.workspace.domain.CategoryPlaceRepository;
 import courseitda.workspace.domain.CategoryRepository;
+import courseitda.workspace.domain.Place;
+import courseitda.workspace.domain.PlaceRepository;
 import courseitda.workspace.ui.dto.request.CategoryPlaceCreateRequest;
 import courseitda.workspace.ui.dto.response.CategoryPlaceCreateResponse;
 import courseitda.workspace.ui.dto.response.CategoryPlacesFindResponse;
@@ -33,7 +33,7 @@ public class CategoryPlaceService {
         final var category = getCategoryById(categoryId);
         category.validateOwnership(memberAuthInfo.id());
 
-        final var place = findOrCreatePlace(request);
+        final var place = createPlace(request);
 
         final var categoryPlace = CategoryPlace.createNew(category, place);
         final var savedCategoryPlace = categoryPlaceRepository.save(categoryPlace);
@@ -61,7 +61,9 @@ public class CategoryPlaceService {
         }
 
         categoryPlace.updateWorkspaceLastActivityAt();
+        final Long placeId = categoryPlace.getPlace().getId();
         categoryPlaceRepository.delete(categoryPlace);
+        placeRepository.deleteById(placeId);
     }
 
     @Transactional(readOnly = true)
@@ -80,18 +82,15 @@ public class CategoryPlaceService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
     }
 
-    private Place findOrCreatePlace(final CategoryPlaceCreateRequest request) {
-        return placeRepository.findPlaceByNameAndAddressName(request.name(), request.addressName())
-                .orElseGet(() -> {
-                    final Place newPlace = Place.createNew(
-                            request.name(),
-                            request.roadAddressName(),
-                            request.addressName(),
-                            request.latitude(),
-                            request.longitude()
-                    );
-                    return placeRepository.save(newPlace);
-                });
+    private Place createPlace(final CategoryPlaceCreateRequest request) {
+        final Place newPlace = Place.createNew(
+                request.name(),
+                request.roadAddressName(),
+                request.addressName(),
+                request.latitude(),
+                request.longitude()
+        );
+        return placeRepository.save(newPlace);
     }
 
     private CategoryPlace getCategoryPlaceById(final Long categoryPlaceId) {

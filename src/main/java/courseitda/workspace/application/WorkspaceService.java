@@ -7,6 +7,7 @@ import courseitda.member.domain.Member;
 import courseitda.workspace.domain.Category;
 import courseitda.workspace.domain.CategoryPlaceRepository;
 import courseitda.workspace.domain.CategoryRepository;
+import courseitda.workspace.domain.PlaceRepository;
 import courseitda.workspace.domain.Workspace;
 import courseitda.workspace.domain.WorkspaceRepository;
 import courseitda.workspace.ui.dto.request.WorkspaceCreateRequest;
@@ -27,6 +28,7 @@ public class WorkspaceService {
     private final WorkspaceRepository workspaceRepository;
     private final CategoryRepository categoryRepository;
     private final CategoryPlaceRepository categoryPlaceRepository;
+    private final PlaceRepository placeRepository;
 
     @Transactional
     public WorkspaceCreateResponse createWorkspace(final WorkspaceCreateRequest request, final Member member) {
@@ -68,7 +70,13 @@ public class WorkspaceService {
                 .map(Category::getId)
                 .toList();
 
+        final var categoryPlaces = categoryPlaceRepository.findAllByCategoryIds(categoryIds);
+        final var placeIds = categoryPlaces.stream()
+                .map(categoryPlace -> categoryPlace.getPlace().getId())
+                .toList();
+
         categoryPlaceRepository.deleteAllByCategoryIds(categoryIds);
+        placeRepository.deleteAllByIds(placeIds);
         categoryRepository.deleteAllByWorkspaceId(workspace.getId());
         workspaceRepository.deleteById(workspace.getId());
     }

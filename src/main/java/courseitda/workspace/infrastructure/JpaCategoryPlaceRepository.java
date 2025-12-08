@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface JpaCategoryPlaceRepository extends JpaRepository<CategoryPlace, Long> {
 
     void deleteAllByCategoryIdIn(List<Long> categoryIds);
+
+    List<CategoryPlace> findAllByCategoryIdIn(List<Long> categoryIds);
 }

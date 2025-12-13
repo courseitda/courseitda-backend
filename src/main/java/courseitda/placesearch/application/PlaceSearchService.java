@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PlaceSearchService {
 
-    private static final int SEARCH_SIZE = 5;
+    private static final int SEARCH_SIZE = 15;
     private final PlaceSearcher placeSearcher;
 
     public SearchedPlacesResponse search(final String keyword) {

@@ -29,6 +29,9 @@ public class Place extends Timestamp {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
+    private String placeUrl;
+
     @Column
     private String roadAddressName;
 
@@ -41,38 +44,36 @@ public class Place extends Timestamp {
     @Column(nullable = false)
     private double longitude;
 
-    private String placeUrl;
-
     @Builder
     public Place(
             final String name,
+            final String placeUrl,
             final String roadAddressName,
             final String addressName,
             final double latitude,
-            final double longitude,
-            final String placeUrl
+            final double longitude
     ) {
         validateName(name);
         validateAddressName(addressName);
         validateCoordinates(latitude, longitude);
 
         this.name = name;
+        this.placeUrl = placeUrl;
         this.roadAddressName = roadAddressName;
         this.addressName = addressName;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.placeUrl = placeUrl;
     }
 
     public static Place createNew(
             final String name,
+            final String placeUrl,
             final String roadAddressName,
             final String addressName,
             final double latitude,
             final double longitude
     ) {
-        final var emptyPlaceUrl = "";
-        return new Place(name, roadAddressName, addressName, latitude, longitude, emptyPlaceUrl);
+        return new Place(name, placeUrl, roadAddressName, addressName, latitude, longitude);
     }
 
     private static void validateName(final String name) {

@@ -57,6 +57,7 @@ public record CategoriesReadResponse(
             public record CategoryPlaceResponse(
                     Long id,
                     String name,
+                    String placeUrl,
                     String addressName,
                     String roadAddressName,
                     double latitude,
@@ -71,6 +72,7 @@ public record CategoriesReadResponse(
                     return new CategoryPlaceResponse(
                             categoryPlace.getId(),
                             categoryPlace.getPlace().getName(),
+                            categoryPlace.getPlace().getPlaceUrl(),
                             categoryPlace.getPlace().getAddressName(),
                             categoryPlace.getPlace().getRoadAddressName(),
                             categoryPlace.getPlace().getLatitude(),

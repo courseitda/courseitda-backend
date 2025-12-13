@@ -113,13 +113,14 @@ class CategoryControllerTest {
 
     private CategoryPlaceCreateResponse createCategoryPlace(final String accessToken, final Long categoryId) {
         final String name = PlaceFixture.anyName();
+        final String placeUrl = PlaceFixture.anyPlaceUrl();
         final String roadAddressName = PlaceFixture.anyRoadAddressName();
         final String addressName = PlaceFixture.anyAddressName();
         final double lat = PlaceFixture.anyLatitude();
         final double lng = PlaceFixture.anyLongitude();
 
         final CategoryPlaceCreateRequest request = new CategoryPlaceCreateRequest(
-                name, roadAddressName, addressName, lat, lng
+                name, placeUrl, roadAddressName, addressName, lat, lng
         );
 
         return given()

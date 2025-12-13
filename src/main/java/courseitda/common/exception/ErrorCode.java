@@ -330,6 +330,13 @@ public enum ErrorCode {
             "네이버 장소 검색 API 호출 중 오류가 발생했습니다.",
             HttpStatus.BAD_GATEWAY // 502
     ),
+
+    SEARCHED_PLACE_URL_EMPTY(
+            "6013",
+            "검색된 장소의 URL은 null 또는 공백일 수 없습니다.",
+            HttpStatus.BAD_GATEWAY // 502
+    ),
+
     ;
 
     private final String code;

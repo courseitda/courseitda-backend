@@ -5,6 +5,7 @@ import courseitda.common.exception.ErrorCode;
 
 public record SearchedPlace(
         String name,
+        String url,
         String addressName,
         String roadAddressName,
         double latitude,
@@ -13,6 +14,7 @@ public record SearchedPlace(
 
     public SearchedPlace {
         validateName(name);
+        validateUrl(url);
         validateAddressName(addressName);
         validateLatitude(latitude);
         validateLongitude(longitude);
@@ -25,6 +27,12 @@ public record SearchedPlace(
     private void validateName(final String name) {
         if (name == null || name.isBlank()) {
             throw new BusinessException(ErrorCode.SEARCHED_PLACE_NAME_EMPTY);
+        }
+    }
+
+    private void validateUrl(final String url) {
+        if (url == null || url.isBlank()) {
+            throw new BusinessException(ErrorCode.SEARCHED_PLACE_URL_EMPTY);
         }
     }
 

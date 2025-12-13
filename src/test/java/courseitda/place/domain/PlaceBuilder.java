@@ -5,11 +5,11 @@ import courseitda.workspace.domain.Place;
 public class PlaceBuilder {
 
     private String name = PlaceFixture.anyName();
+    private String placeUrl = PlaceFixture.anyPlaceUrl();
     private String roadAddressName = PlaceFixture.anyRoadAddressName();
     private String addressName = PlaceFixture.anyAddressName();
     private double latitude = PlaceFixture.anyLatitude();
     private double longitude = PlaceFixture.anyLongitude();
-    private String placeUrl = "";
 
     public PlaceBuilder name(final String name) {
         this.name = name;

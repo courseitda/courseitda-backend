@@ -34,6 +34,7 @@ public record NaverPlaceSearchResponse(
 
             return new SearchedPlace(
                     cleanName,
+                    url,
                     addressName,
                     roadAddressName,
                     lat,

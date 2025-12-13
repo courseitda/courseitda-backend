@@ -22,6 +22,7 @@ public record KakaoPlaceSearchResponse(
         public SearchedPlace toSearchedPlace() {
             return new SearchedPlace(
                     this.name,
+                    this.placeUrl,
                     this.addressName,
                     this.roadAddressName,
                     this.latitude,

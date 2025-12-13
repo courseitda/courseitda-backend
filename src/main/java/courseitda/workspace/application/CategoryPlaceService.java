@@ -85,6 +85,7 @@ public class CategoryPlaceService {
     private Place createPlace(final CategoryPlaceCreateRequest request) {
         final Place newPlace = Place.createNew(
                 request.name(),
+                request.placeUrl(),
                 request.roadAddressName(),
                 request.addressName(),
                 request.latitude(),

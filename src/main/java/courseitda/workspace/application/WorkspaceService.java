@@ -70,13 +70,7 @@ public class WorkspaceService {
                 .map(Category::getId)
                 .toList();
 
-        final var categoryPlaces = categoryPlaceRepository.findAllByCategoryIds(categoryIds);
-        final var placeIds = categoryPlaces.stream()
-                .map(categoryPlace -> categoryPlace.getPlace().getId())
-                .toList();
-
         categoryPlaceRepository.deleteAllByCategoryIds(categoryIds);
-        placeRepository.deleteAllByIds(placeIds);
         categoryRepository.deleteAllByWorkspaceId(workspace.getId());
         workspaceRepository.deleteById(workspace.getId());
     }

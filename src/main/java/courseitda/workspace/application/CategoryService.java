@@ -140,13 +140,7 @@ public class CategoryService {
 
         category.updateWorkspaceLastActivityAt();
 
-        final var categoryPlaces = categoryPlaceRepository.findAllByCategoryIds(List.of(categoryId));
-        final var placeIds = categoryPlaces.stream()
-                .map(categoryPlace -> categoryPlace.getPlace().getId())
-                .toList();
-
         categoryPlaceRepository.deleteAllByCategoryIds(List.of(categoryId));
-        placeRepository.deleteAllByIds(placeIds);
         categoryRepository.delete(category);
     }
 

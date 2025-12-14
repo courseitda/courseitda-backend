@@ -1,7 +1,5 @@
 package courseitda.place.domain;
 
-import courseitda.workspace.domain.Place;
-
 public class PlaceBuilder {
 
     private String name = PlaceFixture.anyName();

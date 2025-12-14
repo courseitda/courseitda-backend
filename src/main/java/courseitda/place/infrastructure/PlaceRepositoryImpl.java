@@ -1,7 +1,7 @@
-package courseitda.workspace.infrastructure;
+package courseitda.place.infrastructure;
 
-import courseitda.workspace.domain.Place;
-import courseitda.workspace.domain.PlaceRepository;
+import courseitda.place.domain.Place;
+import courseitda.place.domain.PlaceRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;

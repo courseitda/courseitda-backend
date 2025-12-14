@@ -1,4 +1,4 @@
-package courseitda.workspace.domain;
+package courseitda.place.domain;
 
 import courseitda.common.entity.Timestamp;
 import courseitda.common.exception.BusinessException;

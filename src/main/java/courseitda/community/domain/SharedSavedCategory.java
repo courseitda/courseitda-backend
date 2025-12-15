@@ -19,10 +19,10 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "shared_categories")
+@Table(name = "shared_saved_categories")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
-public class SharedCategory extends Timestamp {
+public class SharedSavedCategory extends Timestamp {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,8 +33,8 @@ public class SharedCategory extends Timestamp {
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private Member uploader;
+    private Member author;
 
-    @OneToMany(mappedBy = "sharedCategory")
-    private List<SharedCategoryPlace> sharedCategoryPlaces;
+    @OneToMany(mappedBy = "sharedSavedCategory")
+    private List<SharedSavedCategoryPlace> sharedSavedCategoryPlaces;
 }

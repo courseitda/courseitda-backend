@@ -15,10 +15,10 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "shared_category_places")
+@Table(name = "shared_saved_category_places")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
-public class SharedCategoryPlace {
+public class SharedSavedCategoryPlace {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +26,7 @@ public class SharedCategoryPlace {
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private SharedCategory sharedCategory;
+    private SharedSavedCategory sharedSavedCategory;
 
     @ManyToOne
     @JoinColumn(nullable = false)

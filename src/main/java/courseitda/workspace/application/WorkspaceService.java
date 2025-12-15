@@ -32,6 +32,7 @@ public class WorkspaceService {
 
     @Transactional
     public WorkspaceCreateResponse createWorkspace(final WorkspaceCreateRequest request, final Member member) {
+        validateTitle(request.title());
         validateDuplicatedTitle(member.getId(), request.title());
 
         final var workspace = Workspace.createNew(member, request.title());
@@ -50,6 +51,7 @@ public class WorkspaceService {
         final var newTitle = Workspace.formatTitle(request.title());
 
         workspace.validateOwnership(memberAuthInfo.id());
+        validateTitle(newTitle);
         // 제목이 변경되는 경우에만 중복 검증
         if (!workspace.getTitle().equals(newTitle)) {
             validateDuplicatedTitle(memberAuthInfo.id(), newTitle);
@@ -86,7 +88,7 @@ public class WorkspaceService {
     }
 
     public CheckTitleDuplicateResponse checkTitleDuplicate(final MemberAuthInfo memberAuthInfo, final String title) {
-        validateTitleNotEmpty(title);
+        validateTitle(title);
 
         final var isDuplicated = workspaceRepository.existsByOwnerIdAndTitle(
                 memberAuthInfo.id(),
@@ -101,16 +103,19 @@ public class WorkspaceService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.WORKSPACE_NOT_FOUND));
     }
 
+    private void validateTitle(final String title) {
+        if (title == null || title.isBlank()) {
+            throw new BusinessException(ErrorCode.WORKSPACE_TITLE_EMPTY);
+        }
+        if (title.length() > 20) {
+            throw new BusinessException(ErrorCode.WORKSPACE_TITLE_LENGTH_EXCEEDED);
+        }
+    }
+
     private void validateDuplicatedTitle(final Long memberId, final String newTitle) {
         // 해당 회원 소유의 워크스페이스에 이미 해당 타이틀을 사용중인지
         if (workspaceRepository.existsByOwnerIdAndTitle(memberId, newTitle)) {
             throw new BusinessException(ErrorCode.DUPLICATE_WORKSPACE_TITLE);
-        }
-    }
-
-    private void validateTitleNotEmpty(final String title) {
-        if (title == null || title.isBlank()) {
-            throw new BusinessException(ErrorCode.WORKSPACE_TITLE_EMPTY);
         }
     }
 }

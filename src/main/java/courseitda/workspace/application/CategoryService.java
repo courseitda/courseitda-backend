@@ -45,6 +45,9 @@ public class CategoryService {
         final var workspace = getWorkspaceByIdentifier(workspaceIdentifier);
         workspace.validateOwnership(memberAuthInfo.id());
 
+        validateCategoryName(request.name());
+        validateCategoryColor(request.color());
+
         // N+1 문제 해결: workspace.getCategories().size() 대신 직접 count 쿼리 사용
         final var nextSequence = categoryRepository.countByWorkspaceId(workspace.getId()) + 1;
         final var category = Category.createNew(workspace, request.name(), request.color(), nextSequence);
@@ -62,6 +65,9 @@ public class CategoryService {
     ) {
         final var category = getCategoryById(categoryId);
         category.validateOwnership(memberAuthInfo.id());
+
+        validateCategoryName(request.name());
+        validateCategoryColor(request.color());
 
         category.updateNameAndColor(request.name(), request.color());
         category.updateWorkspaceLastActivityAt();
@@ -205,5 +211,23 @@ public class CategoryService {
     private CategoryPlace getCategoryPlaceById(final Long categoryPlaceId) {
         return categoryPlaceRepository.findById(categoryPlaceId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_PLACE_NOT_FOUND));
+    }
+
+    private void validateCategoryName(final String name) {
+        if (name == null || name.isBlank()) {
+            throw new BusinessException(ErrorCode.CATEGORY_NAME_EMPTY);
+        }
+        if (name.length() > 10) {
+            throw new BusinessException(ErrorCode.CATEGORY_NAME_LENGTH_EXCEEDED);
+        }
+    }
+
+    private void validateCategoryColor(final String color) {
+        if (color == null || color.isBlank()) {
+            throw new BusinessException(ErrorCode.CATEGORY_COLOR_EMPTY);
+        }
+        if (!color.matches("^#[0-9A-Fa-f]{6}$")) {
+            throw new BusinessException(ErrorCode.INVALID_CATEGORY_COLOR_FORMAT);
+        }
     }
 }

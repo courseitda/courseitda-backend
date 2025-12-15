@@ -21,6 +21,8 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
     public SignUpResponse signUp(final SignUpRequest request) {
+        validateNickname(request.nickname());
+        validateEmail(request.email());
         validatePassword(request.password());
         validateDuplicateEmail(request.email());
         validateDuplicateNickname(request.nickname());
@@ -47,7 +49,7 @@ public class MemberService {
     }
 
     public CheckNicknameDuplicateResponse checkNicknameDuplicate(final String nickname) {
-        validateNicknameNotEmpty(nickname);
+        validateNickname(nickname);
 
         final boolean isDuplicated = memberRepository.existsByNickname(nickname);
 
@@ -55,27 +57,26 @@ public class MemberService {
     }
 
     public CheckEmailDuplicateResponse checkEmailDuplicate(final String email) {
-        validateEmailNotEmpty(email);
-        validateEmailFormat(email);
+        validateEmail(email);
 
         final boolean isDuplicated = memberRepository.existsByEmail(email);
 
         return new CheckEmailDuplicateResponse(isDuplicated);
     }
 
-    private void validateNicknameNotEmpty(final String nickname) {
+    private void validateNickname(final String nickname) {
         if (nickname == null || nickname.isBlank()) {
             throw new BusinessException(ErrorCode.MEMBER_NICKNAME_EMPTY);
         }
-    }
-
-    private void validateEmailNotEmpty(final String email) {
-        if (email == null || email.isBlank()) {
-            throw new BusinessException(ErrorCode.MEMBER_EMAIL_EMPTY);
+        if (nickname.length() < 2 || nickname.length() > 20) {
+            throw new BusinessException(ErrorCode.INVALID_NICKNAME_LENGTH);
         }
     }
 
-    private void validateEmailFormat(final String email) {
+    private void validateEmail(final String email) {
+        if (email == null || email.isBlank()) {
+            throw new BusinessException(ErrorCode.MEMBER_EMAIL_EMPTY);
+        }
         final String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
         if (!email.matches(emailRegex)) {
             throw new BusinessException(ErrorCode.INVALID_EMAIL_FORMAT);

@@ -166,7 +166,7 @@ public enum ErrorCode {
     INVALID_CATEGORY_COLOR_FORMAT(
             "3011",
             "유효하지 않은 색상 형식입니다.",
-            HttpStatus.UNPROCESSABLE_ENTITY // 422
+            HttpStatus.BAD_REQUEST // 400
     ),
 
     //-----------------------------------------------------------------------------------

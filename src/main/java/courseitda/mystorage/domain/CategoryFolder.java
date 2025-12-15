@@ -17,10 +17,10 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "folders")
+@Table(name = "category_folders")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
-public class Folder extends Timestamp {
+public class CategoryFolder extends Timestamp {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

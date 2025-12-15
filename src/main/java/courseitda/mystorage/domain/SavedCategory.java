@@ -40,5 +40,5 @@ public class SavedCategory extends Timestamp {
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private Folder folder;
+    private CategoryFolder categoryFolder;
 }

@@ -139,6 +139,7 @@ public class CategoryService {
         category.validateOwnership(memberAuthInfo.id());
 
         category.updateWorkspaceLastActivityAt();
+        category.updateRepresentativePlaceTo(null);
 
         categoryPlaceRepository.deleteAllByCategoryIds(List.of(categoryId));
         categoryRepository.delete(category);

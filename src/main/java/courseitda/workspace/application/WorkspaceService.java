@@ -70,6 +70,8 @@ public class WorkspaceService {
                 .map(Category::getId)
                 .toList();
 
+        categories.forEach(category -> category.updateRepresentativePlaceTo(null));
+
         categoryPlaceRepository.deleteAllByCategoryIds(categoryIds);
         categoryRepository.deleteAllByWorkspaceId(workspace.getId());
         workspaceRepository.deleteById(workspace.getId());

@@ -28,17 +28,13 @@ public class SavedCategory extends Timestamp {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private Member owner;
+
     @Column(nullable = false)
     private String name;
 
     @OneToMany(mappedBy = "savedCategory")
     private List<SavedCategoryPlace> savedCategoryPlaces;
-
-    @ManyToOne
-    @JoinColumn(nullable = false)
-    private Member owner;
-
-    @ManyToOne
-    @JoinColumn(nullable = false)
-    private CategoryFolder categoryFolder;
 }

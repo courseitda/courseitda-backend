@@ -1,8 +1,8 @@
 package courseitda.mystorage.domain;
 
 import courseitda.common.entity.Timestamp;
+import courseitda.community.domain.SharedSavedCategory;
 import courseitda.member.domain.Member;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,22 +17,21 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "category_folders")
+@Table(name = "like_categories")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
-public class CategoryFolder extends Timestamp {
+public class LikeCategory extends Timestamp {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
-
     @ManyToOne
     @JoinColumn(nullable = false)
     private Member owner;
 
-    @Column(nullable = false)
-    private Boolean isDeletable;
+    // TODO: (owner id, sharedSavedCategory id)에 대해 unique함 보장 필요
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private SharedSavedCategory sharedSavedCategory;
 }

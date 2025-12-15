@@ -166,7 +166,7 @@ public enum ErrorCode {
     INVALID_CATEGORY_COLOR_FORMAT(
             "3011",
             "유효하지 않은 색상 형식입니다.",
-            HttpStatus.UNPROCESSABLE_ENTITY // 422
+            HttpStatus.BAD_REQUEST // 400
     ),
 
     //-----------------------------------------------------------------------------------
@@ -255,6 +255,18 @@ public enum ErrorCode {
             "5008",
             "이미 사용중인 닉네임입니다.",
             HttpStatus.CONFLICT // 409
+    ),
+
+    MEMBER_PASSWORD_EMPTY(
+            "5009",
+            "비밀번호는 null 또는 공백일 수 없습니다.",
+            HttpStatus.BAD_REQUEST // 400
+    ),
+
+    INVALID_PASSWORD_LENGTH(
+            "5010",
+            "비밀번호는 6자 이상 20자 이하여야 합니다.",
+            HttpStatus.BAD_REQUEST // 400
     ),
 
     //-----------------------------------------------------------------------------------

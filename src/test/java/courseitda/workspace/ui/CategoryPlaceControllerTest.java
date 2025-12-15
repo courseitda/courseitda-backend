@@ -177,6 +177,56 @@ class CategoryPlaceControllerTest {
     class CreateCategoryPlaceFailureScenarios {
 
         @Test
+        @DisplayName("위도가 범위를 벗어난 경우 생성에 실패한다")
+        void createCategoryPlace_fail_invalidLatitude() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(accessToken);
+            final Long categoryId = createCategory(accessToken, workspaceIdentifier).id();
+
+            final CategoryPlaceCreateRequest request = new CategoryPlaceCreateRequest(
+                    PlaceFixture.anyName(), PlaceFixture.anyPlaceUrl(), PlaceFixture.anyRoadAddressName(),
+                    PlaceFixture.anyAddressName(), 91.0, PlaceFixture.anyLongitude()
+            );
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .body(request)
+                    .when()
+                    .post("/api/categories/" + categoryId + "/places")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.INVALID_LATITUDE_RANGE.getCode()));
+        }
+
+        @Test
+        @DisplayName("경도가 범위를 벗어난 경우 생성에 실패한다")
+        void createCategoryPlace_fail_invalidLongitude() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(accessToken);
+            final Long categoryId = createCategory(accessToken, workspaceIdentifier).id();
+
+            final CategoryPlaceCreateRequest request = new CategoryPlaceCreateRequest(
+                    PlaceFixture.anyName(), PlaceFixture.anyPlaceUrl(), PlaceFixture.anyRoadAddressName(),
+                    PlaceFixture.anyAddressName(), PlaceFixture.anyLatitude(), 181.0
+            );
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .body(request)
+                    .when()
+                    .post("/api/categories/" + categoryId + "/places")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.INVALID_LONGITUDE_RANGE.getCode()));
+        }
+
+        @Test
         @DisplayName("존재하지 않는 카테고리에 장소 생성 시 실패한다")
         void createCategoryPlace_fail_categoryNotFound() {
             // given

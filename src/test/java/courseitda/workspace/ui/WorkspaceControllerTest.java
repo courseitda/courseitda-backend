@@ -173,6 +173,26 @@ class WorkspaceControllerTest {
     class CreateWorkspaceFailureScenarios {
 
         @Test
+        @DisplayName("제목이 20자 초과인 경우 생성에 실패한다")
+        void createWorkspace_fail_titleTooLong() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String longTitle = "a".repeat(21);
+            final WorkspaceCreateRequest request = new WorkspaceCreateRequest(longTitle);
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .body(request)
+                    .when()
+                    .post("/api/workspaces")
+                    .then()
+                    .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.WORKSPACE_TITLE_LENGTH_EXCEEDED.getCode()));
+        }
+
+        @Test
         @DisplayName("중복된 워크스페이스 제목으로 생성 시 실패한다")
         void createWorkspace_fail_duplicateTitle() {
             // given
@@ -487,6 +507,50 @@ class WorkspaceControllerTest {
     @Nested
     @DisplayName("카테고리 생성 실패 시나리오")
     class CreateCategoryFailureScenarios {
+
+        @Test
+        @DisplayName("카테고리 이름이 10자 초과인 경우 생성에 실패한다")
+        void createCategory_fail_nameTooLong() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(accessToken);
+            final String longName = "a".repeat(11);
+            final String color = CategoryFixture.anyColor();
+            final CategoryCreateRequest request = new CategoryCreateRequest(longName, color);
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .body(request)
+                    .when()
+                    .post("/api/workspaces/" + workspaceIdentifier + "/categories")
+                    .then()
+                    .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.CATEGORY_NAME_LENGTH_EXCEEDED.getCode()));
+        }
+
+        @Test
+        @DisplayName("카테고리 색상 형식이 잘못된 경우 생성에 실패한다")
+        void createCategory_fail_invalidColorFormat() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(accessToken);
+            final String name = CategoryFixture.anyName();
+            final String invalidColor = "invalid-color";
+            final CategoryCreateRequest request = new CategoryCreateRequest(name, invalidColor);
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .body(request)
+                    .when()
+                    .post("/api/workspaces/" + workspaceIdentifier + "/categories")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.INVALID_CATEGORY_COLOR_FORMAT.getCode()));
+        }
 
         @Test
         @DisplayName("존재하지 않는 워크스페이스에 카테고리 생성 시 실패한다")
@@ -860,6 +924,25 @@ class WorkspaceControllerTest {
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.WORKSPACE_TITLE_EMPTY.getCode()));
+        }
+
+        @Test
+        @DisplayName("제목이 20자 초과인 경우 검증에 실패한다")
+        void checkTitleDuplicate_fail_titleTooLong() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String longTitle = "a".repeat(21);
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .queryParam("value", longTitle)
+                    .when()
+                    .get("/api/workspaces/validations/title")
+                    .then()
+                    .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.WORKSPACE_TITLE_LENGTH_EXCEEDED.getCode()));
         }
     }
 

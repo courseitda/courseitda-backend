@@ -33,6 +33,10 @@ public class CategoryPlaceService {
         final var category = getCategoryById(categoryId);
         category.validateOwnership(memberAuthInfo.id());
 
+        validatePlaceName(request.name());
+        validatePlaceAddress(request.addressName());
+        validateCoordinates(request.latitude(), request.longitude());
+
         final var place = createPlace(request);
 
         final var categoryPlace = CategoryPlace.createNew(category, place);
@@ -100,6 +104,27 @@ public class CategoryPlaceService {
     private void validateCategoryOwnership(final Long categoryId, final CategoryPlace categoryPlace) {
         if (!categoryPlace.belongsToCategory(categoryId)) {
             throw new BusinessException(ErrorCode.PLACE_NOT_BELONG_TO_CATEGORY);
+        }
+    }
+
+    private void validatePlaceName(final String name) {
+        if (name == null || name.isBlank()) {
+            throw new BusinessException(ErrorCode.PLACE_NAME_EMPTY);
+        }
+    }
+
+    private void validatePlaceAddress(final String addressName) {
+        if (addressName == null || addressName.isBlank()) {
+            throw new BusinessException(ErrorCode.PLACE_ADDRESS_EMPTY);
+        }
+    }
+
+    private void validateCoordinates(final double latitude, final double longitude) {
+        if (latitude < -90 || latitude > 90) {
+            throw new BusinessException(ErrorCode.INVALID_LATITUDE_RANGE);
+        }
+        if (longitude < -180 || longitude > 180) {
+            throw new BusinessException(ErrorCode.INVALID_LONGITUDE_RANGE);
         }
     }
 }

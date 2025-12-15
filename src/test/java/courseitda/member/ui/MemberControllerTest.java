@@ -70,6 +70,106 @@ class MemberControllerTest {
     class SignUpFailureScenarios {
 
         @Test
+        @DisplayName("닉네임이 2자 미만인 경우 회원가입에 실패한다")
+        void signup_fail_nicknameTooShort() {
+            // given
+            final String shortNickname = "a";
+            final String email = MemberFixture.anyEmail();
+            final String password = MemberFixture.anyPassword();
+            final SignUpRequest request = new SignUpRequest(shortNickname, email, password);
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(request)
+                    .when()
+                    .post("/api/members")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.INVALID_NICKNAME_LENGTH.getCode()));
+        }
+
+        @Test
+        @DisplayName("닉네임이 20자 초과인 경우 회원가입에 실패한다")
+        void signup_fail_nicknameTooLong() {
+            // given
+            final String longNickname = "a".repeat(21);
+            final String email = MemberFixture.anyEmail();
+            final String password = MemberFixture.anyPassword();
+            final SignUpRequest request = new SignUpRequest(longNickname, email, password);
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(request)
+                    .when()
+                    .post("/api/members")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.INVALID_NICKNAME_LENGTH.getCode()));
+        }
+
+        @Test
+        @DisplayName("이메일 형식이 잘못된 경우 회원가입에 실패한다")
+        void signup_fail_invalidEmailFormat() {
+            // given
+            final String nickname = MemberFixture.anyNickname();
+            final String invalidEmail = "invalid-email";
+            final String password = MemberFixture.anyPassword();
+            final SignUpRequest request = new SignUpRequest(nickname, invalidEmail, password);
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(request)
+                    .when()
+                    .post("/api/members")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.INVALID_EMAIL_FORMAT.getCode()));
+        }
+
+        @Test
+        @DisplayName("비밀번호가 6자 미만인 경우 회원가입에 실패한다")
+        void signup_fail_passwordTooShort() {
+            // given
+            final String nickname = MemberFixture.anyNickname();
+            final String email = MemberFixture.anyEmail();
+            final String shortPassword = "pass1";
+            final SignUpRequest request = new SignUpRequest(nickname, email, shortPassword);
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(request)
+                    .when()
+                    .post("/api/members")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.INVALID_PASSWORD_LENGTH.getCode()));
+        }
+
+        @Test
+        @DisplayName("비밀번호가 20자 초과인 경우 회원가입에 실패한다")
+        void signup_fail_passwordTooLong() {
+            // given
+            final String nickname = MemberFixture.anyNickname();
+            final String email = MemberFixture.anyEmail();
+            final String longPassword = "a".repeat(21);
+            final SignUpRequest request = new SignUpRequest(nickname, email, longPassword);
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(request)
+                    .when()
+                    .post("/api/members")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.INVALID_PASSWORD_LENGTH.getCode()));
+        }
+
+        @Test
         @DisplayName("중복된 이메일로 회원가입 시 실패한다")
         void signup_fail_duplicateEmail() {
             // given
@@ -218,6 +318,38 @@ class MemberControllerTest {
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.MEMBER_NICKNAME_EMPTY.getCode()));
+        }
+
+        @Test
+        @DisplayName("닉네임이 2자 미만인 경우 검증에 실패한다")
+        void checkNicknameDuplicate_fail_nicknameTooShort() {
+            // given
+            final String shortNickname = "a";
+
+            // when & then
+            given()
+                    .queryParam("value", shortNickname)
+                    .when()
+                    .get("/api/members/validations/nickname")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.INVALID_NICKNAME_LENGTH.getCode()));
+        }
+
+        @Test
+        @DisplayName("닉네임이 20자 초과인 경우 검증에 실패한다")
+        void checkNicknameDuplicate_fail_nicknameTooLong() {
+            // given
+            final String longNickname = "a".repeat(21);
+
+            // when & then
+            given()
+                    .queryParam("value", longNickname)
+                    .when()
+                    .get("/api/members/validations/nickname")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.INVALID_NICKNAME_LENGTH.getCode()));
         }
     }
 

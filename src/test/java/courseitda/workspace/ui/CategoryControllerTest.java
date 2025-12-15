@@ -175,6 +175,54 @@ class CategoryControllerTest {
     class UpdateCategoryFailureScenarios {
 
         @Test
+        @DisplayName("카테고리 이름이 10자 초과인 경우 수정에 실패한다")
+        void updateCategory_fail_nameTooLong() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(accessToken);
+            final CategoryCreateResponse category = createCategory(accessToken, workspaceIdentifier);
+
+            final String longName = "a".repeat(11);
+            final String newColor = "#123456";
+            final CategoryUpdateRequest request = new CategoryUpdateRequest(longName, newColor);
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .body(request)
+                    .when()
+                    .patch("/api/categories/" + category.id())
+                    .then()
+                    .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.CATEGORY_NAME_LENGTH_EXCEEDED.getCode()));
+        }
+
+        @Test
+        @DisplayName("카테고리 색상 형식이 잘못된 경우 수정에 실패한다")
+        void updateCategory_fail_invalidColorFormat() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final String workspaceIdentifier = createWorkspace(accessToken);
+            final CategoryCreateResponse category = createCategory(accessToken, workspaceIdentifier);
+
+            final String newName = CategoryFixture.anyName();
+            final String invalidColor = "invalid-color";
+            final CategoryUpdateRequest request = new CategoryUpdateRequest(newName, invalidColor);
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .body(request)
+                    .when()
+                    .patch("/api/categories/" + category.id())
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.INVALID_CATEGORY_COLOR_FORMAT.getCode()));
+        }
+
+        @Test
         @DisplayName("존재하지 않는 카테고리 수정 시 실패한다")
         void updateCategory_fail_categoryNotFound() {
             // given

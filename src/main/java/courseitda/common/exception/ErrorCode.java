@@ -257,6 +257,18 @@ public enum ErrorCode {
             HttpStatus.CONFLICT // 409
     ),
 
+    MEMBER_PASSWORD_EMPTY(
+            "5009",
+            "비밀번호는 null 또는 공백일 수 없습니다.",
+            HttpStatus.BAD_REQUEST // 400
+    ),
+
+    INVALID_PASSWORD_LENGTH(
+            "5010",
+            "비밀번호는 6자 이상 20자 이하여야 합니다.",
+            HttpStatus.BAD_REQUEST // 400
+    ),
+
     //-----------------------------------------------------------------------------------
     // 6000 Series: Place Search Errors
     PLACE_SEARCH_KEYWORD_EMPTY(

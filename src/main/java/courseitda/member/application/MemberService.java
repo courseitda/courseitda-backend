@@ -21,6 +21,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
     public SignUpResponse signUp(final SignUpRequest request) {
+        validatePassword(request.password());
         validateDuplicateEmail(request.email());
         validateDuplicateNickname(request.nickname());
 
@@ -78,6 +79,15 @@ public class MemberService {
         final String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
         if (!email.matches(emailRegex)) {
             throw new BusinessException(ErrorCode.INVALID_EMAIL_FORMAT);
+        }
+    }
+
+    private void validatePassword(final String password) {
+        if (password == null || password.isBlank()) {
+            throw new BusinessException(ErrorCode.MEMBER_PASSWORD_EMPTY);
+        }
+        if (password.length() < 6 || password.length() > 20) {
+            throw new BusinessException(ErrorCode.INVALID_PASSWORD_LENGTH);
         }
     }
 

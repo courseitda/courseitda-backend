@@ -3,11 +3,11 @@ package courseitda.workspace.application;
 import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.common.exception.BusinessException;
 import courseitda.common.exception.ErrorCode;
+import courseitda.place.domain.PlaceRepository;
 import courseitda.workspace.domain.Category;
 import courseitda.workspace.domain.CategoryPlace;
 import courseitda.workspace.domain.CategoryPlaceRepository;
 import courseitda.workspace.domain.CategoryRepository;
-import courseitda.workspace.domain.PlaceRepository;
 import courseitda.workspace.domain.Workspace;
 import courseitda.workspace.domain.WorkspaceRepository;
 import courseitda.workspace.ui.dto.request.CategoryCreateRequest;
@@ -139,14 +139,9 @@ public class CategoryService {
         category.validateOwnership(memberAuthInfo.id());
 
         category.updateWorkspaceLastActivityAt();
-
-        final var categoryPlaces = categoryPlaceRepository.findAllByCategoryIds(List.of(categoryId));
-        final var placeIds = categoryPlaces.stream()
-                .map(categoryPlace -> categoryPlace.getPlace().getId())
-                .toList();
+        category.updateRepresentativePlaceTo(null);
 
         categoryPlaceRepository.deleteAllByCategoryIds(List.of(categoryId));
-        placeRepository.deleteAllByIds(placeIds);
         categoryRepository.delete(category);
     }
 

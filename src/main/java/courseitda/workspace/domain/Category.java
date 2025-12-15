@@ -22,6 +22,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
@@ -56,6 +58,7 @@ public class Category extends Timestamp {
     @JoinColumn(
             name = "representative_place_id", foreignKey = @ForeignKey(name = "fk_category_representative_place")
     )
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private CategoryPlace representativePlace;
 
     @Builder

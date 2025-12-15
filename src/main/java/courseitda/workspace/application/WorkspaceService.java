@@ -4,10 +4,10 @@ import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.common.exception.BusinessException;
 import courseitda.common.exception.ErrorCode;
 import courseitda.member.domain.Member;
+import courseitda.place.domain.PlaceRepository;
 import courseitda.workspace.domain.Category;
 import courseitda.workspace.domain.CategoryPlaceRepository;
 import courseitda.workspace.domain.CategoryRepository;
-import courseitda.workspace.domain.PlaceRepository;
 import courseitda.workspace.domain.Workspace;
 import courseitda.workspace.domain.WorkspaceRepository;
 import courseitda.workspace.ui.dto.request.WorkspaceCreateRequest;
@@ -70,13 +70,9 @@ public class WorkspaceService {
                 .map(Category::getId)
                 .toList();
 
-        final var categoryPlaces = categoryPlaceRepository.findAllByCategoryIds(categoryIds);
-        final var placeIds = categoryPlaces.stream()
-                .map(categoryPlace -> categoryPlace.getPlace().getId())
-                .toList();
+        categories.forEach(category -> category.updateRepresentativePlaceTo(null));
 
         categoryPlaceRepository.deleteAllByCategoryIds(categoryIds);
-        placeRepository.deleteAllByIds(placeIds);
         categoryRepository.deleteAllByWorkspaceId(workspace.getId());
         workspaceRepository.deleteById(workspace.getId());
     }

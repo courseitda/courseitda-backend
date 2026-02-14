@@ -1,4 +1,4 @@
-package courseitda.community.domain;
+package courseitda.mystorage.domain;
 
 import courseitda.place.domain.Place;
 import jakarta.persistence.Entity;
@@ -15,10 +15,10 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "shared_saved_category_places")
+@Table(name = "like_category_places")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
-public class SharedSavedCategoryPlace {
+public class LikeCategoryPlace {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +26,7 @@ public class SharedSavedCategoryPlace {
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private SharedSavedCategory sharedSavedCategory;
+    private LikeCategory likeCategory;
 
     @ManyToOne
     @JoinColumn(nullable = false)

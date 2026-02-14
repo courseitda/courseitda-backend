@@ -1,7 +1,7 @@
 package courseitda.mystorage.domain;
 
 import courseitda.common.entity.Timestamp;
-import courseitda.community.domain.SharedSavedCategory;
+import courseitda.community.domain.SharedCategory;
 import courseitda.member.domain.Member;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -33,5 +33,5 @@ public class LikeCategory extends Timestamp {
     // TODO: (owner id, sharedSavedCategory id)에 대해 unique함 보장 필요
     @ManyToOne
     @JoinColumn(nullable = false)
-    private SharedSavedCategory sharedSavedCategory;
+    private SharedCategory sharedCategory;
 }

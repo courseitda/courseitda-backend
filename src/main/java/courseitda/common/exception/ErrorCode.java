@@ -17,6 +17,7 @@ public enum ErrorCode {
      * 4000 Series: Category Place Errors
      * 5000 Series: Member Errors
      * 6000 Series: Place Search Errors
+     * 7000 Series: SavedCategory Errors
      * */
 
     // TEMPORARY_ERROR - 0000
@@ -347,6 +348,20 @@ public enum ErrorCode {
             "6013",
             "검색된 장소의 URL은 null 또는 공백일 수 없습니다.",
             HttpStatus.BAD_GATEWAY // 502
+    ),
+
+    //-----------------------------------------------------------------------------------
+    // 7000 Series: SavedCategory Errors
+    SAVED_CATEGORY_NAME_EMPTY(
+            "7001",
+            "보관 카테고리 이름은 null 또는 공백일 수 없습니다.",
+            HttpStatus.BAD_REQUEST // 400
+    ),
+
+    SAVED_CATEGORY_NAME_LENGTH_EXCEEDED(
+            "7002",
+            "보관 카테고리 이름은 10자를 초과할 수 없습니다.",
+            HttpStatus.UNPROCESSABLE_ENTITY // 422
     ),
 
     ;

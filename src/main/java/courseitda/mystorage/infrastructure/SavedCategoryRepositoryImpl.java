@@ -2,6 +2,7 @@ package courseitda.mystorage.infrastructure;
 
 import courseitda.mystorage.domain.SavedCategory;
 import courseitda.mystorage.domain.SavedCategoryRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -14,5 +15,10 @@ public class SavedCategoryRepositoryImpl implements SavedCategoryRepository {
     @Override
     public SavedCategory save(final SavedCategory savedCategory) {
         return jpaSavedCategoryRepository.save(savedCategory);
+    }
+
+    @Override
+    public Optional<SavedCategory> findById(final Long savedCategoryId) {
+        return jpaSavedCategoryRepository.findById(savedCategoryId);
     }
 }

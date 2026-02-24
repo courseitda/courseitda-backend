@@ -364,6 +364,18 @@ public enum ErrorCode {
             HttpStatus.UNPROCESSABLE_ENTITY // 422
     ),
 
+    SAVED_CATEGORY_NOT_FOUND(
+            "7003",
+            "존재하지 않는 보관 카테고리 입니다.",
+            HttpStatus.NOT_FOUND // 404
+    ),
+
+    SAVED_CATEGORY_MODIFY_FORBIDDEN(
+            "7004",
+            "해당 보관 카테고리의 수정 권한이 없습니다.",
+            HttpStatus.FORBIDDEN // 403
+    ),
+
     ;
 
     private final String code;

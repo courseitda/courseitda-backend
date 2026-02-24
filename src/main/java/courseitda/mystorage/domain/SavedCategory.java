@@ -15,6 +15,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -55,6 +56,17 @@ public class SavedCategory extends Timestamp {
 
     public static SavedCategory createNew(final Member owner, final String name) {
         return new SavedCategory(owner, name, new ArrayList<>());
+    }
+
+    public void updateName(final String newName) {
+        validateName(newName);
+        this.name = newName;
+    }
+
+    public void validateOwnership(final Long memberId) {
+        if (!Objects.equals(this.owner.getId(), memberId)) {
+            throw new BusinessException(ErrorCode.SAVED_CATEGORY_MODIFY_FORBIDDEN);
+        }
     }
 
     private void validateName(final String name) {

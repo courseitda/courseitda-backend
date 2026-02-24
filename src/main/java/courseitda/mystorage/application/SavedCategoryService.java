@@ -71,6 +71,15 @@ public class SavedCategoryService {
         return SavedCategoryUpdateResponse.from(savedCategory);
     }
 
+    @Transactional
+    public void deleteSavedCategory(final MemberAuthInfo memberAuthInfo, final Long savedCategoryId) {
+        final var savedCategory = getSavedCategoryById(savedCategoryId);
+        savedCategory.validateOwnership(memberAuthInfo.id());
+
+        savedCategoryPlaceRepository.deleteAllBySavedCategoryId(savedCategoryId);
+        savedCategoryRepository.delete(savedCategory);
+    }
+
     private void applyName(final String name, final SavedCategory savedCategory) {
         if (!savedCategory.getName().equals(name)) {
             savedCategory.updateName(name);

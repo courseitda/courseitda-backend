@@ -7,4 +7,6 @@ public interface SavedCategoryRepository {
     SavedCategory save(SavedCategory savedCategory);
 
     Optional<SavedCategory> findById(Long savedCategoryId);
+
+    void delete(SavedCategory savedCategory);
 }

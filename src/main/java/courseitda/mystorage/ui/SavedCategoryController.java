@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,5 +49,15 @@ public class SavedCategoryController {
         final var response = savedCategoryService.updateSavedCategory(request, memberAuthInfo, savedCategoryId);
 
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{savedCategoryId}")
+    public ResponseEntity<Void> deleteSavedCategory(
+            final MemberAuthInfo memberAuthInfo,
+            @PathVariable final Long savedCategoryId
+    ) {
+        savedCategoryService.deleteSavedCategory(memberAuthInfo, savedCategoryId);
+
+        return ResponseEntity.noContent().build();
     }
 }

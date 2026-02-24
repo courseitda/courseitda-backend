@@ -9,4 +9,6 @@ public interface JpaSavedCategoryPlaceRepository extends JpaRepository<SavedCate
     List<SavedCategoryPlace> findAllBySavedCategoryId(Long savedCategoryId);
 
     void deleteAllByIdIn(List<Long> ids);
+
+    void deleteAllBySavedCategoryId(Long savedCategoryId);
 }

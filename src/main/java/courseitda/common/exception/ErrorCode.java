@@ -18,6 +18,7 @@ public enum ErrorCode {
      * 5000 Series: Member Errors
      * 6000 Series: Place Search Errors
      * 7000 Series: SavedCategory Errors
+     * 8000 Series: SharedCategory Errors
      * */
 
     // TEMPORARY_ERROR - 0000
@@ -374,6 +375,20 @@ public enum ErrorCode {
             "7004",
             "해당 보관 카테고리의 수정 권한이 없습니다.",
             HttpStatus.FORBIDDEN // 403
+    ),
+
+    //-----------------------------------------------------------------------------------
+    // 8000 Series: SharedCategory Errors
+    SHARED_CATEGORY_NAME_EMPTY(
+            "8001",
+            "공유 카테고리 이름은 null 또는 공백일 수 없습니다.",
+            HttpStatus.BAD_REQUEST // 400
+    ),
+
+    SHARED_CATEGORY_NAME_LENGTH_EXCEEDED(
+            "8002",
+            "공유 카테고리 이름은 10자를 초과할 수 없습니다.",
+            HttpStatus.UNPROCESSABLE_ENTITY // 422
     ),
 
     ;

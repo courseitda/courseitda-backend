@@ -31,4 +31,16 @@ public class SharedCategoryPlace {
     @ManyToOne
     @JoinColumn(nullable = false)
     private Place place;
+
+    public SharedCategoryPlace(
+            final SharedCategory sharedCategory,
+            final Place place
+    ) {
+        this.sharedCategory = sharedCategory;
+        this.place = place;
+    }
+
+    public static SharedCategoryPlace createNew(final SharedCategory sharedCategory, final Place place) {
+        return new SharedCategoryPlace(sharedCategory, place);
+    }
 }

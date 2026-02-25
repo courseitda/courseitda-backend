@@ -2,6 +2,7 @@ package courseitda.mystorage.infrastructure;
 
 import courseitda.mystorage.domain.SavedCategory;
 import courseitda.mystorage.domain.SavedCategoryRepository;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -25,5 +26,10 @@ public class SavedCategoryRepositoryImpl implements SavedCategoryRepository {
     @Override
     public void delete(final SavedCategory savedCategory) {
         jpaSavedCategoryRepository.delete(savedCategory);
+    }
+
+    @Override
+    public List<SavedCategory> findAllByOwnerId(Long ownerId) {
+        return jpaSavedCategoryRepository.findAllByOwnerId(ownerId);
     }
 }

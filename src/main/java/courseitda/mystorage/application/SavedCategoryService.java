@@ -93,7 +93,7 @@ public class SavedCategoryService {
     }
 
     private void applyName(final String name, final SavedCategory savedCategory) {
-        if (!savedCategory.getName().equals(name)) {
+        if (!Objects.equals(savedCategory.getName(), name)) {
             savedCategory.updateName(name);
         }
     }

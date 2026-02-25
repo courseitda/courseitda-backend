@@ -8,12 +8,14 @@ import courseitda.mystorage.application.SavedCategoryService;
 import courseitda.mystorage.ui.dto.request.SavedCategoryCreateRequest;
 import courseitda.mystorage.ui.dto.request.SavedCategoryUpdateRequest;
 import courseitda.mystorage.ui.dto.response.SavedCategoryCreateResponse;
+import courseitda.mystorage.ui.dto.response.SavedCategoryReadResponse;
 import courseitda.mystorage.ui.dto.response.SavedCategoryUpdateResponse;
 import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -59,5 +61,15 @@ public class SavedCategoryController {
         savedCategoryService.deleteSavedCategory(memberAuthInfo, savedCategoryId);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{savedCategoryId}")
+    public ResponseEntity<SavedCategoryReadResponse> readSavedCategory(
+            final MemberAuthInfo memberAuthInfo,
+            @PathVariable final Long savedCategoryId
+    ) {
+        final var response = savedCategoryService.findSavedCategory(memberAuthInfo, savedCategoryId);
+
+        return ResponseEntity.ok(response);
     }
 }

@@ -11,6 +11,7 @@ import courseitda.mystorage.domain.SavedCategoryRepository;
 import courseitda.mystorage.ui.dto.request.SavedCategoryCreateRequest;
 import courseitda.mystorage.ui.dto.request.SavedCategoryUpdateRequest;
 import courseitda.mystorage.ui.dto.response.SavedCategoryCreateResponse;
+import courseitda.mystorage.ui.dto.response.SavedCategoryReadResponse;
 import courseitda.mystorage.ui.dto.response.SavedCategoryUpdateResponse;
 import courseitda.place.domain.Place;
 import courseitda.place.domain.PlaceRepository;
@@ -78,6 +79,17 @@ public class SavedCategoryService {
 
         savedCategoryPlaceRepository.deleteAllBySavedCategoryId(savedCategoryId);
         savedCategoryRepository.delete(savedCategory);
+    }
+
+    @Transactional(readOnly = true)
+    public SavedCategoryReadResponse findSavedCategory(
+            final MemberAuthInfo memberAuthInfo,
+            final Long savedCategoryId
+    ) {
+        final var savedCategory = getSavedCategoryById(savedCategoryId);
+        savedCategory.validateOwnership(memberAuthInfo.id());
+
+        return SavedCategoryReadResponse.from(savedCategory);
     }
 
     private void applyName(final String name, final SavedCategory savedCategory) {

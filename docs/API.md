@@ -197,7 +197,34 @@ Content-Type: application/json
     {
       "identifier": "abc123",
       "title": "워크스페이스 제목",
-      "modifiedAt": "2025-10-31T12:00:00"
+      "modifiedAt": "2025-10-31T12:00:00+09:00"
+    }
+  ]
+}
+```
+
+### 3.5 내 보관 카테고리 목록 조회
+
+현재 로그인한 사용자가 보관한 모든 카테고리 목록을 조회합니다.
+
+```http
+GET /api/me/saved-categories HTTP/1.1
+Authorization: Bearer {accessToken}
+```
+
+**성공 응답:**
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "savedCategories": [
+    {
+      "id": 1,
+      "name": "보관 카테고리 이름",
+      "placeCount": 3,
+      "modifiedAt": "2025-10-31T12:00:00+09:00"
     }
   ]
 }
@@ -226,6 +253,7 @@ Content-Type: application/json
   "searchedPlaces": [
     {
       "name": "장소 이름",
+      "url": "카카오 장소 URL",
       "roadAddressName": "도로명 주소",
       "addressName": "지번 주소",
       "latitude": 37.5665,
@@ -262,7 +290,7 @@ Content-Type: application/json
 {
   "identifier": "abc123",
   "title": "워크스페이스 제목",
-  "modifiedAt": "2025-10-31T12:00:00"
+  "modifiedAt": "2025-10-31T12:00:00+09:00"
 }
 ```
 
@@ -284,7 +312,7 @@ Content-Type: application/json
 {
   "identifier": "abc123",
   "title": "워크스페이스 제목",
-  "modifiedAt": "2025-10-31T12:00:00"
+  "modifiedAt": "2025-10-31T12:00:00+09:00"
 }
 ```
 
@@ -311,7 +339,7 @@ Content-Type: application/json
 {
   "identifier": "abc123",
   "title": "새로운 제목",
-  "modifiedAt": "2025-10-31T12:30:00"
+  "modifiedAt": "2025-10-31T12:30:00+09:00"
 }
 ```
 
@@ -402,11 +430,12 @@ Content-Type: application/json
       "color": "#FF5733",
       "sequence": 1,
       "representativePlaceId": 5,
-      "categoryPlacesResponse": {
-        "categoryPlaceResponses": [
+      "categoryPlaces": {
+        "categoryPlaces": [
           {
             "id": 5,
             "name": "장소 이름",
+            "placeUrl": "카카오 장소 URL",
             "addressName": "지번 주소",
             "roadAddressName": "도로명 주소",
             "latitude": 37.5665,
@@ -488,11 +517,12 @@ Content-Type: application/json
   "color": "#FF5733",
   "sequence": 1,
   "representativePlaceId": 5,
-  "categoryPlacesResponse": {
-    "categoryPlaceResponses": [
+  "categoryPlaces": {
+    "categoryPlaces": [
       {
         "id": 5,
         "name": "장소 이름",
+        "placeUrl": "카카오 장소 URL",
         "addressName": "지번 주소",
         "roadAddressName": "도로명 주소",
         "latitude": 37.5665,
@@ -603,6 +633,7 @@ Content-Type: application/json
 
 {
   "name": "장소 이름",
+  "placeUrl": "카카오 장소 URL",
   "roadAddressName": "도로명 주소",
   "addressName": "지번 주소",
   "latitude": 37.5665,
@@ -620,6 +651,7 @@ Content-Type: application/json
   "id": 5,
   "placeId": 10,
   "name": "장소 이름",
+  "placeUrl": "카카오 장소 URL",
   "roadAddressName": "도로명 주소",
   "addressName": "지번 주소",
   "latitude": 37.5665,
@@ -647,6 +679,7 @@ Content-Type: application/json
     {
       "id": 5,
       "name": "장소 이름",
+      "placeUrl": "카카오 장소 URL",
       "addressName": "지번 주소",
       "roadAddressName": "도로명 주소",
       "latitude": 37.5665,
@@ -674,14 +707,147 @@ HTTP/1.1 204 No Content
 
 ---
 
+## 8. 보관 카테고리 (Saved Category)
+
+### 8.1 보관 카테고리 생성
+
+새로운 보관 카테고리를 생성합니다. 생성 시 장소 목록을 함께 전달해야 합니다.
+
+```http
+POST /api/saved-categories HTTP/1.1
+Authorization: Bearer {accessToken}
+Content-Type: application/json
+
+{
+  "name": "보관 카테고리 이름",
+  "savedCategoryPlaces": [
+    {
+      "name": "장소 이름",
+      "placeUrl": "카카오 장소 URL",
+      "roadAddressName": "도로명 주소",
+      "addressName": "지번 주소",
+      "latitude": 37.5665,
+      "longitude": 126.9780
+    }
+  ]
+}
+```
+
+**성공 응답:**
+
+```http
+HTTP/1.1 201 Created
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "보관 카테고리 이름"
+}
+```
+
+### 8.2 보관 카테고리 단건 조회
+
+특정 보관 카테고리의 상세 정보와 포함된 장소 목록을 조회합니다.
+
+```http
+GET /api/saved-categories/{savedCategoryId} HTTP/1.1
+Authorization: Bearer {accessToken}
+```
+
+**성공 응답:**
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "보관 카테고리 이름",
+  "savedCategoryPlaces": [
+    {
+      "id": 1,
+      "name": "장소 이름",
+      "placeUrl": "카카오 장소 URL",
+      "roadAddressName": "도로명 주소",
+      "addressName": "지번 주소",
+      "latitude": 37.5665,
+      "longitude": 126.9780
+    }
+  ]
+}
+```
+
+### 8.3 보관 카테고리 수정
+
+보관 카테고리의 이름과 장소 목록을 수정합니다. `savedCategoryPlaceId`가 있으면 기존 장소 유지, `null`이면 새 장소로 추가됩니다. 요청에 포함되지 않은 기존 장소는 삭제됩니다.
+
+```http
+PATCH /api/saved-categories/{savedCategoryId} HTTP/1.1
+Authorization: Bearer {accessToken}
+Content-Type: application/json
+
+{
+  "name": "새로운 카테고리 이름",
+  "savedCategoryPlaces": [
+    {
+      "savedCategoryPlaceId": 1,
+      "name": "기존 장소 이름",
+      "placeUrl": "카카오 장소 URL",
+      "roadAddressName": "도로명 주소",
+      "addressName": "지번 주소",
+      "latitude": 37.5665,
+      "longitude": 126.9780
+    },
+    {
+      "savedCategoryPlaceId": null,
+      "name": "새 장소 이름",
+      "placeUrl": "카카오 장소 URL",
+      "roadAddressName": "도로명 주소",
+      "addressName": "지번 주소",
+      "latitude": 37.1234,
+      "longitude": 127.1234
+    }
+  ]
+}
+```
+
+**성공 응답:**
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "새로운 카테고리 이름"
+}
+```
+
+### 8.4 보관 카테고리 삭제
+
+보관 카테고리를 삭제합니다. 포함된 모든 장소 정보도 함께 삭제됩니다.
+
+```http
+DELETE /api/saved-categories/{savedCategoryId} HTTP/1.1
+Authorization: Bearer {accessToken}
+```
+
+**성공 응답:**
+
+```http
+HTTP/1.1 204 No Content
+```
+
+---
+
 ## API 통계
 
-- **전체 엔드포인트**: 26개
+- **전체 엔드포인트**: 30개
 - **HTTP 메서드별**:
-    - GET: 11개
-    - POST: 8개
-    - PATCH: 2개
-    - DELETE: 4개
+    - GET: 14개
+    - POST: 7개
+    - PATCH: 3개
+    - DELETE: 5개
     - PUT: 1개
-- **인증 필요**: 19개
-- **공개 엔드포인트**: 7개
+- **인증 필요**: 26개
+- **공개 엔드포인트**: 4개

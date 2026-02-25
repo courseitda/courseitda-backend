@@ -4,6 +4,8 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
+import java.util.List;
+
 import courseitda.auth.ui.dto.request.LoginRequest;
 import courseitda.auth.ui.dto.response.LoginResponse;
 import courseitda.member.domain.MemberFixture;
@@ -11,7 +13,12 @@ import courseitda.member.ui.dto.request.SignUpRequest;
 import courseitda.member.ui.dto.response.MemberDropdownResponse;
 import courseitda.member.ui.dto.response.MemberNavigatorResponse;
 import courseitda.member.ui.dto.response.MemberProfileResponse;
+import courseitda.member.ui.dto.response.MySavedCategoriesResponse;
 import courseitda.member.ui.dto.response.MyWorkspacesResponse;
+import courseitda.mystorage.domain.SavedCategoryFixture;
+import courseitda.mystorage.ui.dto.request.SavedCategoryCreateRequest;
+import courseitda.mystorage.ui.dto.request.SavedCategoryCreateRequest.SavedCategoryPlaceRequest;
+import courseitda.place.domain.PlaceFixture;
 import courseitda.workspace.domain.WorkspaceFixture;
 import courseitda.workspace.ui.dto.request.WorkspaceCreateRequest;
 import courseitda.workspace.ui.dto.response.WorkspaceCreateResponse;
@@ -68,6 +75,29 @@ class MeControllerTest {
         return loginResponse.tokenType() + " " + loginResponse.accessToken();
     }
 
+    private void createSavedCategory(final String accessToken) {
+        final SavedCategoryCreateRequest request = new SavedCategoryCreateRequest(
+                SavedCategoryFixture.anyName(),
+                List.of(new SavedCategoryPlaceRequest(
+                        PlaceFixture.anyName(),
+                        PlaceFixture.anyPlaceUrl(),
+                        PlaceFixture.anyRoadAddressName(),
+                        PlaceFixture.anyAddressName(),
+                        PlaceFixture.anyLatitude(),
+                        PlaceFixture.anyLongitude()
+                ))
+        );
+
+        given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .body(request)
+                .when()
+                .post("/api/saved-categories")
+                .then()
+                .statusCode(HttpStatus.CREATED.value());
+    }
+
     private String createWorkspace(final String accessToken) {
         final String title = WorkspaceFixture.anyTitle();
         final WorkspaceCreateRequest request = new WorkspaceCreateRequest(title);
@@ -83,6 +113,55 @@ class MeControllerTest {
                 .extract()
                 .as(WorkspaceCreateResponse.class)
                 .identifier();
+    }
+
+    @Nested
+    @DisplayName("내 보관 카테고리 목록 조회 성공 시나리오")
+    class ReadMySavedCategoriesSuccessScenarios {
+
+        @Test
+        @DisplayName("내 보관 카테고리 목록 조회에 성공한다")
+        void readMySavedCategories_success() {
+            // given
+            final String accessToken = signUpAndLogin();
+            createSavedCategory(accessToken);
+            createSavedCategory(accessToken);
+
+            // when
+            final MySavedCategoriesResponse response = given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .when()
+                    .get("/api/me/saved-categories")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .as(MySavedCategoriesResponse.class);
+
+            // then
+            assertThat(response.savedCategoryResponses()).hasSize(2);
+        }
+
+        @Test
+        @DisplayName("보관 카테고리가 없는 경우 빈 목록이 반환된다")
+        void readMySavedCategories_success_emptyList() {
+            // given
+            final String accessToken = signUpAndLogin();
+
+            // when
+            final MySavedCategoriesResponse response = given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .when()
+                    .get("/api/me/saved-categories")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .as(MySavedCategoriesResponse.class);
+
+            // then
+            assertThat(response.savedCategoryResponses()).isEmpty();
+        }
     }
 
     @Nested

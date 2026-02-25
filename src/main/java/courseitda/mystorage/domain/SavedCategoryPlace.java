@@ -31,4 +31,16 @@ public class SavedCategoryPlace {
     @ManyToOne
     @JoinColumn(nullable = false)
     private Place place;
+
+    public SavedCategoryPlace(
+            final SavedCategory savedCategory,
+            final Place place
+    ) {
+        this.savedCategory = savedCategory;
+        this.place = place;
+    }
+
+    public static SavedCategoryPlace createNew(final SavedCategory savedCategory, final Place place) {
+        return new SavedCategoryPlace(savedCategory, place);
+    }
 }

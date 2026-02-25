@@ -1,6 +1,8 @@
 package courseitda.mystorage.domain;
 
 import courseitda.common.entity.Timestamp;
+import courseitda.common.exception.BusinessException;
+import courseitda.common.exception.ErrorCode;
 import courseitda.member.domain.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,7 +13,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -37,4 +41,40 @@ public class SavedCategory extends Timestamp {
 
     @OneToMany(mappedBy = "savedCategory")
     private List<SavedCategoryPlace> savedCategoryPlaces;
+
+    public SavedCategory(
+            final Member owner,
+            final String name,
+            final List<SavedCategoryPlace> savedCategoryPlaces
+    ) {
+        validateName(name);
+
+        this.owner = owner;
+        this.name = name;
+        this.savedCategoryPlaces = savedCategoryPlaces;
+    }
+
+    public static SavedCategory createNew(final Member owner, final String name) {
+        return new SavedCategory(owner, name, new ArrayList<>());
+    }
+
+    public void updateName(final String newName) {
+        validateName(newName);
+        this.name = newName;
+    }
+
+    public void validateOwnership(final Long memberId) {
+        if (!Objects.equals(this.owner.getId(), memberId)) {
+            throw new BusinessException(ErrorCode.SAVED_CATEGORY_MODIFY_FORBIDDEN);
+        }
+    }
+
+    private void validateName(final String name) {
+        if (name == null || name.isBlank()) {
+            throw new BusinessException(ErrorCode.SAVED_CATEGORY_NAME_EMPTY);
+        }
+        if (name.length() > 10) {
+            throw new BusinessException(ErrorCode.SAVED_CATEGORY_NAME_LENGTH_EXCEEDED);
+        }
+    }
 }

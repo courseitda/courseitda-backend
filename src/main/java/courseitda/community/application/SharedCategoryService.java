@@ -34,6 +34,8 @@ public class SharedCategoryService {
 
         final var savedCategory = getSavedCategoryById(request.savedCategoryId());
 
+        savedCategory.validateOwnership(member.getId());
+
         final var newSharedCategory = SharedCategory.createNew(savedCategory.getName(), member);
         final var sharedCategory = sharedCategoryRepository.save(newSharedCategory);
 

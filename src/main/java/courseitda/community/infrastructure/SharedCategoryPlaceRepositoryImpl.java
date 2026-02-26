@@ -15,4 +15,9 @@ public class SharedCategoryPlaceRepositoryImpl implements SharedCategoryPlaceRep
     public SharedCategoryPlace save(final SharedCategoryPlace sharedCategoryPlace) {
         return jpaSharedCategoryPlaceRepository.save(sharedCategoryPlace);
     }
+
+    @Override
+    public void deleteAllBySharedCategoryId(final Long sharedCategoryId) {
+        jpaSharedCategoryPlaceRepository.deleteAllBySharedCategoryId(sharedCategoryId);
+    }
 }

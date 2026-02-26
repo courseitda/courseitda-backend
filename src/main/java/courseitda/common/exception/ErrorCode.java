@@ -391,6 +391,18 @@ public enum ErrorCode {
             HttpStatus.UNPROCESSABLE_ENTITY // 422
     ),
 
+    SHARED_CATEGORY_NOT_FOUND(
+            "8003",
+            "존재하지 않는 공유 카테고리 입니다.",
+            HttpStatus.NOT_FOUND // 404
+    ),
+
+    SHARED_CATEGORY_MODIFY_FORBIDDEN(
+            "8004",
+            "해당 공유 카테고리의 수정 권한이 없습니다.",
+            HttpStatus.FORBIDDEN // 403
+    ),
+
     ;
 
     private final String code;

@@ -1,6 +1,7 @@
 package courseitda.community.ui;
 
 import courseitda.auth.domain.AuthRole;
+import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.auth.domain.RequiresRole;
 import courseitda.community.application.SharedCategoryService;
 import courseitda.community.ui.dto.request.SharedCategoryCreateRequest;
@@ -10,6 +11,8 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,5 +35,15 @@ public class SharedCategoryController {
 
         return ResponseEntity.created(URI.create("/api/shared-categories/" + response.id()))
                 .body(response);
+    }
+
+    @DeleteMapping("/{sharedCategoryId}")
+    public ResponseEntity<Void> deleteSharedCategory(
+            final MemberAuthInfo memberAuthInfo,
+            @PathVariable final Long sharedCategoryId
+    ) {
+        sharedCategoryService.deleteSharedCategory(memberAuthInfo, sharedCategoryId);
+
+        return ResponseEntity.noContent().build();
     }
 }

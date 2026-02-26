@@ -1,5 +1,6 @@
 package courseitda.community.application;
 
+import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.common.exception.BusinessException;
 import courseitda.common.exception.ErrorCode;
 import courseitda.community.domain.SharedCategory;
@@ -40,6 +41,20 @@ public class SharedCategoryService {
 
         // 주의: sharedCategoryPlaces 응답에 포함 시 재조회 필요 (JPA 1차 캐시 불일치)
         return SharedCategoryCreateResponse.from(sharedCategory);
+    }
+
+    @Transactional
+    public void deleteSharedCategory(final MemberAuthInfo memberAuthInfo, final Long sharedCategoryId) {
+        final var sharedCategory = getSharedCategoryById(sharedCategoryId);
+        sharedCategory.validateOwnership(memberAuthInfo.id());
+
+        sharedCategoryPlaceRepository.deleteAllBySharedCategoryId(sharedCategoryId);
+        sharedCategoryRepository.delete(sharedCategory);
+    }
+
+    private SharedCategory getSharedCategoryById(final Long sharedCategoryId) {
+        return sharedCategoryRepository.findById(sharedCategoryId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.SHARED_CATEGORY_NOT_FOUND));
     }
 
     private SavedCategory getSavedCategoryById(final Long savedCategoryId) {

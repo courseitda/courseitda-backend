@@ -15,6 +15,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -55,6 +56,12 @@ public class SharedCategory extends Timestamp {
 
     public static SharedCategory createNew(final String name, Member author) {
         return new SharedCategory(name, author, new ArrayList<>());
+    }
+
+    public void validateOwnership(final Long memberId) {
+        if (!Objects.equals(this.author.getId(), memberId)) {
+            throw new BusinessException(ErrorCode.SHARED_CATEGORY_MODIFY_FORBIDDEN);
+        }
     }
 
     private void validateName(final String name) {

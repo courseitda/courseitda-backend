@@ -30,7 +30,7 @@ public class SharedCategoryService {
 
     @Transactional
     public SharedCategoryCreateResponse createSharedCategory(final SharedCategoryCreateRequest request,
-                                                             final Member member) {
+            final Member member) {
 
         final var savedCategory = getSavedCategoryById(request.savedCategoryId());
 

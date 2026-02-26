@@ -15,5 +15,6 @@ public interface JpaSharedCategoryRepository extends JpaRepository<SharedCategor
 
     List<SharedCategory> findAllByNameContainingOrderByIdDesc(String keyword, Pageable pageable);
 
-    List<SharedCategory> findAllByNameContainingAndIdLessThanOrderByIdDesc(String keyword, Long cursor, Pageable pageable);
+    List<SharedCategory> findAllByNameContainingAndIdLessThanOrderByIdDesc(String keyword, Long cursor,
+            Pageable pageable);
 }

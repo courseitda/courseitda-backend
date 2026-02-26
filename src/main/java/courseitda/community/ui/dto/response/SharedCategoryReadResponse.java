@@ -1,5 +1,6 @@
 package courseitda.community.ui.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import courseitda.community.domain.SharedCategory;
 import courseitda.community.domain.SharedCategoryPlace;
@@ -10,7 +11,7 @@ public record SharedCategoryReadResponse(
         Long id,
         String name,
         String authorNickname,
-        LocalDateTime createdAt,
+        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss+09:00") LocalDateTime createdAt,
         @JsonProperty("sharedCategoryPlaces") List<SharedCategoryPlaceResponse> sharedCategoryPlaceResponses
 ) {
 

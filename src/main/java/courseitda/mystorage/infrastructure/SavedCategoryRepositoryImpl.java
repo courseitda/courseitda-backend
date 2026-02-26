@@ -29,7 +29,7 @@ public class SavedCategoryRepositoryImpl implements SavedCategoryRepository {
     }
 
     @Override
-    public List<SavedCategory> findAllByOwnerId(Long ownerId) {
+    public List<SavedCategory> findAllByOwnerId(final Long ownerId) {
         return jpaSavedCategoryRepository.findAllByOwnerId(ownerId);
     }
 }

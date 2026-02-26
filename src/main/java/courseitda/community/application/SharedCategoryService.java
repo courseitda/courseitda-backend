@@ -10,6 +10,7 @@ import courseitda.community.domain.SharedCategoryRepository;
 import courseitda.community.ui.dto.request.SharedCategoryCreateRequest;
 import courseitda.community.ui.dto.response.SharedCategoriesReadResponse;
 import courseitda.community.ui.dto.response.SharedCategoryCreateResponse;
+import courseitda.community.ui.dto.response.SharedCategoryReadResponse;
 import courseitda.member.domain.Member;
 import courseitda.mystorage.domain.SavedCategory;
 import courseitda.mystorage.domain.SavedCategoryRepository;
@@ -56,6 +57,13 @@ public class SharedCategoryService {
                     sharedCategories.get(size - 1).getId());
         }
         return SharedCategoriesReadResponse.from(sharedCategories, hasNext, null);
+    }
+
+    @Transactional(readOnly = true)
+    public SharedCategoryReadResponse findSharedCategory(final Long sharedCategoryId) {
+        final var sharedCategory = getSharedCategoryById(sharedCategoryId);
+
+        return SharedCategoryReadResponse.from(sharedCategory);
     }
 
     @Transactional

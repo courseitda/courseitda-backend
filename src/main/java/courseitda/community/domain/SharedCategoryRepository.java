@@ -16,4 +16,8 @@ public interface SharedCategoryRepository {
     List<SharedCategory> findAllOrderByIdDesc(int limit);
 
     List<SharedCategory> findAllByIdLessThanOrderByIdDesc(Long cursor, int limit);
+
+    List<SharedCategory> findAllByNameContainingOrderByIdDesc(String keyword, int limit);
+
+    List<SharedCategory> findAllByNameContainingAndIdLessThanOrderByIdDesc(String keyword, Long cursor, int limit);
 }

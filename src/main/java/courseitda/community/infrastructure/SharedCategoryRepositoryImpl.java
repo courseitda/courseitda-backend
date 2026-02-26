@@ -43,4 +43,14 @@ public class SharedCategoryRepositoryImpl implements SharedCategoryRepository {
     public List<SharedCategory> findAllByIdLessThanOrderByIdDesc(final Long cursor, final int limit) {
         return jpaSharedCategoryRepository.findAllByIdLessThanOrderByIdDesc(cursor, PageRequest.of(0, limit));
     }
+
+    @Override
+    public List<SharedCategory> findAllByNameContainingOrderByIdDesc(final String keyword, final int limit) {
+        return jpaSharedCategoryRepository.findAllByNameContainingOrderByIdDesc(keyword, PageRequest.of(0, limit));
+    }
+
+    @Override
+    public List<SharedCategory> findAllByNameContainingAndIdLessThanOrderByIdDesc(final String keyword, final Long cursor, final int limit) {
+        return jpaSharedCategoryRepository.findAllByNameContainingAndIdLessThanOrderByIdDesc(keyword, cursor, PageRequest.of(0, limit));
+    }
 }

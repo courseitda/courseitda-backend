@@ -11,6 +11,7 @@ import courseitda.community.ui.dto.request.SharedCategoryCreateRequest;
 import courseitda.community.ui.dto.response.SharedCategoriesReadResponse;
 import courseitda.community.ui.dto.response.SharedCategoryCreateResponse;
 import courseitda.community.ui.dto.response.SharedCategoryReadResponse;
+import courseitda.community.ui.dto.response.SharedCategorySearchResponse;
 import courseitda.member.domain.Member;
 import courseitda.mystorage.domain.SavedCategory;
 import courseitda.mystorage.domain.SavedCategoryRepository;
@@ -66,6 +67,25 @@ public class SharedCategoryService {
         return SharedCategoryReadResponse.from(sharedCategory);
     }
 
+    @Transactional(readOnly = true)
+    public SharedCategorySearchResponse searchSharedCategories(
+            final String keyword,
+            final Long cursor,
+            final int size
+    ) {
+        validateKeyword(keyword);
+        validatePageSize(size);
+
+        final var sharedCategories = findSharedCategoriesByKeywordAndCursor(keyword, cursor, size + 1);
+        final boolean hasNext = sharedCategories.size() > size;
+
+        if (hasNext) {
+            return SharedCategorySearchResponse.from(sharedCategories.subList(0, size), hasNext,
+                    sharedCategories.get(size - 1).getId());
+        }
+        return SharedCategorySearchResponse.from(sharedCategories, hasNext, null);
+    }
+
     @Transactional
     public void deleteSharedCategory(final MemberAuthInfo memberAuthInfo, final Long sharedCategoryId) {
         final var sharedCategory = getSharedCategoryById(sharedCategoryId);
@@ -75,9 +95,15 @@ public class SharedCategoryService {
         sharedCategoryRepository.delete(sharedCategory);
     }
 
-    private void validatePageSize(int size) {
+    private void validatePageSize(final int size) {
         if (size < 1 || size > 100) {
             throw new BusinessException(ErrorCode.INVALID_SHARED_CATEGORY_SIZE);
+        }
+    }
+
+    private void validateKeyword(final String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            throw new BusinessException(ErrorCode.BLANK_SHARED_CATEGORY_SEARCH_KEYWORD);
         }
     }
 
@@ -86,6 +112,17 @@ public class SharedCategoryService {
             return sharedCategoryRepository.findAllOrderByIdDesc(limit);
         }
         return sharedCategoryRepository.findAllByIdLessThanOrderByIdDesc(cursor, limit);
+    }
+
+    private List<SharedCategory> findSharedCategoriesByKeywordAndCursor(
+            final String keyword,
+            final Long cursor,
+            final int limit
+    ) {
+        if (cursor == null) {
+            return sharedCategoryRepository.findAllByNameContainingOrderByIdDesc(keyword, limit);
+        }
+        return sharedCategoryRepository.findAllByNameContainingAndIdLessThanOrderByIdDesc(keyword, cursor, limit);
     }
 
     private SharedCategory getSharedCategoryById(final Long sharedCategoryId) {

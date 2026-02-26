@@ -409,6 +409,12 @@ public enum ErrorCode {
             HttpStatus.BAD_REQUEST // 400
     ),
 
+    BLANK_SHARED_CATEGORY_SEARCH_KEYWORD(
+            "8006",
+            "검색어를 입력해 주세요.",
+            HttpStatus.BAD_REQUEST // 400
+    ),
+
     ;
 
     private final String code;

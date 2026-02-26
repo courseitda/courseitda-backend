@@ -8,6 +8,7 @@ import courseitda.community.ui.dto.request.SharedCategoryCreateRequest;
 import courseitda.community.ui.dto.response.SharedCategoriesReadResponse;
 import courseitda.community.ui.dto.response.SharedCategoryCreateResponse;
 import courseitda.community.ui.dto.response.SharedCategoryReadResponse;
+import courseitda.community.ui.dto.response.SharedCategorySearchResponse;
 import courseitda.member.domain.Member;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -47,6 +48,17 @@ public class SharedCategoryController {
             @RequestParam(defaultValue = "10") final int size
     ) {
         final var response = sharedCategoryService.findAllSharedCategories(cursor, size);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<SharedCategorySearchResponse> searchSharedCategories(
+            @RequestParam final String keyword,
+            @RequestParam(required = false) final Long cursor,
+            @RequestParam(defaultValue = "10") final int size
+    ) {
+        final var response = sharedCategoryService.searchSharedCategories(keyword, cursor, size);
 
         return ResponseEntity.ok(response);
     }

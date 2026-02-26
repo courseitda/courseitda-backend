@@ -26,12 +26,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/shared-categories")
-@RequiresRole(authRoles = {AuthRole.MEMBER})
 public class SharedCategoryController {
 
     private final SharedCategoryService sharedCategoryService;
 
     @PostMapping
+    @RequiresRole(authRoles = {AuthRole.MEMBER})
     public ResponseEntity<SharedCategoryCreateResponse> createSharedCategory(
             final Member member,
             @Valid @RequestBody final SharedCategoryCreateRequest request
@@ -73,6 +73,7 @@ public class SharedCategoryController {
     }
 
     @DeleteMapping("/{sharedCategoryId}")
+    @RequiresRole(authRoles = {AuthRole.MEMBER})
     public ResponseEntity<Void> deleteSharedCategory(
             final MemberAuthInfo memberAuthInfo,
             @PathVariable final Long sharedCategoryId

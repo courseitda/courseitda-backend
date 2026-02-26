@@ -5,6 +5,7 @@ import courseitda.community.domain.SharedCategoryRepository;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -31,5 +32,15 @@ public class SharedCategoryRepositoryImpl implements SharedCategoryRepository {
     @Override
     public List<SharedCategory> findAllByAuthorId(final Long authorId) {
         return jpaSharedCategoryRepository.findAllByAuthorId(authorId);
+    }
+
+    @Override
+    public List<SharedCategory> findAllOrderByIdDesc(final int limit) {
+        return jpaSharedCategoryRepository.findAllByOrderByIdDesc(PageRequest.of(0, limit));
+    }
+
+    @Override
+    public List<SharedCategory> findAllByIdLessThanOrderByIdDesc(final Long cursor, final int limit) {
+        return jpaSharedCategoryRepository.findAllByIdLessThanOrderByIdDesc(cursor, PageRequest.of(0, limit));
     }
 }

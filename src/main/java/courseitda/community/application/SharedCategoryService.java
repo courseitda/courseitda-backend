@@ -8,10 +8,12 @@ import courseitda.community.domain.SharedCategoryPlace;
 import courseitda.community.domain.SharedCategoryPlaceRepository;
 import courseitda.community.domain.SharedCategoryRepository;
 import courseitda.community.ui.dto.request.SharedCategoryCreateRequest;
+import courseitda.community.ui.dto.response.SharedCategoriesReadResponse;
 import courseitda.community.ui.dto.response.SharedCategoryCreateResponse;
 import courseitda.member.domain.Member;
 import courseitda.mystorage.domain.SavedCategory;
 import courseitda.mystorage.domain.SavedCategoryRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +45,19 @@ public class SharedCategoryService {
         return SharedCategoryCreateResponse.from(sharedCategory);
     }
 
+    @Transactional(readOnly = true)
+    public SharedCategoriesReadResponse findAllSharedCategories(final Long cursor, final int size) {
+        validatePageSize(size);
+        final var sharedCategories = findSharedCategoriesByCursor(cursor, size + 1);
+        final boolean hasNext = sharedCategories.size() > size;
+
+        if (hasNext) {
+            return SharedCategoriesReadResponse.from(sharedCategories.subList(0, size), hasNext,
+                    sharedCategories.get(size - 1).getId());
+        }
+        return SharedCategoriesReadResponse.from(sharedCategories, hasNext, null);
+    }
+
     @Transactional
     public void deleteSharedCategory(final MemberAuthInfo memberAuthInfo, final Long sharedCategoryId) {
         final var sharedCategory = getSharedCategoryById(sharedCategoryId);
@@ -50,6 +65,19 @@ public class SharedCategoryService {
 
         sharedCategoryPlaceRepository.deleteAllBySharedCategoryId(sharedCategoryId);
         sharedCategoryRepository.delete(sharedCategory);
+    }
+
+    private void validatePageSize(int size) {
+        if (size < 1 || size > 100) {
+            throw new BusinessException(ErrorCode.INVALID_SHARED_CATEGORY_SIZE);
+        }
+    }
+
+    private List<SharedCategory> findSharedCategoriesByCursor(final Long cursor, final int limit) {
+        if (cursor == null) {
+            return sharedCategoryRepository.findAllOrderByIdDesc(limit);
+        }
+        return sharedCategoryRepository.findAllByIdLessThanOrderByIdDesc(cursor, limit);
     }
 
     private SharedCategory getSharedCategoryById(final Long sharedCategoryId) {

@@ -403,6 +403,12 @@ public enum ErrorCode {
             HttpStatus.FORBIDDEN // 403
     ),
 
+    INVALID_SHARED_CATEGORY_SIZE(
+            "8005",
+            "조회 개수는 1에서 100 사이여야 합니다.",
+            HttpStatus.BAD_REQUEST // 400
+    ),
+
     ;
 
     private final String code;

@@ -12,4 +12,8 @@ public interface SharedCategoryRepository {
     void delete(SharedCategory sharedCategory);
 
     List<SharedCategory> findAllByAuthorId(Long authorId);
+
+    List<SharedCategory> findAllOrderByIdDesc(int limit);
+
+    List<SharedCategory> findAllByIdLessThanOrderByIdDesc(Long cursor, int limit);
 }

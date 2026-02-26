@@ -1,5 +1,6 @@
 package courseitda.community.domain;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface SharedCategoryRepository {
@@ -9,4 +10,6 @@ public interface SharedCategoryRepository {
     Optional<SharedCategory> findById(Long sharedCategoryId);
 
     void delete(SharedCategory sharedCategory);
+
+    List<SharedCategory> findAllByAuthorId(Long authorId);
 }

@@ -2,6 +2,7 @@ package courseitda.community.infrastructure;
 
 import courseitda.community.domain.SharedCategory;
 import courseitda.community.domain.SharedCategoryRepository;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -25,5 +26,10 @@ public class SharedCategoryRepositoryImpl implements SharedCategoryRepository {
     @Override
     public void delete(final SharedCategory sharedCategory) {
         jpaSharedCategoryRepository.delete(sharedCategory);
+    }
+
+    @Override
+    public List<SharedCategory> findAllByAuthorId(final Long authorId) {
+        return jpaSharedCategoryRepository.findAllByAuthorId(authorId);
     }
 }

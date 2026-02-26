@@ -2,6 +2,7 @@ package courseitda.mystorage.domain;
 
 import courseitda.member.domain.Member;
 import courseitda.member.domain.MemberFixture;
+import java.util.ArrayList;
 
 public class SavedCategoryBuilder {
 
@@ -19,6 +20,10 @@ public class SavedCategoryBuilder {
     }
 
     public SavedCategory build() {
-        return SavedCategory.createNew(owner, name);
+        return SavedCategory.builder()
+                .owner(owner)
+                .name(name)
+                .savedCategoryPlaces(new ArrayList<>())
+                .build();
     }
 }

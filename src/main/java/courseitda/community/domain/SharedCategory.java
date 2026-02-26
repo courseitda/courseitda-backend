@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -42,6 +43,7 @@ public class SharedCategory extends Timestamp {
     @OneToMany(mappedBy = "sharedCategory")
     private List<SharedCategoryPlace> sharedCategoryPlaces;
 
+    @Builder
     public SharedCategory(
             final String name,
             final Member author,

@@ -32,7 +32,7 @@ public class SavedCategoryPlace {
     @JoinColumn(nullable = false)
     private Place place;
 
-    public SavedCategoryPlace(
+    private SavedCategoryPlace(
             final SavedCategory savedCategory,
             final Place place
     ) {

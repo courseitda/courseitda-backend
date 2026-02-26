@@ -32,7 +32,7 @@ public class SharedCategoryPlace {
     @JoinColumn(nullable = false)
     private Place place;
 
-    public SharedCategoryPlace(
+    private SharedCategoryPlace(
             final SharedCategory sharedCategory,
             final Place place
     ) {

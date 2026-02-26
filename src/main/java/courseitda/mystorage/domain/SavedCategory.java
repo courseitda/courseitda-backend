@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -42,6 +43,7 @@ public class SavedCategory extends Timestamp {
     @OneToMany(mappedBy = "savedCategory")
     private List<SavedCategoryPlace> savedCategoryPlaces;
 
+    @Builder
     public SavedCategory(
             final Member owner,
             final String name,

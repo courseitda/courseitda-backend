@@ -9,6 +9,7 @@ import courseitda.member.domain.Member;
 import courseitda.member.ui.dto.response.MemberDropdownResponse;
 import courseitda.member.ui.dto.response.MemberNavigatorResponse;
 import courseitda.member.ui.dto.response.MemberProfileResponse;
+import courseitda.member.ui.dto.response.MySharedCategoriesResponse;
 import courseitda.member.ui.dto.response.MySavedCategoriesResponse;
 import courseitda.member.ui.dto.response.MyWorkspacesResponse;
 import lombok.RequiredArgsConstructor;
@@ -71,6 +72,16 @@ public class MeController {
             final MemberAuthInfo memberAuthInfo
     ) {
         final var response = meService.readMySavedCategory(memberAuthInfo.id());
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/shared-categories")
+    // TODO: 페이징 고려 필요
+    public ResponseEntity<MySharedCategoriesResponse> readMySharedCategories(
+            final MemberAuthInfo memberAuthInfo
+    ) {
+        final var response = meService.readMySharedCategories(memberAuthInfo.id());
 
         return ResponseEntity.ok(response);
     }

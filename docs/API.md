@@ -230,6 +230,33 @@ Content-Type: application/json
 }
 ```
 
+### 3.6 내 공유 카테고리 목록 조회
+
+현재 로그인한 사용자가 공유한 모든 카테고리 목록을 조회합니다.
+
+```http
+GET /api/me/shared-categories HTTP/1.1
+Authorization: Bearer {accessToken}
+```
+
+**성공 응답:**
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "sharedCategories": [
+    {
+      "id": 1,
+      "name": "공유 카테고리 이름",
+      "createdAt": "2025-10-31T12:00:00+09:00",
+      "placeCount": 3
+    }
+  ]
+}
+```
+
 ---
 
 ## 4. 장소 검색 (Place Search)
@@ -840,14 +867,162 @@ HTTP/1.1 204 No Content
 
 ---
 
+## 9. 공유 카테고리 (Shared Category)
+
+### 9.1 공유 카테고리 생성
+
+보관 카테고리를 기반으로 공유 카테고리를 생성합니다. 보관 카테고리의 이름과 장소 목록이 그대로 복사됩니다.
+
+```http
+POST /api/shared-categories HTTP/1.1
+Authorization: Bearer {accessToken}
+Content-Type: application/json
+
+{
+  "savedCategoryId": 1
+}
+```
+
+**성공 응답:**
+
+```http
+HTTP/1.1 201 Created
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "공유 카테고리 이름"
+}
+```
+
+### 9.2 전체 공유 카테고리 목록 조회
+
+공유된 모든 카테고리 목록을 최신순으로 조회합니다. 커서 기반 페이지네이션을 지원합니다.
+
+```http
+GET /api/shared-categories?cursor=50&size=10 HTTP/1.1
+Authorization: Bearer {accessToken}
+```
+
+| 파라미터 | 필수 여부 | 기본값 | 설명 |
+|---|---|---|---|
+| cursor | 선택 | - | 이전 응답의 `nextCursor` 값. 없으면 첫 페이지 |
+| size | 선택 | 10 | 한 번에 조회할 개수 (1~100) |
+
+**성공 응답:**
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "sharedCategories": [
+    {
+      "id": 1,
+      "name": "공유 카테고리 이름",
+      "authorNickname": "닉네임",
+      "placeCount": 3
+    }
+  ],
+  "hasNext": true,
+  "nextCursor": 42
+}
+```
+
+### 9.3 공유 카테고리 검색
+
+카테고리 이름으로 공유 카테고리를 검색합니다. 커서 기반 페이지네이션을 지원합니다.
+
+```http
+GET /api/shared-categories/search?keyword=맛집&cursor=50&size=10 HTTP/1.1
+Authorization: Bearer {accessToken}
+```
+
+| 파라미터 | 필수 여부 | 기본값 | 설명 |
+|---|---|---|---|
+| keyword | 필수 | - | 검색할 카테고리 이름 (공백만 입력 시 400 오류) |
+| cursor | 선택 | - | 이전 응답의 `nextCursor` 값. 없으면 첫 페이지 |
+| size | 선택 | 10 | 한 번에 조회할 개수 (1~100) |
+
+**성공 응답:**
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "sharedCategories": [
+    {
+      "id": 1,
+      "name": "공유 카테고리 이름",
+      "authorNickname": "닉네임",
+      "placeCount": 3
+    }
+  ],
+  "hasNext": true,
+  "nextCursor": 42
+}
+```
+
+### 9.4 공유 카테고리 단건 조회
+
+특정 공유 카테고리의 상세 정보와 포함된 장소 목록을 조회합니다.
+
+```http
+GET /api/shared-categories/{sharedCategoryId} HTTP/1.1
+Authorization: Bearer {accessToken}
+```
+
+**성공 응답:**
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "공유 카테고리 이름",
+  "authorNickname": "닉네임",
+  "createdAt": "2025-10-31T12:00:00+09:00",
+  "sharedCategoryPlaces": [
+    {
+      "id": 1,
+      "name": "장소 이름",
+      "placeUrl": "카카오 장소 URL",
+      "roadAddressName": "도로명 주소",
+      "addressName": "지번 주소",
+      "latitude": 37.5665,
+      "longitude": 126.9780
+    }
+  ]
+}
+```
+
+### 9.5 공유 카테고리 삭제
+
+공유 카테고리를 삭제합니다. 본인이 생성한 공유 카테고리만 삭제할 수 있습니다.
+
+```http
+DELETE /api/shared-categories/{sharedCategoryId} HTTP/1.1
+Authorization: Bearer {accessToken}
+```
+
+**성공 응답:**
+
+```http
+HTTP/1.1 204 No Content
+```
+
+---
+
 ## API 통계
 
-- **전체 엔드포인트**: 30개
+- **전체 엔드포인트**: 36개
 - **HTTP 메서드별**:
-    - GET: 14개
-    - POST: 7개
+    - GET: 18개
+    - POST: 8개
     - PATCH: 3개
-    - DELETE: 5개
+    - DELETE: 6개
     - PUT: 1개
-- **인증 필요**: 26개
+- **인증 필요**: 32개
 - **공개 엔드포인트**: 4개

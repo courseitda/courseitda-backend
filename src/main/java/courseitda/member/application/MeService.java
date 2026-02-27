@@ -1,5 +1,7 @@
 package courseitda.member.application;
 
+import courseitda.community.domain.SharedCategoryRepository;
+import courseitda.member.ui.dto.response.MySharedCategoriesResponse;
 import courseitda.member.ui.dto.response.MySavedCategoriesResponse;
 import courseitda.member.ui.dto.response.MyWorkspacesResponse;
 import courseitda.mystorage.domain.SavedCategoryRepository;
@@ -14,6 +16,7 @@ public class MeService {
 
     private final WorkspaceRepository workspaceRepository;
     private final SavedCategoryRepository savedCategoryRepository;
+    private final SharedCategoryRepository sharedCategoryRepository;
 
     public MyWorkspacesResponse readMyWorkspaces(final Long memberId) {
         return MyWorkspacesResponse.from(workspaceRepository.findAllByOwnerId(memberId));
@@ -22,5 +25,10 @@ public class MeService {
     @Transactional(readOnly = true)
     public MySavedCategoriesResponse readMySavedCategory(final Long memberId) {
         return MySavedCategoriesResponse.from(savedCategoryRepository.findAllByOwnerId(memberId));
+    }
+
+    @Transactional(readOnly = true)
+    public MySharedCategoriesResponse readMySharedCategories(final Long memberId) {
+        return MySharedCategoriesResponse.from(sharedCategoryRepository.findAllByAuthorId(memberId));
     }
 }

@@ -18,6 +18,7 @@ public enum ErrorCode {
      * 5000 Series: Member Errors
      * 6000 Series: Place Search Errors
      * 7000 Series: SavedCategory Errors
+     * 8000 Series: SharedCategory Errors
      * */
 
     // TEMPORARY_ERROR - 0000
@@ -374,6 +375,44 @@ public enum ErrorCode {
             "7004",
             "해당 보관 카테고리의 수정 권한이 없습니다.",
             HttpStatus.FORBIDDEN // 403
+    ),
+
+    //-----------------------------------------------------------------------------------
+    // 8000 Series: SharedCategory Errors
+    SHARED_CATEGORY_NAME_EMPTY(
+            "8001",
+            "공유 카테고리 이름은 null 또는 공백일 수 없습니다.",
+            HttpStatus.BAD_REQUEST // 400
+    ),
+
+    SHARED_CATEGORY_NAME_LENGTH_EXCEEDED(
+            "8002",
+            "공유 카테고리 이름은 10자를 초과할 수 없습니다.",
+            HttpStatus.UNPROCESSABLE_ENTITY // 422
+    ),
+
+    SHARED_CATEGORY_NOT_FOUND(
+            "8003",
+            "존재하지 않는 공유 카테고리 입니다.",
+            HttpStatus.NOT_FOUND // 404
+    ),
+
+    SHARED_CATEGORY_MODIFY_FORBIDDEN(
+            "8004",
+            "해당 공유 카테고리의 수정 권한이 없습니다.",
+            HttpStatus.FORBIDDEN // 403
+    ),
+
+    INVALID_SHARED_CATEGORY_SIZE(
+            "8005",
+            "조회 개수는 1에서 100 사이여야 합니다.",
+            HttpStatus.BAD_REQUEST // 400
+    ),
+
+    BLANK_SHARED_CATEGORY_SEARCH_KEYWORD(
+            "8006",
+            "검색어를 입력해 주세요.",
+            HttpStatus.BAD_REQUEST // 400
     ),
 
     ;

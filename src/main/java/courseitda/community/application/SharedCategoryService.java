@@ -30,7 +30,7 @@ public class SharedCategoryService {
 
     @Transactional
     public SharedCategoryCreateResponse createSharedCategory(final SharedCategoryCreateRequest request,
-            final Member member) {
+                                                             final Member member) {
 
         final var savedCategory = getSavedCategoryById(request.savedCategoryId());
 
@@ -49,6 +49,22 @@ public class SharedCategoryService {
         return SharedCategoryCreateResponse.from(sharedCategory);
     }
 
+    @Transactional
+    public void deleteSharedCategory(final MemberAuthInfo memberAuthInfo, final Long sharedCategoryId) {
+        final var sharedCategory = getSharedCategoryById(sharedCategoryId);
+        sharedCategory.validateOwnership(memberAuthInfo.id());
+
+        sharedCategoryPlaceRepository.deleteAllBySharedCategoryId(sharedCategoryId);
+        sharedCategoryRepository.delete(sharedCategory);
+    }
+
+    @Transactional(readOnly = true)
+    public SharedCategoryReadResponse findSharedCategory(final Long sharedCategoryId) {
+        final var sharedCategory = getSharedCategoryById(sharedCategoryId);
+
+        return SharedCategoryReadResponse.from(sharedCategory);
+    }
+
     @Transactional(readOnly = true)
     public SharedCategoriesReadResponse findAllSharedCategories(final Long cursor, final int size) {
         validatePageSize(size);
@@ -60,13 +76,6 @@ public class SharedCategoryService {
                     sharedCategories.get(size - 1).getId());
         }
         return SharedCategoriesReadResponse.from(sharedCategories, hasNext, null);
-    }
-
-    @Transactional(readOnly = true)
-    public SharedCategoryReadResponse findSharedCategory(final Long sharedCategoryId) {
-        final var sharedCategory = getSharedCategoryById(sharedCategoryId);
-
-        return SharedCategoryReadResponse.from(sharedCategory);
     }
 
     @Transactional(readOnly = true)
@@ -86,15 +95,6 @@ public class SharedCategoryService {
                     sharedCategories.get(size - 1).getId());
         }
         return SharedCategorySearchResponse.from(sharedCategories, hasNext, null);
-    }
-
-    @Transactional
-    public void deleteSharedCategory(final MemberAuthInfo memberAuthInfo, final Long sharedCategoryId) {
-        final var sharedCategory = getSharedCategoryById(sharedCategoryId);
-        sharedCategory.validateOwnership(memberAuthInfo.id());
-
-        sharedCategoryPlaceRepository.deleteAllBySharedCategoryId(sharedCategoryId);
-        sharedCategoryRepository.delete(sharedCategory);
     }
 
     private void validatePageSize(final int size) {
@@ -127,13 +127,13 @@ public class SharedCategoryService {
         return sharedCategoryRepository.findAllByNameContainingAndIdLessThanOrderByIdDesc(keyword, cursor, limit);
     }
 
-    private SharedCategory getSharedCategoryById(final Long sharedCategoryId) {
-        return sharedCategoryRepository.findById(sharedCategoryId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.SHARED_CATEGORY_NOT_FOUND));
-    }
-
     private SavedCategory getSavedCategoryById(final Long savedCategoryId) {
         return savedCategoryRepository.findById(savedCategoryId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.SAVED_CATEGORY_NOT_FOUND));
+    }
+
+    private SharedCategory getSharedCategoryById(final Long sharedCategoryId) {
+        return sharedCategoryRepository.findById(sharedCategoryId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.SHARED_CATEGORY_NOT_FOUND));
     }
 }

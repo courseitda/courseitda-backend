@@ -7,9 +7,9 @@ public interface SharedCategoryRepository {
 
     SharedCategory save(SharedCategory sharedCategory);
 
-    Optional<SharedCategory> findById(Long sharedCategoryId);
-
     void delete(SharedCategory sharedCategory);
+
+    Optional<SharedCategory> findById(Long sharedCategoryId);
 
     List<SharedCategory> findAllByAuthorId(Long authorId);
 

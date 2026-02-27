@@ -42,6 +42,26 @@ public class SharedCategoryController {
                 .body(response);
     }
 
+    @DeleteMapping("/{sharedCategoryId}")
+    @RequiresRole(authRoles = {AuthRole.MEMBER})
+    public ResponseEntity<Void> deleteSharedCategory(
+            final MemberAuthInfo memberAuthInfo,
+            @PathVariable final Long sharedCategoryId
+    ) {
+        sharedCategoryService.deleteSharedCategory(memberAuthInfo, sharedCategoryId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{sharedCategoryId}")
+    public ResponseEntity<SharedCategoryReadResponse> readSharedCategory(
+            @PathVariable final Long sharedCategoryId
+    ) {
+        final var response = sharedCategoryService.findSharedCategory(sharedCategoryId);
+
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping
     public ResponseEntity<SharedCategoriesReadResponse> readAllSharedCategories(
             @RequestParam(required = false) final Long cursor,
@@ -61,25 +81,5 @@ public class SharedCategoryController {
         final var response = sharedCategoryService.searchSharedCategories(keyword, cursor, size);
 
         return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/{sharedCategoryId}")
-    public ResponseEntity<SharedCategoryReadResponse> readSharedCategory(
-            @PathVariable final Long sharedCategoryId
-    ) {
-        final var response = sharedCategoryService.findSharedCategory(sharedCategoryId);
-
-        return ResponseEntity.ok(response);
-    }
-
-    @DeleteMapping("/{sharedCategoryId}")
-    @RequiresRole(authRoles = {AuthRole.MEMBER})
-    public ResponseEntity<Void> deleteSharedCategory(
-            final MemberAuthInfo memberAuthInfo,
-            @PathVariable final Long sharedCategoryId
-    ) {
-        sharedCategoryService.deleteSharedCategory(memberAuthInfo, sharedCategoryId);
-
-        return ResponseEntity.noContent().build();
     }
 }

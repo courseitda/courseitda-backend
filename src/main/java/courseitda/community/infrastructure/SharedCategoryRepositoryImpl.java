@@ -20,13 +20,13 @@ public class SharedCategoryRepositoryImpl implements SharedCategoryRepository {
     }
 
     @Override
-    public Optional<SharedCategory> findById(final Long sharedCategoryId) {
-        return jpaSharedCategoryRepository.findById(sharedCategoryId);
+    public void delete(final SharedCategory sharedCategory) {
+        jpaSharedCategoryRepository.delete(sharedCategory);
     }
 
     @Override
-    public void delete(final SharedCategory sharedCategory) {
-        jpaSharedCategoryRepository.delete(sharedCategory);
+    public Optional<SharedCategory> findById(final Long sharedCategoryId) {
+        return jpaSharedCategoryRepository.findById(sharedCategoryId);
     }
 
     @Override
@@ -51,7 +51,7 @@ public class SharedCategoryRepositoryImpl implements SharedCategoryRepository {
 
     @Override
     public List<SharedCategory> findAllByNameContainingAndIdLessThanOrderByIdDesc(final String keyword,
-            final Long cursor, final int limit) {
+                                                                                  final Long cursor, final int limit) {
         return jpaSharedCategoryRepository.findAllByNameContainingAndIdLessThanOrderByIdDesc(keyword, cursor,
                 PageRequest.of(0, limit));
     }

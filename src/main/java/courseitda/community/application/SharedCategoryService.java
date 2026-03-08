@@ -57,8 +57,7 @@ public class SharedCategoryService {
         final var sharedCategory = getSharedCategoryById(sharedCategoryId);
         sharedCategory.validateOwnership(memberAuthInfo.id());
 
-        sharedCategoryPlaceRepository.deleteAllBySharedCategoryId(sharedCategoryId);
-        sharedCategoryRepository.delete(sharedCategory);
+        sharedCategory.softDelete();
     }
 
     @Transactional(readOnly = true)

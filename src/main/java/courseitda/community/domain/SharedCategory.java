@@ -13,6 +13,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -21,12 +23,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
 @Table(name = "shared_categories")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
+@SQLRestriction("deleted_at IS NULL")
 public class SharedCategory extends Timestamp {
 
     @Id
@@ -48,6 +52,9 @@ public class SharedCategory extends Timestamp {
 
     @Column(name = "parent_shared_category_id")
     private Long parentSharedCategoryId;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     @Builder
     public SharedCategory(
@@ -83,6 +90,10 @@ public class SharedCategory extends Timestamp {
         if (this.rootSharedCategoryId == null) {
             this.rootSharedCategoryId = this.id;
         }
+    }
+
+    public void softDelete() {
+        this.deletedAt = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
     }
 
     public void validateOwnership(final Long memberId) {

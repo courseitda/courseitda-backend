@@ -77,8 +77,7 @@ public class SavedCategoryService {
         final var savedCategory = getSavedCategoryById(savedCategoryId);
         savedCategory.validateOwnership(memberAuthInfo.id());
 
-        savedCategoryPlaceRepository.deleteAllBySavedCategoryId(savedCategoryId);
-        savedCategoryRepository.delete(savedCategory);
+        savedCategory.softDelete();
     }
 
     @Transactional(readOnly = true)

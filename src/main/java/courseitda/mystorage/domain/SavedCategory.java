@@ -43,21 +43,35 @@ public class SavedCategory extends Timestamp {
     @OneToMany(mappedBy = "savedCategory")
     private List<SavedCategoryPlace> savedCategoryPlaces;
 
+    @Column
+    private Long sourceSharedCategoryId;
+
     @Builder
     public SavedCategory(
             final Member owner,
             final String name,
-            final List<SavedCategoryPlace> savedCategoryPlaces
+            final List<SavedCategoryPlace> savedCategoryPlaces,
+            final Long sourceSharedCategoryId
     ) {
         validateName(name);
 
         this.owner = owner;
         this.name = name;
         this.savedCategoryPlaces = savedCategoryPlaces;
+        this.sourceSharedCategoryId = sourceSharedCategoryId;
     }
 
     public static SavedCategory createNew(final Member owner, final String name) {
-        return new SavedCategory(owner, name, new ArrayList<>());
+        return new SavedCategory(owner, name, new ArrayList<>(), null);
+    }
+
+    public static SavedCategory createFromShared(final Member owner, final String name,
+                                                 final Long sourceSharedCategoryId) {
+        return new SavedCategory(owner, name, new ArrayList<>(), sourceSharedCategoryId);
+    }
+
+    public boolean hasSource() {
+        return this.sourceSharedCategoryId != null;
     }
 
     public void updateName(final String newName) {

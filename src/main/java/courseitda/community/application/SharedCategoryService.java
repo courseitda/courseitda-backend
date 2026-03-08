@@ -38,8 +38,9 @@ public class SharedCategoryService {
 
         savedCategory.validateOwnership(member.getId());
 
-        final var newSharedCategory = SharedCategory.createNew(savedCategory.getName(), member);
+        final var newSharedCategory = createSharedCategoryFromSavedCategory(savedCategory, member);
         final var sharedCategory = sharedCategoryRepository.save(newSharedCategory);
+        sharedCategory.initializeRoot();
 
         for (var savedCategoryPlace : savedCategory.getSavedCategoryPlaces()) {
             final var newSharedCategoryPlace = SharedCategoryPlace.createNew(sharedCategory,
@@ -109,6 +110,20 @@ public class SharedCategoryService {
         if (keyword == null || keyword.isBlank()) {
             throw new BusinessException(ErrorCode.BLANK_SHARED_CATEGORY_SEARCH_KEYWORD);
         }
+    }
+
+    private SharedCategory createSharedCategoryFromSavedCategory(final SavedCategory savedCategory,
+                                                                 final Member member) {
+        if (savedCategory.hasSource()) {
+            final var parentSharedCategoryId = savedCategory.getSourceSharedCategoryId();
+            final var parentSharedCategory = getSharedCategoryById(parentSharedCategoryId);
+            final var rootSharedCategoryId = parentSharedCategory.getRootSharedCategoryId();
+
+            return SharedCategory.createChild(savedCategory.getName(), member, rootSharedCategoryId,
+                    parentSharedCategoryId);
+        }
+
+        return SharedCategory.createRoot(savedCategory.getName(), member);
     }
 
     private List<SharedCategory> findSharedCategoriesByCursor(final Long cursor, final int limit) {

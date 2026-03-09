@@ -3,12 +3,15 @@ package courseitda.mystorage.application;
 import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.common.exception.BusinessException;
 import courseitda.common.exception.ErrorCode;
+import courseitda.community.domain.SharedCategory;
+import courseitda.community.domain.SharedCategoryRepository;
 import courseitda.member.domain.Member;
 import courseitda.mystorage.domain.SavedCategory;
 import courseitda.mystorage.domain.SavedCategoryPlace;
 import courseitda.mystorage.domain.SavedCategoryPlaceRepository;
 import courseitda.mystorage.domain.SavedCategoryRepository;
 import courseitda.mystorage.ui.dto.request.SavedCategoryCreateRequest;
+import courseitda.mystorage.ui.dto.request.SavedCategoryForkRequest;
 import courseitda.mystorage.ui.dto.request.SavedCategoryUpdateRequest;
 import courseitda.mystorage.ui.dto.response.SavedCategoryCreateResponse;
 import courseitda.mystorage.ui.dto.response.SavedCategoryReadResponse;
@@ -29,6 +32,7 @@ public class SavedCategoryService {
 
     private final SavedCategoryRepository savedCategoryRepository;
     private final SavedCategoryPlaceRepository savedCategoryPlaceRepository;
+    private final SharedCategoryRepository sharedCategoryRepository;
     private final PlaceRepository placeRepository;
 
     @Transactional
@@ -53,6 +57,24 @@ public class SavedCategoryService {
         }
 
         // 주의: savedCategoryPlaces 응답에 포함 시 getSavedCategoryById()로 재조회 필요 (JPA 1차 캐시 불일치)
+        return SavedCategoryCreateResponse.from(persistedSavedCategory);
+    }
+
+    @Transactional
+    public SavedCategoryCreateResponse forkSharedCategory(
+            final SavedCategoryForkRequest request,
+            final Member member
+    ) {
+        final var sharedCategory = getSharedCategoryById(request.sharedCategoryId());
+        final var savedCategory = SavedCategory.createFromShared(member, sharedCategory.getName(),
+                sharedCategory.getId());
+        final var persistedSavedCategory = savedCategoryRepository.save(savedCategory);
+
+        for (final var sharedCategoryPlace : sharedCategory.getSharedCategoryPlaces()) {
+            savedCategoryPlaceRepository.save(
+                    SavedCategoryPlace.createNew(persistedSavedCategory, sharedCategoryPlace.getPlace()));
+        }
+
         return SavedCategoryCreateResponse.from(persistedSavedCategory);
     }
 
@@ -144,6 +166,11 @@ public class SavedCategoryService {
                 savedCategoryPlaceRepository.save(newSavedCategoryPlace);
             }
         }
+    }
+
+    private SharedCategory getSharedCategoryById(final Long sharedCategoryId) {
+        return sharedCategoryRepository.findById(sharedCategoryId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.SHARED_CATEGORY_NOT_FOUND));
     }
 
     private SavedCategory getSavedCategoryById(final Long savedCategoryId) {

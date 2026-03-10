@@ -865,6 +865,32 @@ Authorization: Bearer {accessToken}
 HTTP/1.1 204 No Content
 ```
 
+### 8.5 공유 카테고리 포크
+
+공유 카테고리를 포크하여 새로운 보관 카테고리를 생성합니다. 공유 카테고리의 이름과 장소 목록이 그대로 복사됩니다.
+
+```http
+POST /api/saved-categories/fork HTTP/1.1
+Authorization: Bearer {accessToken}
+Content-Type: application/json
+
+{
+  "sharedCategoryId": 1
+}
+```
+
+**성공 응답:**
+
+```http
+HTTP/1.1 201 Created
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "공유 카테고리 이름"
+}
+```
+
 ---
 
 ## 9. 공유 카테고리 (Shared Category)
@@ -901,7 +927,6 @@ Content-Type: application/json
 
 ```http
 GET /api/shared-categories?cursor=50&size=10 HTTP/1.1
-Authorization: Bearer {accessToken}
 ```
 
 | 파라미터 | 필수 여부 | 기본값 | 설명 |
@@ -935,7 +960,6 @@ Content-Type: application/json
 
 ```http
 GET /api/shared-categories/search?keyword=맛집&cursor=50&size=10 HTTP/1.1
-Authorization: Bearer {accessToken}
 ```
 
 | 파라미터 | 필수 여부 | 기본값 | 설명 |
@@ -970,7 +994,6 @@ Content-Type: application/json
 
 ```http
 GET /api/shared-categories/{sharedCategoryId} HTTP/1.1
-Authorization: Bearer {accessToken}
 ```
 
 **성공 응답:**
@@ -1017,12 +1040,12 @@ HTTP/1.1 204 No Content
 
 ## API 통계
 
-- **전체 엔드포인트**: 36개
+- **전체 엔드포인트**: 37개
 - **HTTP 메서드별**:
     - GET: 18개
-    - POST: 8개
+    - POST: 9개
     - PATCH: 3개
     - DELETE: 6개
     - PUT: 1개
 - **인증 필요**: 32개
-- **공개 엔드포인트**: 4개
+- **공개 엔드포인트**: 5개

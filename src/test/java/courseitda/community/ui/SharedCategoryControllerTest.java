@@ -19,6 +19,7 @@ import courseitda.member.ui.dto.response.MySharedCategoriesResponse;
 import courseitda.mystorage.domain.SavedCategoryFixture;
 import courseitda.mystorage.ui.dto.request.SavedCategoryCreateRequest;
 import courseitda.mystorage.ui.dto.request.SavedCategoryCreateRequest.SavedCategoryPlaceRequest;
+import courseitda.mystorage.ui.dto.request.SavedCategoryForkRequest;
 import courseitda.mystorage.ui.dto.response.SavedCategoryCreateResponse;
 import courseitda.place.domain.PlaceFixture;
 import io.restassured.RestAssured;
@@ -189,6 +190,41 @@ class SharedCategoryControllerTest {
                     .then()
                     .statusCode(HttpStatus.NOT_FOUND.value())
                     .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.SAVED_CATEGORY_NOT_FOUND.getCode()));
+        }
+
+        @Test
+        @DisplayName("포크한 보관 카테고리의 장소를 수정하지 않고 공유 시 실패한다")
+        void createSharedCategory_fail_placesNotModified() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final SavedCategoryCreateResponse savedCategory = createSavedCategory(accessToken);
+            final SharedCategoryCreateResponse sharedCategory = createSharedCategory(accessToken, savedCategory.id());
+
+            final SavedCategoryForkRequest forkRequest = new SavedCategoryForkRequest(sharedCategory.id());
+            final SavedCategoryCreateResponse forkedSavedCategory = given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .body(forkRequest)
+                    .when()
+                    .post("/api/saved-categories/fork")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value())
+                    .extract()
+                    .as(SavedCategoryCreateResponse.class);
+
+            final SharedCategoryCreateRequest shareRequest = new SharedCategoryCreateRequest(forkedSavedCategory.id());
+
+            // when & then
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .body(shareRequest)
+                    .when()
+                    .post("/api/shared-categories")
+                    .then()
+                    .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value())
+                    .body("code",
+                            org.hamcrest.Matchers.equalTo(ErrorCode.SAVED_CATEGORY_PLACES_NOT_MODIFIED.getCode()));
         }
 
         @Test

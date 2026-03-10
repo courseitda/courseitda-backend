@@ -11,6 +11,8 @@ public interface SharedCategoryRepository {
 
     Optional<SharedCategory> findById(Long sharedCategoryId);
 
+    Optional<SharedCategory> findByIdIncludingDeleted(Long sharedCategoryId);
+
     List<SharedCategory> findAllByAuthorId(Long authorId);
 
     List<SharedCategory> findAllOrderByIdDesc(int limit);

@@ -19,17 +19,17 @@ public class SavedCategoryRepositoryImpl implements SavedCategoryRepository {
     }
 
     @Override
-    public Optional<SavedCategory> findById(final Long savedCategoryId) {
-        return jpaSavedCategoryRepository.findById(savedCategoryId);
-    }
-
-    @Override
     public void delete(final SavedCategory savedCategory) {
         jpaSavedCategoryRepository.delete(savedCategory);
     }
 
     @Override
+    public Optional<SavedCategory> findById(final Long savedCategoryId) {
+        return jpaSavedCategoryRepository.findByIdAndDeletedAtIsNull(savedCategoryId);
+    }
+
+    @Override
     public List<SavedCategory> findAllByOwnerId(final Long ownerId) {
-        return jpaSavedCategoryRepository.findAllByOwnerId(ownerId);
+        return jpaSavedCategoryRepository.findAllByOwnerIdAndDeletedAtIsNull(ownerId);
     }
 }

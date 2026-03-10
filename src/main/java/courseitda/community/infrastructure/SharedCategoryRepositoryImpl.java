@@ -26,27 +26,34 @@ public class SharedCategoryRepositoryImpl implements SharedCategoryRepository {
 
     @Override
     public Optional<SharedCategory> findById(final Long sharedCategoryId) {
+        return jpaSharedCategoryRepository.findByIdAndDeletedAtIsNull(sharedCategoryId);
+    }
+
+    @Override
+    public Optional<SharedCategory> findByIdIncludingDeleted(final Long sharedCategoryId) {
         return jpaSharedCategoryRepository.findById(sharedCategoryId);
     }
 
     @Override
     public List<SharedCategory> findAllByAuthorId(final Long authorId) {
-        return jpaSharedCategoryRepository.findAllByAuthorId(authorId);
+        return jpaSharedCategoryRepository.findAllByAuthorIdAndDeletedAtIsNull(authorId);
     }
 
     @Override
     public List<SharedCategory> findAllOrderByIdDesc(final int limit) {
-        return jpaSharedCategoryRepository.findAllByOrderByIdDesc(PageRequest.of(0, limit));
+        return jpaSharedCategoryRepository.findAllByDeletedAtIsNullOrderByIdDesc(PageRequest.of(0, limit));
     }
 
     @Override
     public List<SharedCategory> findAllByIdLessThanOrderByIdDesc(final Long cursor, final int limit) {
-        return jpaSharedCategoryRepository.findAllByIdLessThanOrderByIdDesc(cursor, PageRequest.of(0, limit));
+        return jpaSharedCategoryRepository.findAllByIdLessThanAndDeletedAtIsNullOrderByIdDesc(cursor,
+                PageRequest.of(0, limit));
     }
 
     @Override
     public List<SharedCategory> findAllByNameContainingOrderByIdDesc(final String keyword, final int limit) {
-        return jpaSharedCategoryRepository.findAllByNameContainingOrderByIdDesc(keyword, PageRequest.of(0, limit));
+        return jpaSharedCategoryRepository.findAllByNameContainingAndDeletedAtIsNullOrderByIdDesc(keyword,
+                PageRequest.of(0, limit));
     }
 
     @Override
@@ -55,7 +62,7 @@ public class SharedCategoryRepositoryImpl implements SharedCategoryRepository {
             final Long cursor,
             final int limit
     ) {
-        return jpaSharedCategoryRepository.findAllByNameContainingAndIdLessThanOrderByIdDesc(keyword, cursor,
-                PageRequest.of(0, limit));
+        return jpaSharedCategoryRepository.findAllByNameContainingAndIdLessThanAndDeletedAtIsNullOrderByIdDesc(
+                keyword, cursor, PageRequest.of(0, limit));
     }
 }

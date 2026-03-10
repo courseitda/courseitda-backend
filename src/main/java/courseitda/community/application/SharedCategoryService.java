@@ -106,7 +106,7 @@ public class SharedCategoryService {
     }
 
     private void validatePlacesModified(final SavedCategory savedCategory) {
-        final var source = getSharedCategoryById(savedCategory.getSourceSharedCategoryId());
+        final var source = getSharedCategoryByIdIncludingDeleted(savedCategory.getSourceSharedCategoryId());
 
         final Set<Long> sourcePlaceIds = source.getSharedCategoryPlaces().stream()
                 .map(scp -> scp.getPlace().getId())
@@ -137,7 +137,7 @@ public class SharedCategoryService {
                                                                  final Member member) {
         if (savedCategory.hasSource()) {
             final var parentSharedCategoryId = savedCategory.getSourceSharedCategoryId();
-            final var parentSharedCategory = getSharedCategoryById(parentSharedCategoryId);
+            final var parentSharedCategory = getSharedCategoryByIdIncludingDeleted(parentSharedCategoryId);
             final var rootSharedCategoryId = parentSharedCategory.getRootSharedCategoryId();
 
             return SharedCategory.createChild(savedCategory.getName(), member, rootSharedCategoryId,
@@ -167,6 +167,11 @@ public class SharedCategoryService {
 
     private SharedCategory getSharedCategoryById(final Long sharedCategoryId) {
         return sharedCategoryRepository.findById(sharedCategoryId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.SHARED_CATEGORY_NOT_FOUND));
+    }
+
+    private SharedCategory getSharedCategoryByIdIncludingDeleted(final Long sharedCategoryId) {
+        return sharedCategoryRepository.findByIdIncludingDeleted(sharedCategoryId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.SHARED_CATEGORY_NOT_FOUND));
     }
 

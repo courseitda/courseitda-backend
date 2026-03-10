@@ -2,9 +2,12 @@ package courseitda.mystorage.infrastructure;
 
 import courseitda.mystorage.domain.SavedCategory;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface JpaSavedCategoryRepository extends JpaRepository<SavedCategory, Long> {
 
-    List<SavedCategory> findAllByOwnerId(Long ownerId);
+    Optional<SavedCategory> findByIdAndDeletedAtIsNull(Long id);
+
+    List<SavedCategory> findAllByOwnerIdAndDeletedAtIsNull(Long ownerId);
 }

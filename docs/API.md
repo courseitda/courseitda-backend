@@ -739,7 +739,7 @@ HTTP/1.1 204 No Content
 
 ### 8.1 보관 카테고리 생성
 
-새로운 보관 카테고리를 생성합니다. 생성 시 장소 목록을 함께 전달해야 합니다.
+새로운 보관 카테고리를 이름만으로 생성합니다. 장소는 생성 후 8.6 장소 동기화 API로 추가합니다.
 
 ```http
 POST /api/saved-categories HTTP/1.1
@@ -747,17 +747,7 @@ Authorization: Bearer {accessToken}
 Content-Type: application/json
 
 {
-  "name": "보관 카테고리 이름",
-  "savedCategoryPlaces": [
-    {
-      "name": "장소 이름",
-      "placeUrl": "카카오 장소 URL",
-      "roadAddressName": "도로명 주소",
-      "addressName": "지번 주소",
-      "latitude": 37.5665,
-      "longitude": 126.9780
-    }
-  ]
+  "name": "보관 카테고리 이름"
 }
 ```
 
@@ -807,7 +797,7 @@ Content-Type: application/json
 
 ### 8.3 보관 카테고리 수정
 
-보관 카테고리의 이름과 장소 목록을 수정합니다. `savedCategoryPlaceId`가 있으면 기존 장소 유지, `null`이면 새 장소로 추가됩니다. 요청에 포함되지 않은 기존 장소는 삭제됩니다.
+보관 카테고리의 이름을 수정합니다. 장소 수정은 8.6 장소 동기화 API를 사용합니다.
 
 ```http
 PATCH /api/saved-categories/{savedCategoryId} HTTP/1.1
@@ -815,27 +805,7 @@ Authorization: Bearer {accessToken}
 Content-Type: application/json
 
 {
-  "name": "새로운 카테고리 이름",
-  "savedCategoryPlaces": [
-    {
-      "savedCategoryPlaceId": 1,
-      "name": "기존 장소 이름",
-      "placeUrl": "카카오 장소 URL",
-      "roadAddressName": "도로명 주소",
-      "addressName": "지번 주소",
-      "latitude": 37.5665,
-      "longitude": 126.9780
-    },
-    {
-      "savedCategoryPlaceId": null,
-      "name": "새 장소 이름",
-      "placeUrl": "카카오 장소 URL",
-      "roadAddressName": "도로명 주소",
-      "addressName": "지번 주소",
-      "latitude": 37.1234,
-      "longitude": 127.1234
-    }
-  ]
+  "name": "새로운 카테고리 이름"
 }
 ```
 
@@ -866,7 +836,114 @@ Authorization: Bearer {accessToken}
 HTTP/1.1 204 No Content
 ```
 
-### 8.5 공유 카테고리 포크
+### 8.5 보관 카테고리 장소 추가
+
+보관 카테고리에 장소 목록을 추가합니다. 카테고리 생성 후 최초 장소 기입 시 사용합니다.
+
+```http
+POST /api/saved-categories/{savedCategoryId}/places HTTP/1.1
+Authorization: Bearer {accessToken}
+Content-Type: application/json
+
+{
+  "savedCategoryPlaces": [
+    {
+      "name": "장소 이름",
+      "placeUrl": "카카오 장소 URL",
+      "roadAddressName": "도로명 주소",
+      "addressName": "지번 주소",
+      "latitude": 37.5665,
+      "longitude": 126.9780
+    }
+  ]
+}
+```
+
+**성공 응답:**
+
+```http
+HTTP/1.1 201 Created
+Content-Type: application/json
+
+{
+  "savedCategoryPlaces": [
+    {
+      "id": 1,
+      "name": "장소 이름",
+      "placeUrl": "카카오 장소 URL",
+      "roadAddressName": "도로명 주소",
+      "addressName": "지번 주소",
+      "latitude": 37.5665,
+      "longitude": 126.9780
+    }
+  ]
+}
+```
+
+### 8.6 보관 카테고리 장소 동기화
+
+보관 카테고리의 장소 목록을 동기화합니다. `savedCategoryPlaceId`가 있으면 기존 장소 유지, `null`이면 새 장소로 추가됩니다. 요청에 포함되지 않은 기존 장소는 삭제됩니다.
+
+```http
+PATCH /api/saved-categories/{savedCategoryId}/places HTTP/1.1
+Authorization: Bearer {accessToken}
+Content-Type: application/json
+
+{
+  "savedCategoryPlaces": [
+    {
+      "savedCategoryPlaceId": 1,
+      "name": "기존 장소 이름",
+      "placeUrl": "카카오 장소 URL",
+      "roadAddressName": "도로명 주소",
+      "addressName": "지번 주소",
+      "latitude": 37.5665,
+      "longitude": 126.9780
+    },
+    {
+      "savedCategoryPlaceId": null,
+      "name": "새 장소 이름",
+      "placeUrl": "카카오 장소 URL",
+      "roadAddressName": "도로명 주소",
+      "addressName": "지번 주소",
+      "latitude": 37.1234,
+      "longitude": 127.1234
+    }
+  ]
+}
+```
+
+**성공 응답:**
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "savedCategoryPlaces": [
+    {
+      "id": 1,
+      "name": "기존 장소 이름",
+      "placeUrl": "카카오 장소 URL",
+      "roadAddressName": "도로명 주소",
+      "addressName": "지번 주소",
+      "latitude": 37.5665,
+      "longitude": 126.9780
+    },
+    {
+      "id": 2,
+      "name": "새 장소 이름",
+      "placeUrl": "카카오 장소 URL",
+      "roadAddressName": "도로명 주소",
+      "addressName": "지번 주소",
+      "latitude": 37.1234,
+      "longitude": 127.1234
+    }
+  ]
+}
+```
+
+### 8.7 공유 카테고리 포크
 
 공유 카테고리를 포크하여 새로운 보관 카테고리를 생성합니다. 공유 카테고리의 이름과 장소 목록이 그대로 복사됩니다.
 

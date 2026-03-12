@@ -12,4 +12,6 @@ public interface SavedCategoryRepository {
     Optional<SavedCategory> findById(Long savedCategoryId);
 
     List<SavedCategory> findAllByOwnerId(Long ownerId);
+
+    List<Long> findAllSourceSharedCategoryIdsByOwnerIdAndSourceSharedCategoryIdIn(Long ownerId, List<Long> sharedCategoryIds);
 }

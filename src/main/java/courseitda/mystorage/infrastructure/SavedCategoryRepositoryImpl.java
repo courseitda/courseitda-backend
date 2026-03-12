@@ -32,4 +32,12 @@ public class SavedCategoryRepositoryImpl implements SavedCategoryRepository {
     public List<SavedCategory> findAllByOwnerId(final Long ownerId) {
         return jpaSavedCategoryRepository.findAllByOwnerIdAndDeletedAtIsNull(ownerId);
     }
+
+    @Override
+    public List<Long> findAllSourceSharedCategoryIdsByOwnerIdAndSourceSharedCategoryIdIn(
+            final Long ownerId,
+            final List<Long> sharedCategoryIds
+    ) {
+        return jpaSavedCategoryRepository.findSourceSharedCategoryIdsByOwnerIdAndSourceSharedCategoryIdIn(ownerId, sharedCategoryIds);
+    }
 }

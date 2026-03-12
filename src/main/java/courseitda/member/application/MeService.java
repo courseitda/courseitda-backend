@@ -1,9 +1,11 @@
 package courseitda.member.application;
 
 import courseitda.community.domain.SharedCategoryRepository;
-import courseitda.member.ui.dto.response.MySharedCategoriesResponse;
+import courseitda.member.ui.dto.response.ForkedSharedCategoryIdsResponse;
 import courseitda.member.ui.dto.response.MySavedCategoriesResponse;
+import courseitda.member.ui.dto.response.MySharedCategoriesResponse;
 import courseitda.member.ui.dto.response.MyWorkspacesResponse;
+import java.util.List;
 import courseitda.mystorage.domain.SavedCategoryRepository;
 import courseitda.workspace.domain.WorkspaceRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,5 +32,15 @@ public class MeService {
     @Transactional(readOnly = true)
     public MySharedCategoriesResponse readMySharedCategories(final Long memberId) {
         return MySharedCategoriesResponse.from(sharedCategoryRepository.findAllByAuthorId(memberId));
+    }
+
+    @Transactional(readOnly = true)
+    public ForkedSharedCategoryIdsResponse readForkedSharedCategoryIds(
+            final Long memberId,
+            final List<Long> sharedCategoryIds
+    ) {
+        final var forkedIds = savedCategoryRepository.findAllSourceSharedCategoryIdsByOwnerIdAndSourceSharedCategoryIdIn(
+                memberId, sharedCategoryIds);
+        return ForkedSharedCategoryIdsResponse.from(forkedIds);
     }
 }

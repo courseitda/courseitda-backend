@@ -51,6 +51,9 @@ public class SharedCategory extends Timestamp {
     @Column(name = "parent_shared_category_id")
     private Long parentSharedCategoryId;
 
+    @Column(name = "fork_count", nullable = false)
+    private int forkCount;
+
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
@@ -92,6 +95,16 @@ public class SharedCategory extends Timestamp {
 
     public void softDelete() {
         this.deletedAt = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+    }
+
+    public void incrementForkCount() {
+        this.forkCount++;
+    }
+
+    public void decrementForkCount() {
+        if (this.forkCount > 0) {
+            this.forkCount--;
+        }
     }
 
     public void validateOwnership(final Long memberId) {

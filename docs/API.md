@@ -251,7 +251,8 @@ Content-Type: application/json
       "id": 1,
       "name": "공유 카테고리 이름",
       "createdAt": "2025-10-31T12:00:00+09:00",
-      "placeCount": 3
+      "placeCount": 3,
+      "forkCount": 10
     }
   ]
 }
@@ -946,7 +947,8 @@ Content-Type: application/json
       "id": 1,
       "name": "공유 카테고리 이름",
       "authorNickname": "닉네임",
-      "placeCount": 3
+      "placeCount": 3,
+      "forkCount": 10
     }
   ],
   "hasNext": true,
@@ -980,7 +982,8 @@ Content-Type: application/json
       "id": 1,
       "name": "공유 카테고리 이름",
       "authorNickname": "닉네임",
-      "placeCount": 3
+      "placeCount": 3,
+      "forkCount": 10
     }
   ],
   "hasNext": true,
@@ -1007,6 +1010,7 @@ Content-Type: application/json
   "name": "공유 카테고리 이름",
   "authorNickname": "닉네임",
   "createdAt": "2025-10-31T12:00:00+09:00",
+  "forkCount": 10,
   "sharedCategoryPlaces": [
     {
       "id": 1,

@@ -75,6 +75,8 @@ public class SavedCategoryService {
                     SavedCategoryPlace.createNew(persistedSavedCategory, sharedCategoryPlace.getPlace()));
         }
 
+        sharedCategory.incrementForkCount();
+
         return SavedCategoryCreateResponse.from(persistedSavedCategory);
     }
 
@@ -98,6 +100,11 @@ public class SavedCategoryService {
     public void deleteSavedCategory(final MemberAuthInfo memberAuthInfo, final Long savedCategoryId) {
         final var savedCategory = getSavedCategoryById(savedCategoryId);
         savedCategory.validateOwnership(memberAuthInfo.id());
+
+        if (savedCategory.hasSource()) {
+            sharedCategoryRepository.findByIdIncludingDeleted(savedCategory.getSourceSharedCategoryId())
+                    .ifPresent(SharedCategory::decrementForkCount);
+        }
 
         savedCategory.softDelete();
     }

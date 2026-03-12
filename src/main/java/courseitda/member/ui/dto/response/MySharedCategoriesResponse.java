@@ -22,7 +22,8 @@ public record MySharedCategoriesResponse(
             Long id,
             String name,
             @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss+09:00") LocalDateTime createdAt,
-            int placeCount
+            int placeCount,
+            int forkCount
     ) {
 
         public static SharedCategoryResponse from(final SharedCategory sharedCategory) {
@@ -30,7 +31,8 @@ public record MySharedCategoriesResponse(
                     sharedCategory.getId(),
                     sharedCategory.getName(),
                     sharedCategory.getCreatedAt(),
-                    sharedCategory.getSharedCategoryPlaces().size()
+                    sharedCategory.getSharedCategoryPlaces().size(),
+                    sharedCategory.getForkCount()
             );
         }
     }

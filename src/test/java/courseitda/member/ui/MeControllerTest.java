@@ -274,6 +274,43 @@ class MeControllerTest {
         }
 
         @Test
+        @DisplayName("원본 공유 카테고리가 삭제된 경우에도 목록 조회에 성공한다")
+        void readMySavedCategories_success_canPublish_deletedSource() {
+            // given
+            final String accessToken = signUpAndLogin();
+            final SavedCategoryCreateResponse savedCategory = createSavedCategory(accessToken);
+            final SharedCategoryCreateResponse sharedCategory = createSharedCategory(accessToken, savedCategory.id());
+            final SavedCategoryCreateResponse forked = forkSharedCategory(accessToken, sharedCategory.id());
+
+            given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .when()
+                    .delete("/api/shared-categories/" + sharedCategory.id())
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
+
+            // when
+            final MySavedCategoriesResponse response = given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, accessToken)
+                    .when()
+                    .get("/api/me/saved-categories")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .as(MySavedCategoriesResponse.class);
+
+            // then
+            final MySavedCategoriesResponse.SavedCategoryResponse forkedResponse = response.savedCategoryResponses()
+                    .stream()
+                    .filter(sc -> sc.id().equals(forked.id()))
+                    .findFirst()
+                    .orElseThrow();
+            assertThat(forkedResponse.canPublish()).isTrue();
+        }
+
+        @Test
         @DisplayName("보관 카테고리가 없는 경우 빈 목록이 반환된다")
         void readMySavedCategories_success_emptyList() {
             // given

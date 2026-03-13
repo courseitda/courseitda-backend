@@ -90,7 +90,7 @@ public class MeService {
                     .collect(Collectors.toSet());
         }
 
-        final var sourceMap = sharedCategoryRepository.findAllByIdIn(sourceSharedCategoryIds).stream()
+        final var sourceMap = sharedCategoryRepository.findAllByIdInIncludingDeleted(sourceSharedCategoryIds).stream()
                 .collect(Collectors.toMap(SharedCategory::getId, sc -> sc));
 
         return savedCategories.stream()
@@ -104,6 +104,9 @@ public class MeService {
             return true;
         }
         final var sourceSharedCategory = sourceMap.get(savedCategory.getSourceSharedCategoryId());
+        if (sourceSharedCategory == null) {
+            return true;
+        }
 
         final Set<Long> sourcePlaceIds = sourceSharedCategory.getSharedCategoryPlaces().stream()
                 .map(scp -> scp.getPlace().getId())

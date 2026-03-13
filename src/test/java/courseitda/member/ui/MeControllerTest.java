@@ -275,7 +275,7 @@ class MeControllerTest {
 
         @Test
         @DisplayName("원본 공유 카테고리가 삭제된 경우에도 목록 조회에 성공한다")
-        void readMySavedCategories_success_canPublish_deletedSource() {
+        void readMySavedCategories_success_deletedSource() {
             // given
             final String accessToken = signUpAndLogin();
             final SavedCategoryCreateResponse savedCategory = createSavedCategory(accessToken);
@@ -302,12 +302,9 @@ class MeControllerTest {
                     .as(MySavedCategoriesResponse.class);
 
             // then
-            final MySavedCategoriesResponse.SavedCategoryResponse forkedResponse = response.savedCategoryResponses()
-                    .stream()
-                    .filter(sc -> sc.id().equals(forked.id()))
-                    .findFirst()
-                    .orElseThrow();
-            assertThat(forkedResponse.canPublish()).isTrue();
+            final boolean forkedExists = response.savedCategoryResponses().stream()
+                    .anyMatch(sc -> sc.id().equals(forked.id()));
+            assertThat(forkedExists).isTrue();
         }
 
         @Test

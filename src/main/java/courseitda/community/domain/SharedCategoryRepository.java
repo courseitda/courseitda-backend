@@ -15,6 +15,10 @@ public interface SharedCategoryRepository {
 
     List<SharedCategory> findAllByAuthorId(Long authorId);
 
+    List<SharedCategory> findAllByAuthorIdOrderByIdDesc(Long authorId, int limit);
+
+    List<SharedCategory> findAllByAuthorIdAndIdLessThanOrderByIdDesc(Long authorId, Long cursor, int limit);
+
     List<SharedCategory> findAllOrderByIdDesc(int limit);
 
     List<SharedCategory> findAllByIdLessThanOrderByIdDesc(Long cursor, int limit);

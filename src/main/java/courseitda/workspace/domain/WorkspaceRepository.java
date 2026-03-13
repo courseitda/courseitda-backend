@@ -16,4 +16,8 @@ public interface WorkspaceRepository {
     Optional<Workspace> findByIdentifier(String identifier);
 
     List<Workspace> findAllByOwnerId(Long ownerId);
+
+    List<Workspace> findAllByOwnerIdOrderByIdDesc(Long ownerId, int limit);
+
+    List<Workspace> findAllByOwnerIdAndIdLessThanOrderByIdDesc(Long ownerId, Long cursor, int limit);
 }

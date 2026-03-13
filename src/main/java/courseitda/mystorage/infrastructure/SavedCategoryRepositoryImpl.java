@@ -5,6 +5,7 @@ import courseitda.mystorage.domain.SavedCategoryRepository;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -31,6 +32,16 @@ public class SavedCategoryRepositoryImpl implements SavedCategoryRepository {
     @Override
     public List<SavedCategory> findAllByOwnerId(final Long ownerId) {
         return jpaSavedCategoryRepository.findAllByOwnerIdAndDeletedAtIsNull(ownerId);
+    }
+
+    @Override
+    public List<SavedCategory> findAllByOwnerIdOrderByIdDesc(final Long ownerId, final int limit) {
+        return jpaSavedCategoryRepository.findAllByOwnerIdAndDeletedAtIsNullOrderByIdDesc(ownerId, PageRequest.of(0, limit));
+    }
+
+    @Override
+    public List<SavedCategory> findAllByOwnerIdAndIdLessThanOrderByIdDesc(final Long ownerId, final Long cursor, final int limit) {
+        return jpaSavedCategoryRepository.findAllByOwnerIdAndIdLessThanAndDeletedAtIsNullOrderByIdDesc(ownerId, cursor, PageRequest.of(0, limit));
     }
 
     @Override

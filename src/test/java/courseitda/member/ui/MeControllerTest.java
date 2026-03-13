@@ -4,8 +4,6 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
-import java.util.List;
-
 import courseitda.auth.ui.dto.request.LoginRequest;
 import courseitda.auth.ui.dto.response.LoginResponse;
 import courseitda.member.domain.MemberFixture;
@@ -17,8 +15,6 @@ import courseitda.member.ui.dto.response.MySavedCategoriesResponse;
 import courseitda.member.ui.dto.response.MyWorkspacesResponse;
 import courseitda.mystorage.domain.SavedCategoryFixture;
 import courseitda.mystorage.ui.dto.request.SavedCategoryCreateRequest;
-import courseitda.mystorage.ui.dto.request.SavedCategoryCreateRequest.SavedCategoryPlaceRequest;
-import courseitda.place.domain.PlaceFixture;
 import courseitda.workspace.domain.WorkspaceFixture;
 import courseitda.workspace.ui.dto.request.WorkspaceCreateRequest;
 import courseitda.workspace.ui.dto.response.WorkspaceCreateResponse;
@@ -76,17 +72,7 @@ class MeControllerTest {
     }
 
     private void createSavedCategory(final String accessToken) {
-        final SavedCategoryCreateRequest request = new SavedCategoryCreateRequest(
-                SavedCategoryFixture.anyName(),
-                List.of(new SavedCategoryPlaceRequest(
-                        PlaceFixture.anyName(),
-                        PlaceFixture.anyPlaceUrl(),
-                        PlaceFixture.anyRoadAddressName(),
-                        PlaceFixture.anyAddressName(),
-                        PlaceFixture.anyLatitude(),
-                        PlaceFixture.anyLongitude()
-                ))
-        );
+        final SavedCategoryCreateRequest request = new SavedCategoryCreateRequest(SavedCategoryFixture.anyName());
 
         given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

@@ -12,6 +12,10 @@ public interface JpaSharedCategoryRepository extends JpaRepository<SharedCategor
 
     List<SharedCategory> findAllByAuthorIdAndDeletedAtIsNull(Long authorId);
 
+    List<SharedCategory> findAllByAuthorIdAndDeletedAtIsNullOrderByIdDesc(Long authorId, Pageable pageable);
+
+    List<SharedCategory> findAllByAuthorIdAndIdLessThanAndDeletedAtIsNullOrderByIdDesc(Long authorId, Long cursor, Pageable pageable);
+
     List<SharedCategory> findAllByDeletedAtIsNullOrderByIdDesc(Pageable pageable);
 
     List<SharedCategory> findAllByIdLessThanAndDeletedAtIsNullOrderByIdDesc(Long cursor, Pageable pageable);

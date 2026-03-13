@@ -7,15 +7,17 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record MySavedCategoriesResponse(
-        @JsonProperty("savedCategories") List<SavedCategoryResponse> savedCategoryResponses
+        @JsonProperty("savedCategories") List<SavedCategoryResponse> savedCategoryResponses,
+        boolean hasNext,
+        Long nextCursor
 ) {
 
-    public static MySavedCategoriesResponse from(final List<SavedCategory> savedCategories) {
+    public static MySavedCategoriesResponse from(final List<SavedCategory> savedCategories, final boolean hasNext, final Long nextCursor) {
         final List<SavedCategoryResponse> savedCategoryResponses = savedCategories.stream()
                 .map(SavedCategoryResponse::from)
                 .toList();
 
-        return new MySavedCategoriesResponse(savedCategoryResponses);
+        return new MySavedCategoriesResponse(savedCategoryResponses, hasNext, nextCursor);
     }
 
     public record SavedCategoryResponse(

@@ -7,15 +7,17 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record MySharedCategoriesResponse(
-        @JsonProperty("sharedCategories") List<SharedCategoryResponse> sharedCategoryResponses
+        @JsonProperty("sharedCategories") List<SharedCategoryResponse> sharedCategoryResponses,
+        boolean hasNext,
+        Long nextCursor
 ) {
 
-    public static MySharedCategoriesResponse from(final List<SharedCategory> sharedCategories) {
+    public static MySharedCategoriesResponse from(final List<SharedCategory> sharedCategories, final boolean hasNext, final Long nextCursor) {
         final List<SharedCategoryResponse> sharedCategoryResponses = sharedCategories.stream()
                 .map(SharedCategoryResponse::from)
                 .toList();
 
-        return new MySharedCategoriesResponse(sharedCategoryResponses);
+        return new MySharedCategoriesResponse(sharedCategoryResponses, hasNext, nextCursor);
     }
 
     public record SharedCategoryResponse(

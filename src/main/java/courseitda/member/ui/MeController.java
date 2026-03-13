@@ -60,31 +60,34 @@ public class MeController {
     }
 
     @GetMapping("/workspaces")
-    // TODO: 페이징 고려 필요
     public ResponseEntity<MyWorkspacesResponse> readMyWorkspaces(
-            final MemberAuthInfo memberAuthInfo
+            final MemberAuthInfo memberAuthInfo,
+            @RequestParam(required = false) final Long cursor,
+            @RequestParam(defaultValue = "10") final int size
     ) {
-        final var response = meService.readMyWorkspaces(memberAuthInfo.id());
+        final var response = meService.readMyWorkspaces(memberAuthInfo.id(), cursor, size);
 
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/saved-categories")
-    // TODO: 페이징 고려 필요
     public ResponseEntity<MySavedCategoriesResponse> readMySavedCategories(
-            final MemberAuthInfo memberAuthInfo
+            final MemberAuthInfo memberAuthInfo,
+            @RequestParam(required = false) final Long cursor,
+            @RequestParam(defaultValue = "10") final int size
     ) {
-        final var response = meService.readMySavedCategory(memberAuthInfo.id());
+        final var response = meService.readMySavedCategory(memberAuthInfo.id(), cursor, size);
 
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/shared-categories")
-    // TODO: 페이징 고려 필요
     public ResponseEntity<MySharedCategoriesResponse> readMySharedCategories(
-            final MemberAuthInfo memberAuthInfo
+            final MemberAuthInfo memberAuthInfo,
+            @RequestParam(required = false) final Long cursor,
+            @RequestParam(defaultValue = "10") final int size
     ) {
-        final var response = meService.readMySharedCategories(memberAuthInfo.id());
+        final var response = meService.readMySharedCategories(memberAuthInfo.id(), cursor, size);
 
         return ResponseEntity.ok(response);
     }

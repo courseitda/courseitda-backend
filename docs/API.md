@@ -179,12 +179,17 @@ Content-Type: application/json
 
 ### 3.4 내 워크스페이스 목록 조회
 
-현재 로그인한 사용자가 소유한 모든 워크스페이스 목록을 조회합니다.
+현재 로그인한 사용자가 소유한 워크스페이스 목록을 커서 기반 페이징으로 조회합니다.
 
 ```http
-GET /api/me/workspaces HTTP/1.1
+GET /api/me/workspaces?cursor={cursor}&size={size} HTTP/1.1
 Authorization: Bearer {accessToken}
 ```
+
+| 파라미터 | 타입 | 필수 | 기본값 | 설명 |
+|---------|------|------|--------|------|
+| cursor | Long | X | - | 이전 응답의 nextCursor 값 |
+| size | int | X | 10 | 조회 개수 (1~100) |
 
 **성공 응답:**
 
@@ -199,18 +204,25 @@ Content-Type: application/json
       "title": "워크스페이스 제목",
       "modifiedAt": "2025-10-31T12:00:00+09:00"
     }
-  ]
+  ],
+  "hasNext": true,
+  "nextCursor": 5
 }
 ```
 
 ### 3.5 내 보관 카테고리 목록 조회
 
-현재 로그인한 사용자가 보관한 모든 카테고리 목록을 조회합니다.
+현재 로그인한 사용자가 보관한 카테고리 목록을 커서 기반 페이징으로 조회합니다.
 
 ```http
-GET /api/me/saved-categories HTTP/1.1
+GET /api/me/saved-categories?cursor={cursor}&size={size} HTTP/1.1
 Authorization: Bearer {accessToken}
 ```
+
+| 파라미터 | 타입 | 필수 | 기본값 | 설명 |
+|---------|------|------|--------|------|
+| cursor | Long | X | - | 이전 응답의 nextCursor 값 |
+| size | int | X | 10 | 조회 개수 (1~100) |
 
 **성공 응답:**
 
@@ -226,18 +238,25 @@ Content-Type: application/json
       "placeCount": 3,
       "modifiedAt": "2025-10-31T12:00:00+09:00"
     }
-  ]
+  ],
+  "hasNext": true,
+  "nextCursor": 1
 }
 ```
 
 ### 3.6 내 공유 카테고리 목록 조회
 
-현재 로그인한 사용자가 공유한 모든 카테고리 목록을 조회합니다.
+현재 로그인한 사용자가 공유한 카테고리 목록을 커서 기반 페이징으로 조회합니다.
 
 ```http
-GET /api/me/shared-categories HTTP/1.1
+GET /api/me/shared-categories?cursor={cursor}&size={size} HTTP/1.1
 Authorization: Bearer {accessToken}
 ```
+
+| 파라미터 | 타입 | 필수 | 기본값 | 설명 |
+|---------|------|------|--------|------|
+| cursor | Long | X | - | 이전 응답의 nextCursor 값 |
+| size | int | X | 10 | 조회 개수 (1~100) |
 
 **성공 응답:**
 
@@ -254,7 +273,9 @@ Content-Type: application/json
       "placeCount": 3,
       "forkCount": 10
     }
-  ]
+  ],
+  "hasNext": false,
+  "nextCursor": null
 }
 ```
 

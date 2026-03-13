@@ -35,18 +35,8 @@ public class SharedCategoryRepositoryImpl implements SharedCategoryRepository {
     }
 
     @Override
-    public List<SharedCategory> findAllByIdIn(final List<Long> ids) {
-        return jpaSharedCategoryRepository.findAllById(ids);
-    }
-
-    @Override
     public List<SharedCategory> findAllByIdInIncludingDeleted(final List<Long> ids) {
         return jpaSharedCategoryRepository.findAllById(ids);
-    }
-
-    @Override
-    public List<SharedCategory> findAllByAuthorId(final Long authorId) {
-        return jpaSharedCategoryRepository.findAllByAuthorIdAndDeletedAtIsNull(authorId);
     }
 
     @Override
@@ -57,7 +47,7 @@ public class SharedCategoryRepositoryImpl implements SharedCategoryRepository {
 
     @Override
     public List<SharedCategory> findAllByAuthorIdAndIdLessThanOrderByIdDesc(final Long authorId, final Long cursor,
-            final int limit) {
+                                                                            final int limit) {
         return jpaSharedCategoryRepository.findAllByAuthorIdAndIdLessThanAndDeletedAtIsNullOrderByIdDesc(authorId,
                 cursor, PageRequest.of(0, limit));
     }

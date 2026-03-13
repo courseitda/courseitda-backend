@@ -30,11 +30,6 @@ public class SavedCategoryRepositoryImpl implements SavedCategoryRepository {
     }
 
     @Override
-    public List<SavedCategory> findAllByOwnerId(final Long ownerId) {
-        return jpaSavedCategoryRepository.findAllByOwnerIdAndDeletedAtIsNull(ownerId);
-    }
-
-    @Override
     public List<SavedCategory> findAllByOwnerIdOrderByIdDesc(final Long ownerId, final int limit) {
         return jpaSavedCategoryRepository.findAllByOwnerIdAndDeletedAtIsNullOrderByIdDesc(ownerId, PageRequest.of(0,
                 limit));
@@ -42,7 +37,7 @@ public class SavedCategoryRepositoryImpl implements SavedCategoryRepository {
 
     @Override
     public List<SavedCategory> findAllByOwnerIdAndIdLessThanOrderByIdDesc(final Long ownerId, final Long cursor,
-            final int limit) {
+                                                                          final int limit) {
         return jpaSavedCategoryRepository.findAllByOwnerIdAndIdLessThanAndDeletedAtIsNullOrderByIdDesc(ownerId, cursor,
                 PageRequest.of(0, limit));
     }

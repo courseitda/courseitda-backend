@@ -9,6 +9,4 @@ public interface SavedCategoryPlaceRepository {
     List<SavedCategoryPlace> findAllBySavedCategoryId(Long savedCategoryId);
 
     void deleteAllByIds(List<Long> ids);
-
-    void deleteAllBySavedCategoryId(Long savedCategoryId);
 }

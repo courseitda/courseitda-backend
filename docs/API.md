@@ -279,6 +279,30 @@ Content-Type: application/json
 }
 ```
 
+### 3.7 포크 여부 확인
+
+공유 카테고리 응답에 `isForked` 필드가 내장되기 전까지 임시로 사용하는 API입니다. 주어진 공유 카테고리 ID 목록 중, 현재 로그인한 사용자가 포크한 보관 카테고리의 원본(`sourceSharedCategoryId`)에 해당하는 ID만 반환합니다.
+
+```http
+GET /api/me/saved-categories/contains?sharedCategoryIds=1,2,3 HTTP/1.1
+Authorization: Bearer {accessToken}
+```
+
+| 파라미터 | 타입 | 필수 | 설명 |
+|---------|------|------|------|
+| sharedCategoryIds | List&lt;Long&gt; | O | 포크 여부를 확인할 공유 카테고리 ID 목록 |
+
+**성공 응답:**
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "forkedSharedCategoryIds": [1, 3]
+}
+```
+
 ---
 
 ## 4. 장소 검색 (Place Search)
@@ -1142,12 +1166,12 @@ HTTP/1.1 204 No Content
 
 ## API 통계
 
-- **전체 엔드포인트**: 37개
+- **전체 엔드포인트**: 40개
 - **HTTP 메서드별**:
-    - GET: 18개
+    - GET: 20개
     - POST: 9개
-    - PATCH: 3개
+    - PATCH: 4개
     - DELETE: 6개
     - PUT: 1개
-- **인증 필요**: 32개
-- **공개 엔드포인트**: 5개
+- **인증 필요**: 33개
+- **공개 엔드포인트**: 7개

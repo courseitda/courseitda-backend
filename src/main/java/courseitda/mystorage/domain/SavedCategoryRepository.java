@@ -17,5 +17,6 @@ public interface SavedCategoryRepository {
 
     List<SavedCategory> findAllByOwnerIdAndIdLessThanOrderByIdDesc(Long ownerId, Long cursor, int limit);
 
-    List<Long> findAllSourceSharedCategoryIdsByOwnerIdAndSourceSharedCategoryIdIn(Long ownerId, List<Long> sharedCategoryIds);
+    List<Long> findAllSourceSharedCategoryIdsByOwnerIdAndSourceSharedCategoryIdIn(Long ownerId,
+            List<Long> sharedCategoryIds);
 }

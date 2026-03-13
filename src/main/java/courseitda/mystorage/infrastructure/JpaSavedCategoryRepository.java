@@ -16,7 +16,8 @@ public interface JpaSavedCategoryRepository extends JpaRepository<SavedCategory,
 
     List<SavedCategory> findAllByOwnerIdAndDeletedAtIsNullOrderByIdDesc(Long ownerId, Pageable pageable);
 
-    List<SavedCategory> findAllByOwnerIdAndIdLessThanAndDeletedAtIsNullOrderByIdDesc(Long ownerId, Long cursor, Pageable pageable);
+    List<SavedCategory> findAllByOwnerIdAndIdLessThanAndDeletedAtIsNullOrderByIdDesc(Long ownerId, Long cursor,
+            Pageable pageable);
 
     @Query("SELECT DISTINCT s.sourceSharedCategoryId FROM SavedCategory s WHERE s.owner.id = :ownerId AND s.sourceSharedCategoryId IN :sharedCategoryIds AND s.deletedAt IS NULL")
     List<Long> findSourceSharedCategoryIdsByOwnerIdAndSourceSharedCategoryIdIn(

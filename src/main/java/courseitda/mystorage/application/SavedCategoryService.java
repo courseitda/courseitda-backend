@@ -106,7 +106,7 @@ public class SavedCategoryService {
             return true;
         }
         final var sourceSharedCategory = sharedCategoryRepository.findByIdIncludingDeleted(
-                        savedCategory.getSourceSharedCategoryId())
+                savedCategory.getSourceSharedCategoryId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.SHARED_CATEGORY_NOT_FOUND));
 
         final Set<Long> sourcePlaceIds = sourceSharedCategory.getSharedCategoryPlaces().stream()

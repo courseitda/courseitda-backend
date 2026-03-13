@@ -12,7 +12,8 @@ public record MyWorkspacesResponse(
         Long nextCursor
 ) {
 
-    public static MyWorkspacesResponse from(final List<Workspace> workspaces, final boolean hasNext, final Long nextCursor) {
+    public static MyWorkspacesResponse from(final List<Workspace> workspaces, final boolean hasNext,
+            final Long nextCursor) {
         final List<WorkspaceResponse> workspaceResponses = workspaces.stream()
                 .map(WorkspaceResponse::from)
                 .toList();

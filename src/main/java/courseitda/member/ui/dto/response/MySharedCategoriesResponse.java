@@ -12,7 +12,8 @@ public record MySharedCategoriesResponse(
         Long nextCursor
 ) {
 
-    public static MySharedCategoriesResponse from(final List<SharedCategory> sharedCategories, final boolean hasNext, final Long nextCursor) {
+    public static MySharedCategoriesResponse from(final List<SharedCategory> sharedCategories, final boolean hasNext,
+            final Long nextCursor) {
         final List<SharedCategoryResponse> sharedCategoryResponses = sharedCategories.stream()
                 .map(SharedCategoryResponse::from)
                 .toList();

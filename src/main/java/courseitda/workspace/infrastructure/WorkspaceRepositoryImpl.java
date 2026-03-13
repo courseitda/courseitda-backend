@@ -51,7 +51,7 @@ public class WorkspaceRepositoryImpl implements WorkspaceRepository {
 
     @Override
     public List<Workspace> findAllByOwnerIdAndIdLessThanOrderByIdDesc(final Long ownerId, final Long cursor,
-                                                                      final int limit) {
+            final int limit) {
         return jpaWorkspaceRepository.findAllByOwnerIdAndIdLessThanOrderByIdDesc(ownerId, cursor,
                 PageRequest.of(0, limit));
     }

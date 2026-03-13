@@ -71,7 +71,7 @@ public class SavedCategory extends Timestamp {
     }
 
     public static SavedCategory createFromShared(final Member owner, final String name,
-                                                 final Long sourceSharedCategoryId) {
+            final Long sourceSharedCategoryId) {
         return new SavedCategory(owner, name, new ArrayList<>(), sourceSharedCategoryId);
     }
 

@@ -134,7 +134,7 @@ public class SharedCategoryService {
     }
 
     private SharedCategory createSharedCategoryFromSavedCategory(final SavedCategory savedCategory,
-                                                                 final Member member) {
+            final Member member) {
         if (savedCategory.hasSource()) {
             final var parentSharedCategoryId = savedCategory.getSourceSharedCategoryId();
             final var parentSharedCategory = getSharedCategoryByIdIncludingDeleted(parentSharedCategoryId);

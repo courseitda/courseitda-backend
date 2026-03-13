@@ -13,6 +13,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -43,26 +45,47 @@ public class SavedCategory extends Timestamp {
     @OneToMany(mappedBy = "savedCategory")
     private List<SavedCategoryPlace> savedCategoryPlaces;
 
+    @Column
+    private Long sourceSharedCategoryId;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     @Builder
     public SavedCategory(
             final Member owner,
             final String name,
-            final List<SavedCategoryPlace> savedCategoryPlaces
+            final List<SavedCategoryPlace> savedCategoryPlaces,
+            final Long sourceSharedCategoryId
     ) {
         validateName(name);
 
         this.owner = owner;
         this.name = name;
         this.savedCategoryPlaces = savedCategoryPlaces;
+        this.sourceSharedCategoryId = sourceSharedCategoryId;
     }
 
     public static SavedCategory createNew(final Member owner, final String name) {
-        return new SavedCategory(owner, name, new ArrayList<>());
+        return new SavedCategory(owner, name, new ArrayList<>(), null);
+    }
+
+    public static SavedCategory createFromShared(final Member owner, final String name,
+            final Long sourceSharedCategoryId) {
+        return new SavedCategory(owner, name, new ArrayList<>(), sourceSharedCategoryId);
+    }
+
+    public boolean hasSource() {
+        return this.sourceSharedCategoryId != null;
     }
 
     public void updateName(final String newName) {
         validateName(newName);
         this.name = newName;
+    }
+
+    public void softDelete() {
+        this.deletedAt = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
     }
 
     public void validateOwnership(final Long memberId) {

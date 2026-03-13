@@ -3,20 +3,19 @@ package courseitda.mystorage.application;
 import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.common.exception.BusinessException;
 import courseitda.common.exception.ErrorCode;
+import courseitda.community.domain.SharedCategory;
+import courseitda.community.domain.SharedCategoryRepository;
 import courseitda.member.domain.Member;
 import courseitda.mystorage.domain.SavedCategory;
 import courseitda.mystorage.domain.SavedCategoryPlace;
 import courseitda.mystorage.domain.SavedCategoryPlaceRepository;
 import courseitda.mystorage.domain.SavedCategoryRepository;
 import courseitda.mystorage.ui.dto.request.SavedCategoryCreateRequest;
+import courseitda.mystorage.ui.dto.request.SavedCategoryForkRequest;
 import courseitda.mystorage.ui.dto.request.SavedCategoryUpdateRequest;
 import courseitda.mystorage.ui.dto.response.SavedCategoryCreateResponse;
 import courseitda.mystorage.ui.dto.response.SavedCategoryReadResponse;
 import courseitda.mystorage.ui.dto.response.SavedCategoryUpdateResponse;
-import courseitda.place.domain.Place;
-import courseitda.place.domain.PlaceRepository;
-import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +28,7 @@ public class SavedCategoryService {
 
     private final SavedCategoryRepository savedCategoryRepository;
     private final SavedCategoryPlaceRepository savedCategoryPlaceRepository;
-    private final PlaceRepository placeRepository;
+    private final SharedCategoryRepository sharedCategoryRepository;
 
     @Transactional
     public SavedCategoryCreateResponse createSavedCategory(
@@ -39,20 +38,26 @@ public class SavedCategoryService {
         final var newSavedCategory = SavedCategory.createNew(member, request.name());
         final var persistedSavedCategory = savedCategoryRepository.save(newSavedCategory);
 
-        for (final var placeRequest : request.savedCategoryPlaces()) {
-            final var newPlace = Place.createNew(
-                    placeRequest.name(),
-                    placeRequest.placeUrl(),
-                    placeRequest.roadAddressName(),
-                    placeRequest.addressName(),
-                    placeRequest.latitude(),
-                    placeRequest.longitude()
-            );
-            final var persistedPlace = placeRepository.save(newPlace);
-            savedCategoryPlaceRepository.save(SavedCategoryPlace.createNew(persistedSavedCategory, persistedPlace));
+        return SavedCategoryCreateResponse.from(persistedSavedCategory);
+    }
+
+    @Transactional
+    public SavedCategoryCreateResponse forkSharedCategory(
+            final SavedCategoryForkRequest request,
+            final Member member
+    ) {
+        final var sharedCategory = getSharedCategoryById(request.sharedCategoryId());
+        final var savedCategory = SavedCategory.createFromShared(member, sharedCategory.getName(),
+                sharedCategory.getId());
+        final var persistedSavedCategory = savedCategoryRepository.save(savedCategory);
+
+        for (final var sharedCategoryPlace : sharedCategory.getSharedCategoryPlaces()) {
+            savedCategoryPlaceRepository.save(
+                    SavedCategoryPlace.createNew(persistedSavedCategory, sharedCategoryPlace.getPlace()));
         }
 
-        // 주의: savedCategoryPlaces 응답에 포함 시 getSavedCategoryById()로 재조회 필요 (JPA 1차 캐시 불일치)
+        sharedCategory.incrementForkCount();
+
         return SavedCategoryCreateResponse.from(persistedSavedCategory);
     }
 
@@ -65,10 +70,8 @@ public class SavedCategoryService {
         final var savedCategory = getSavedCategoryById(savedCategoryId);
         savedCategory.validateOwnership(memberAuthInfo.id());
 
-        applyName(request.name(), savedCategory);
-        syncSavedCategoryPlaces(request.savedCategoryPlaces(), savedCategory);
+        savedCategory.updateName(request.name());
 
-        // 주의: savedCategoryPlaces 응답에 포함 시 getSavedCategoryById()로 재조회 필요 (JPA 1차 캐시 불일치)
         return SavedCategoryUpdateResponse.from(savedCategory);
     }
 
@@ -77,8 +80,12 @@ public class SavedCategoryService {
         final var savedCategory = getSavedCategoryById(savedCategoryId);
         savedCategory.validateOwnership(memberAuthInfo.id());
 
-        savedCategoryPlaceRepository.deleteAllBySavedCategoryId(savedCategoryId);
-        savedCategoryRepository.delete(savedCategory);
+        if (savedCategory.hasSource()) {
+            sharedCategoryRepository.findByIdIncludingDeleted(savedCategory.getSourceSharedCategoryId())
+                    .ifPresent(SharedCategory::decrementForkCount);
+        }
+
+        savedCategory.softDelete();
     }
 
     @Transactional(readOnly = true)
@@ -89,62 +96,32 @@ public class SavedCategoryService {
         final var savedCategory = getSavedCategoryById(savedCategoryId);
         savedCategory.validateOwnership(memberAuthInfo.id());
 
-        return SavedCategoryReadResponse.from(savedCategory);
+        final boolean canPublish = hasChangesFromSource(savedCategory);
+
+        return SavedCategoryReadResponse.from(savedCategory, canPublish);
     }
 
-    private void applyName(final String name, final SavedCategory savedCategory) {
-        if (!Objects.equals(savedCategory.getName(), name)) {
-            savedCategory.updateName(name);
+    private boolean hasChangesFromSource(final SavedCategory savedCategory) {
+        if (!savedCategory.hasSource()) {
+            return true;
         }
-    }
+        final var sourceSharedCategory = sharedCategoryRepository.findByIdIncludingDeleted(
+                savedCategory.getSourceSharedCategoryId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.SHARED_CATEGORY_NOT_FOUND));
 
-    private void syncSavedCategoryPlaces(
-            final List<SavedCategoryUpdateRequest.SavedCategoryPlaceRequest> placeRequests,
-            final SavedCategory savedCategory
-    ) {
-        removeMissingSavedCategoryPlaces(placeRequests, savedCategory);
-        addNewSavedCategoryPlaces(placeRequests, savedCategory);
-    }
-
-    private void removeMissingSavedCategoryPlaces(
-            final List<SavedCategoryUpdateRequest.SavedCategoryPlaceRequest> placeRequests,
-            final SavedCategory savedCategory
-    ) {
-        final Set<Long> requestPlaceIdSet = placeRequests.stream()
-                .map(SavedCategoryUpdateRequest.SavedCategoryPlaceRequest::savedCategoryPlaceId)
-                .filter(Objects::nonNull)
+        final Set<Long> sourcePlaceIds = sourceSharedCategory.getSharedCategoryPlaces().stream()
+                .map(scp -> scp.getPlace().getId())
+                .collect(Collectors.toSet());
+        final Set<Long> currentPlaceIds = savedCategory.getSavedCategoryPlaces().stream()
+                .map(scp -> scp.getPlace().getId())
                 .collect(Collectors.toSet());
 
-        final var existingPlaces = savedCategoryPlaceRepository.findAllBySavedCategoryId(savedCategory.getId());
-        final var existingPlaceIds = existingPlaces.stream()
-                .map(SavedCategoryPlace::getId)
-                .toList();
-
-        final var idsToDelete = existingPlaceIds.stream()
-                .filter(id -> !requestPlaceIdSet.contains(id))
-                .toList();
-        savedCategoryPlaceRepository.deleteAllByIds(idsToDelete);
+        return !sourcePlaceIds.equals(currentPlaceIds);
     }
 
-    private void addNewSavedCategoryPlaces(
-            final List<SavedCategoryUpdateRequest.SavedCategoryPlaceRequest> placeRequests,
-            final SavedCategory savedCategory
-    ) {
-        for (final var placeRequest : placeRequests) {
-            if (placeRequest.savedCategoryPlaceId() == null) {
-                final var newPlace = Place.createNew(
-                        placeRequest.name(),
-                        placeRequest.placeUrl(),
-                        placeRequest.roadAddressName(),
-                        placeRequest.addressName(),
-                        placeRequest.latitude(),
-                        placeRequest.longitude()
-                );
-                final var persistedPlace = placeRepository.save(newPlace);
-                final var newSavedCategoryPlace = SavedCategoryPlace.createNew(savedCategory, persistedPlace);
-                savedCategoryPlaceRepository.save(newSavedCategoryPlace);
-            }
-        }
+    private SharedCategory getSharedCategoryById(final Long sharedCategoryId) {
+        return sharedCategoryRepository.findById(sharedCategoryId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.SHARED_CATEGORY_NOT_FOUND));
     }
 
     private SavedCategory getSavedCategoryById(final Long savedCategoryId) {

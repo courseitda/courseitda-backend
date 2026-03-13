@@ -6,6 +6,7 @@ import courseitda.auth.domain.RequiresRole;
 import courseitda.member.domain.Member;
 import courseitda.mystorage.application.SavedCategoryService;
 import courseitda.mystorage.ui.dto.request.SavedCategoryCreateRequest;
+import courseitda.mystorage.ui.dto.request.SavedCategoryForkRequest;
 import courseitda.mystorage.ui.dto.request.SavedCategoryUpdateRequest;
 import courseitda.mystorage.ui.dto.response.SavedCategoryCreateResponse;
 import courseitda.mystorage.ui.dto.response.SavedCategoryReadResponse;
@@ -37,6 +38,17 @@ public class SavedCategoryController {
             @Valid @RequestBody final SavedCategoryCreateRequest request
     ) {
         final var response = savedCategoryService.createSavedCategory(request, member);
+
+        return ResponseEntity.created(URI.create("/api/saved-categories/" + response.id()))
+                .body(response);
+    }
+
+    @PostMapping("/fork")
+    public ResponseEntity<SavedCategoryCreateResponse> forkSharedCategory(
+            final Member member,
+            @Valid @RequestBody final SavedCategoryForkRequest request
+    ) {
+        final var response = savedCategoryService.forkSharedCategory(request, member);
 
         return ResponseEntity.created(URI.create("/api/saved-categories/" + response.id()))
                 .body(response);

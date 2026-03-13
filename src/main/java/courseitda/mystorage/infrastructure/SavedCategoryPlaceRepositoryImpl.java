@@ -28,9 +28,4 @@ public class SavedCategoryPlaceRepositoryImpl implements SavedCategoryPlaceRepos
             jpaSavedCategoryPlaceRepository.deleteAllByIdIn(ids);
         }
     }
-
-    @Override
-    public void deleteAllBySavedCategoryId(final Long savedCategoryId) {
-        jpaSavedCategoryPlaceRepository.deleteAllBySavedCategoryId(savedCategoryId);
-    }
 }

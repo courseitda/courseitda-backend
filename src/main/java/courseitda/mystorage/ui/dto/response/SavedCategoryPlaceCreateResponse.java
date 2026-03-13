@@ -1,25 +1,16 @@
 package courseitda.mystorage.ui.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import courseitda.mystorage.domain.SavedCategory;
 import courseitda.mystorage.domain.SavedCategoryPlace;
 import java.util.List;
 
-public record SavedCategoryReadResponse(
-        Long id,
-        String name,
-        Long sourceSharedCategoryId,
-        boolean canPublish,
+public record SavedCategoryPlaceCreateResponse(
         @JsonProperty("savedCategoryPlaces") List<SavedCategoryPlaceResponse> savedCategoryPlaceResponses
 ) {
 
-    public static SavedCategoryReadResponse from(final SavedCategory savedCategory, final boolean canPublish) {
-        return new SavedCategoryReadResponse(
-                savedCategory.getId(),
-                savedCategory.getName(),
-                savedCategory.getSourceSharedCategoryId(),
-                canPublish,
-                savedCategory.getSavedCategoryPlaces().stream()
+    public static SavedCategoryPlaceCreateResponse from(final List<SavedCategoryPlace> savedCategoryPlaces) {
+        return new SavedCategoryPlaceCreateResponse(
+                savedCategoryPlaces.stream()
                         .map(SavedCategoryPlaceResponse::from)
                         .toList()
         );

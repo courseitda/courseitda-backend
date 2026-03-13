@@ -6,16 +6,19 @@ import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.auth.domain.RequiresRole;
 import courseitda.member.application.MeService;
 import courseitda.member.domain.Member;
+import courseitda.member.ui.dto.response.ForkedSharedCategoryIdsResponse;
 import courseitda.member.ui.dto.response.MemberDropdownResponse;
 import courseitda.member.ui.dto.response.MemberNavigatorResponse;
 import courseitda.member.ui.dto.response.MemberProfileResponse;
-import courseitda.member.ui.dto.response.MySharedCategoriesResponse;
 import courseitda.member.ui.dto.response.MySavedCategoriesResponse;
+import courseitda.member.ui.dto.response.MySharedCategoriesResponse;
 import courseitda.member.ui.dto.response.MyWorkspacesResponse;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -57,31 +60,44 @@ public class MeController {
     }
 
     @GetMapping("/workspaces")
-    // TODO: 페이징 고려 필요
     public ResponseEntity<MyWorkspacesResponse> readMyWorkspaces(
-            final MemberAuthInfo memberAuthInfo
+            final MemberAuthInfo memberAuthInfo,
+            @RequestParam(required = false) final Long cursor,
+            @RequestParam(defaultValue = "10") final int size
     ) {
-        final var response = meService.readMyWorkspaces(memberAuthInfo.id());
+        final var response = meService.readMyWorkspaces(memberAuthInfo.id(), cursor, size);
 
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/saved-categories")
-    // TODO: 페이징 고려 필요
     public ResponseEntity<MySavedCategoriesResponse> readMySavedCategories(
-            final MemberAuthInfo memberAuthInfo
+            final MemberAuthInfo memberAuthInfo,
+            @RequestParam(required = false) final Long cursor,
+            @RequestParam(defaultValue = "10") final int size
     ) {
-        final var response = meService.readMySavedCategory(memberAuthInfo.id());
+        final var response = meService.readMySavedCategories(memberAuthInfo.id(), cursor, size);
 
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/shared-categories")
-    // TODO: 페이징 고려 필요
     public ResponseEntity<MySharedCategoriesResponse> readMySharedCategories(
-            final MemberAuthInfo memberAuthInfo
+            final MemberAuthInfo memberAuthInfo,
+            @RequestParam(required = false) final Long cursor,
+            @RequestParam(defaultValue = "10") final int size
     ) {
-        final var response = meService.readMySharedCategories(memberAuthInfo.id());
+        final var response = meService.readMySharedCategories(memberAuthInfo.id(), cursor, size);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/saved-categories/contains")
+    public ResponseEntity<ForkedSharedCategoryIdsResponse> readForkedSharedCategoryIds(
+            final MemberAuthInfo memberAuthInfo,
+            @RequestParam final List<Long> sharedCategoryIds
+    ) {
+        final var response = meService.readForkedSharedCategoryIds(memberAuthInfo.id(), sharedCategoryIds);
 
         return ResponseEntity.ok(response);
     }

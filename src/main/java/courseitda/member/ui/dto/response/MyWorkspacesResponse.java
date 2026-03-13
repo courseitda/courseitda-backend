@@ -7,15 +7,18 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record MyWorkspacesResponse(
-        List<WorkspaceResponse> workspaces
+        List<WorkspaceResponse> workspaces,
+        boolean hasNext,
+        Long nextCursor
 ) {
 
-    public static MyWorkspacesResponse from(final List<Workspace> workspaces) {
+    public static MyWorkspacesResponse from(final List<Workspace> workspaces, final boolean hasNext,
+            final Long nextCursor) {
         final List<WorkspaceResponse> workspaceResponses = workspaces.stream()
                 .map(WorkspaceResponse::from)
                 .toList();
 
-        return new MyWorkspacesResponse(workspaceResponses);
+        return new MyWorkspacesResponse(workspaceResponses, hasNext, nextCursor);
     }
 
     public record WorkspaceResponse(

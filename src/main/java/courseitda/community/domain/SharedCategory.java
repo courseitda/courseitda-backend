@@ -13,6 +13,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -43,21 +45,66 @@ public class SharedCategory extends Timestamp {
     @OneToMany(mappedBy = "sharedCategory")
     private List<SharedCategoryPlace> sharedCategoryPlaces;
 
+    @Column(name = "root_shared_category_id")
+    private Long rootSharedCategoryId;
+
+    @Column(name = "parent_shared_category_id")
+    private Long parentSharedCategoryId;
+
+    @Column(name = "fork_count", nullable = false)
+    private int forkCount;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     @Builder
     public SharedCategory(
             final String name,
             final Member author,
-            final List<SharedCategoryPlace> sharedCategoryPlaces
+            final List<SharedCategoryPlace> sharedCategoryPlaces,
+            final Long rootSharedCategoryId,
+            final Long parentSharedCategoryId
     ) {
         validateName(name);
 
         this.name = name;
         this.author = author;
         this.sharedCategoryPlaces = sharedCategoryPlaces;
+        this.rootSharedCategoryId = rootSharedCategoryId;
+        this.parentSharedCategoryId = parentSharedCategoryId;
     }
 
-    public static SharedCategory createNew(final String name, Member author) {
-        return new SharedCategory(name, author, new ArrayList<>());
+    public static SharedCategory createRoot(final String name, final Member author) {
+        return new SharedCategory(name, author, new ArrayList<>(), null, null);
+    }
+
+    public static SharedCategory createChild(
+            final String name,
+            final Member author,
+            final Long rootSharedCategoryId,
+            final Long parentSharedCategoryId
+    ) {
+        return new SharedCategory(name, author, new ArrayList<>(), rootSharedCategoryId, parentSharedCategoryId);
+    }
+
+    public void initializeRoot() {
+        if (this.rootSharedCategoryId == null) {
+            this.rootSharedCategoryId = this.id;
+        }
+    }
+
+    public void softDelete() {
+        this.deletedAt = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+    }
+
+    public void incrementForkCount() {
+        this.forkCount++;
+    }
+
+    public void decrementForkCount() {
+        if (this.forkCount > 0) {
+            this.forkCount--;
+        }
     }
 
     public void validateOwnership(final Long memberId) {

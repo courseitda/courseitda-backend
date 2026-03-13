@@ -377,6 +377,12 @@ public enum ErrorCode {
             HttpStatus.FORBIDDEN // 403
     ),
 
+    SAVED_CATEGORY_PLACES_NOT_MODIFIED(
+            "7005",
+            "fork한 보관 카테고리는 장소를 수정해야 공유할 수 있습니다.",
+            HttpStatus.UNPROCESSABLE_ENTITY // 422
+    ),
+
     //-----------------------------------------------------------------------------------
     // 8000 Series: SharedCategory Errors
     SHARED_CATEGORY_NAME_EMPTY(

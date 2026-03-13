@@ -5,6 +5,7 @@ import courseitda.mystorage.domain.SavedCategoryRepository;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -19,17 +20,34 @@ public class SavedCategoryRepositoryImpl implements SavedCategoryRepository {
     }
 
     @Override
-    public Optional<SavedCategory> findById(final Long savedCategoryId) {
-        return jpaSavedCategoryRepository.findById(savedCategoryId);
-    }
-
-    @Override
     public void delete(final SavedCategory savedCategory) {
         jpaSavedCategoryRepository.delete(savedCategory);
     }
 
     @Override
-    public List<SavedCategory> findAllByOwnerId(final Long ownerId) {
-        return jpaSavedCategoryRepository.findAllByOwnerId(ownerId);
+    public Optional<SavedCategory> findById(final Long savedCategoryId) {
+        return jpaSavedCategoryRepository.findByIdAndDeletedAtIsNull(savedCategoryId);
+    }
+
+    @Override
+    public List<SavedCategory> findAllByOwnerIdOrderByIdDesc(final Long ownerId, final int limit) {
+        return jpaSavedCategoryRepository.findAllByOwnerIdAndDeletedAtIsNullOrderByIdDesc(ownerId, PageRequest.of(0,
+                limit));
+    }
+
+    @Override
+    public List<SavedCategory> findAllByOwnerIdAndIdLessThanOrderByIdDesc(final Long ownerId, final Long cursor,
+            final int limit) {
+        return jpaSavedCategoryRepository.findAllByOwnerIdAndIdLessThanAndDeletedAtIsNullOrderByIdDesc(ownerId, cursor,
+                PageRequest.of(0, limit));
+    }
+
+    @Override
+    public List<Long> findAllSourceSharedCategoryIdsByOwnerIdAndSourceSharedCategoryIdIn(
+            final Long ownerId,
+            final List<Long> sharedCategoryIds
+    ) {
+        return jpaSavedCategoryRepository.findSourceSharedCategoryIdsByOwnerIdAndSourceSharedCategoryIdIn(ownerId,
+                sharedCategoryIds);
     }
 }

@@ -28,7 +28,8 @@ public record SharedCategorySearchResponse(
             Long id,
             String name,
             String authorNickname,
-            int placeCount
+            int placeCount,
+            int forkCount
     ) {
 
         public static SharedCategoryResponse from(final SharedCategory sharedCategory) {
@@ -36,7 +37,8 @@ public record SharedCategorySearchResponse(
                     sharedCategory.getId(),
                     sharedCategory.getName(),
                     sharedCategory.getAuthor().getNickname(),
-                    sharedCategory.getSharedCategoryPlaces().size()
+                    sharedCategory.getSharedCategoryPlaces().size(),
+                    sharedCategory.getForkCount()
             );
         }
     }

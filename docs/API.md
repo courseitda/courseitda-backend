@@ -179,12 +179,17 @@ Content-Type: application/json
 
 ### 3.4 내 워크스페이스 목록 조회
 
-현재 로그인한 사용자가 소유한 모든 워크스페이스 목록을 조회합니다.
+현재 로그인한 사용자가 소유한 워크스페이스 목록을 커서 기반 페이징으로 조회합니다.
 
 ```http
-GET /api/me/workspaces HTTP/1.1
+GET /api/me/workspaces?cursor={cursor}&size={size} HTTP/1.1
 Authorization: Bearer {accessToken}
 ```
+
+| 파라미터 | 타입 | 필수 | 기본값 | 설명 |
+|---------|------|------|--------|------|
+| cursor | Long | X | - | 이전 응답의 nextCursor 값 |
+| size | int | X | 10 | 조회 개수 (1~100) |
 
 **성공 응답:**
 
@@ -199,18 +204,25 @@ Content-Type: application/json
       "title": "워크스페이스 제목",
       "modifiedAt": "2025-10-31T12:00:00+09:00"
     }
-  ]
+  ],
+  "hasNext": true,
+  "nextCursor": 5
 }
 ```
 
 ### 3.5 내 보관 카테고리 목록 조회
 
-현재 로그인한 사용자가 보관한 모든 카테고리 목록을 조회합니다.
+현재 로그인한 사용자가 보관한 카테고리 목록을 커서 기반 페이징으로 조회합니다.
 
 ```http
-GET /api/me/saved-categories HTTP/1.1
+GET /api/me/saved-categories?cursor={cursor}&size={size} HTTP/1.1
 Authorization: Bearer {accessToken}
 ```
+
+| 파라미터 | 타입 | 필수 | 기본값 | 설명 |
+|---------|------|------|--------|------|
+| cursor | Long | X | - | 이전 응답의 nextCursor 값 |
+| size | int | X | 10 | 조회 개수 (1~100) |
 
 **성공 응답:**
 
@@ -224,20 +236,29 @@ Content-Type: application/json
       "id": 1,
       "name": "보관 카테고리 이름",
       "placeCount": 3,
+      "sourceSharedCategoryId": 2,
+      "canPublish": true,
       "modifiedAt": "2025-10-31T12:00:00+09:00"
     }
-  ]
+  ],
+  "hasNext": true,
+  "nextCursor": 1
 }
 ```
 
 ### 3.6 내 공유 카테고리 목록 조회
 
-현재 로그인한 사용자가 공유한 모든 카테고리 목록을 조회합니다.
+현재 로그인한 사용자가 공유한 카테고리 목록을 커서 기반 페이징으로 조회합니다.
 
 ```http
-GET /api/me/shared-categories HTTP/1.1
+GET /api/me/shared-categories?cursor={cursor}&size={size} HTTP/1.1
 Authorization: Bearer {accessToken}
 ```
+
+| 파라미터 | 타입 | 필수 | 기본값 | 설명 |
+|---------|------|------|--------|------|
+| cursor | Long | X | - | 이전 응답의 nextCursor 값 |
+| size | int | X | 10 | 조회 개수 (1~100) |
 
 **성공 응답:**
 
@@ -251,9 +272,36 @@ Content-Type: application/json
       "id": 1,
       "name": "공유 카테고리 이름",
       "createdAt": "2025-10-31T12:00:00+09:00",
-      "placeCount": 3
+      "placeCount": 3,
+      "forkCount": 10
     }
-  ]
+  ],
+  "hasNext": false,
+  "nextCursor": null
+}
+```
+
+### 3.7 포크 여부 확인
+
+공유 카테고리 응답에 `isForked` 필드가 내장되기 전까지 임시로 사용하는 API입니다. 주어진 공유 카테고리 ID 목록 중, 현재 로그인한 사용자가 포크한 보관 카테고리의 원본(`sourceSharedCategoryId`)에 해당하는 ID만 반환합니다.
+
+```http
+GET /api/me/saved-categories/contains?sharedCategoryIds=1,2,3 HTTP/1.1
+Authorization: Bearer {accessToken}
+```
+
+| 파라미터 | 타입 | 필수 | 설명 |
+|---------|------|------|------|
+| sharedCategoryIds | List&lt;Long&gt; | O | 포크 여부를 확인할 공유 카테고리 ID 목록 |
+
+**성공 응답:**
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "forkedSharedCategoryIds": [1, 3]
 }
 ```
 
@@ -738,7 +786,7 @@ HTTP/1.1 204 No Content
 
 ### 8.1 보관 카테고리 생성
 
-새로운 보관 카테고리를 생성합니다. 생성 시 장소 목록을 함께 전달해야 합니다.
+새로운 보관 카테고리를 이름만으로 생성합니다. 최초 장소 입력은 생성 후 8.5 장소 추가 API를 사용하고, 이후 전체 목록 수정은 8.6 장소 동기화 API를 사용합니다.
 
 ```http
 POST /api/saved-categories HTTP/1.1
@@ -746,17 +794,7 @@ Authorization: Bearer {accessToken}
 Content-Type: application/json
 
 {
-  "name": "보관 카테고리 이름",
-  "savedCategoryPlaces": [
-    {
-      "name": "장소 이름",
-      "placeUrl": "카카오 장소 URL",
-      "roadAddressName": "도로명 주소",
-      "addressName": "지번 주소",
-      "latitude": 37.5665,
-      "longitude": 126.9780
-    }
-  ]
+  "name": "보관 카테고리 이름"
 }
 ```
 
@@ -790,6 +828,8 @@ Content-Type: application/json
 {
   "id": 1,
   "name": "보관 카테고리 이름",
+  "sourceSharedCategoryId": 2,
+  "canPublish": true,
   "savedCategoryPlaces": [
     {
       "id": 1,
@@ -806,7 +846,7 @@ Content-Type: application/json
 
 ### 8.3 보관 카테고리 수정
 
-보관 카테고리의 이름과 장소 목록을 수정합니다. `savedCategoryPlaceId`가 있으면 기존 장소 유지, `null`이면 새 장소로 추가됩니다. 요청에 포함되지 않은 기존 장소는 삭제됩니다.
+보관 카테고리의 이름을 수정합니다. 장소 수정은 8.6 장소 동기화 API를 사용합니다.
 
 ```http
 PATCH /api/saved-categories/{savedCategoryId} HTTP/1.1
@@ -814,7 +854,91 @@ Authorization: Bearer {accessToken}
 Content-Type: application/json
 
 {
-  "name": "새로운 카테고리 이름",
+  "name": "새로운 카테고리 이름"
+}
+```
+
+**성공 응답:**
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "새로운 카테고리 이름"
+}
+```
+
+### 8.4 보관 카테고리 삭제
+
+보관 카테고리를 삭제합니다. 포함된 모든 장소 정보도 함께 삭제됩니다.
+
+```http
+DELETE /api/saved-categories/{savedCategoryId} HTTP/1.1
+Authorization: Bearer {accessToken}
+```
+
+**성공 응답:**
+
+```http
+HTTP/1.1 204 No Content
+```
+
+### 8.5 보관 카테고리 초기 장소 추가
+
+보관 카테고리 생성 직후 최초로 장소 목록을 입력할 때 사용합니다. 기존 장소를 유지하거나 삭제하는 동기화 목적이 아니라, 새 장소를 추가하는 API입니다.
+
+```http
+POST /api/saved-categories/{savedCategoryId}/places HTTP/1.1
+Authorization: Bearer {accessToken}
+Content-Type: application/json
+
+{
+  "savedCategoryPlaces": [
+    {
+      "name": "장소 이름",
+      "placeUrl": "카카오 장소 URL",
+      "roadAddressName": "도로명 주소",
+      "addressName": "지번 주소",
+      "latitude": 37.5665,
+      "longitude": 126.9780
+    }
+  ]
+}
+```
+
+**성공 응답:**
+
+```http
+HTTP/1.1 201 Created
+Content-Type: application/json
+
+{
+  "savedCategoryPlaces": [
+    {
+      "id": 1,
+      "name": "장소 이름",
+      "placeUrl": "카카오 장소 URL",
+      "roadAddressName": "도로명 주소",
+      "addressName": "지번 주소",
+      "latitude": 37.5665,
+      "longitude": 126.9780
+    }
+  ]
+}
+```
+
+### 8.6 보관 카테고리 장소 동기화
+
+이미 장소가 있는 보관 카테고리의 전체 목록을 최종 상태 기준으로 반영할 때 사용합니다. `savedCategoryPlaceId`가 있으면 기존 장소 유지, `null`이면 새 장소로 추가됩니다. 요청에 포함되지 않은 기존 장소는 삭제됩니다.
+
+```http
+PATCH /api/saved-categories/{savedCategoryId}/places HTTP/1.1
+Authorization: Bearer {accessToken}
+Content-Type: application/json
+
+{
   "savedCategoryPlaces": [
     {
       "savedCategoryPlaceId": 1,
@@ -845,24 +969,53 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 {
-  "id": 1,
-  "name": "새로운 카테고리 이름"
+  "savedCategoryPlaces": [
+    {
+      "id": 1,
+      "name": "기존 장소 이름",
+      "placeUrl": "카카오 장소 URL",
+      "roadAddressName": "도로명 주소",
+      "addressName": "지번 주소",
+      "latitude": 37.5665,
+      "longitude": 126.9780
+    },
+    {
+      "id": 2,
+      "name": "새 장소 이름",
+      "placeUrl": "카카오 장소 URL",
+      "roadAddressName": "도로명 주소",
+      "addressName": "지번 주소",
+      "latitude": 37.1234,
+      "longitude": 127.1234
+    }
+  ]
 }
 ```
 
-### 8.4 보관 카테고리 삭제
+### 8.7 공유 카테고리 포크
 
-보관 카테고리를 삭제합니다. 포함된 모든 장소 정보도 함께 삭제됩니다.
+공유 카테고리를 포크하여 새로운 보관 카테고리를 생성합니다. 공유 카테고리의 이름과 장소 목록이 그대로 복사됩니다.
 
 ```http
-DELETE /api/saved-categories/{savedCategoryId} HTTP/1.1
+POST /api/saved-categories/fork HTTP/1.1
 Authorization: Bearer {accessToken}
+Content-Type: application/json
+
+{
+  "sharedCategoryId": 1
+}
 ```
 
 **성공 응답:**
 
 ```http
-HTTP/1.1 204 No Content
+HTTP/1.1 201 Created
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "공유 카테고리 이름"
+}
 ```
 
 ---
@@ -901,7 +1054,6 @@ Content-Type: application/json
 
 ```http
 GET /api/shared-categories?cursor=50&size=10 HTTP/1.1
-Authorization: Bearer {accessToken}
 ```
 
 | 파라미터 | 필수 여부 | 기본값 | 설명 |
@@ -921,7 +1073,8 @@ Content-Type: application/json
       "id": 1,
       "name": "공유 카테고리 이름",
       "authorNickname": "닉네임",
-      "placeCount": 3
+      "placeCount": 3,
+      "forkCount": 10
     }
   ],
   "hasNext": true,
@@ -935,7 +1088,6 @@ Content-Type: application/json
 
 ```http
 GET /api/shared-categories/search?keyword=맛집&cursor=50&size=10 HTTP/1.1
-Authorization: Bearer {accessToken}
 ```
 
 | 파라미터 | 필수 여부 | 기본값 | 설명 |
@@ -956,7 +1108,8 @@ Content-Type: application/json
       "id": 1,
       "name": "공유 카테고리 이름",
       "authorNickname": "닉네임",
-      "placeCount": 3
+      "placeCount": 3,
+      "forkCount": 10
     }
   ],
   "hasNext": true,
@@ -970,7 +1123,6 @@ Content-Type: application/json
 
 ```http
 GET /api/shared-categories/{sharedCategoryId} HTTP/1.1
-Authorization: Bearer {accessToken}
 ```
 
 **성공 응답:**
@@ -984,6 +1136,7 @@ Content-Type: application/json
   "name": "공유 카테고리 이름",
   "authorNickname": "닉네임",
   "createdAt": "2025-10-31T12:00:00+09:00",
+  "forkCount": 10,
   "sharedCategoryPlaces": [
     {
       "id": 1,
@@ -1017,12 +1170,12 @@ HTTP/1.1 204 No Content
 
 ## API 통계
 
-- **전체 엔드포인트**: 36개
+- **전체 엔드포인트**: 40개
 - **HTTP 메서드별**:
-    - GET: 18개
-    - POST: 8개
-    - PATCH: 3개
+    - GET: 20개
+    - POST: 9개
+    - PATCH: 4개
     - DELETE: 6개
     - PUT: 1개
-- **인증 필요**: 32개
-- **공개 엔드포인트**: 4개
+- **인증 필요**: 33개
+- **공개 엔드포인트**: 7개

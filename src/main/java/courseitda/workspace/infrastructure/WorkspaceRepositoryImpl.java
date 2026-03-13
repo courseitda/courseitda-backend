@@ -5,6 +5,7 @@ import courseitda.workspace.domain.WorkspaceRepository;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -41,5 +42,17 @@ public class WorkspaceRepositoryImpl implements WorkspaceRepository {
     @Override
     public List<Workspace> findAllByOwnerId(final Long ownerId) {
         return jpaWorkspaceRepository.findAllByOwnerId(ownerId);
+    }
+
+    @Override
+    public List<Workspace> findAllByOwnerIdOrderByIdDesc(final Long ownerId, final int limit) {
+        return jpaWorkspaceRepository.findAllByOwnerIdOrderByIdDesc(ownerId, PageRequest.of(0, limit));
+    }
+
+    @Override
+    public List<Workspace> findAllByOwnerIdAndIdLessThanOrderByIdDesc(final Long ownerId, final Long cursor,
+            final int limit) {
+        return jpaWorkspaceRepository.findAllByOwnerIdAndIdLessThanOrderByIdDesc(ownerId, cursor,
+                PageRequest.of(0, limit));
     }
 }

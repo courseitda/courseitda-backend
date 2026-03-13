@@ -13,6 +13,9 @@ import courseitda.mystorage.domain.SavedCategoryRepository;
 import courseitda.workspace.domain.Workspace;
 import courseitda.workspace.domain.WorkspaceRepository;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,15 +41,17 @@ public class MeService {
     }
 
     @Transactional(readOnly = true)
-    public MySavedCategoriesResponse readMySavedCategory(final Long memberId, final Long cursor, final int size) {
+    public MySavedCategoriesResponse readMySavedCategories(final Long memberId, final Long cursor, final int size) {
         validatePageSize(size);
         final var savedCategories = findSavedCategoriesByCursor(memberId, cursor, size + 1);
         final boolean hasNext = savedCategories.size() > size;
+        final var publishableIds = findPublishableSavedCategoryIds(savedCategories);
 
         if (hasNext) {
-            return MySavedCategoriesResponse.from(savedCategories.subList(0, size), hasNext, savedCategories.get(size - 1).getId());
+            return MySavedCategoriesResponse.from(savedCategories.subList(0, size), publishableIds, hasNext,
+                    savedCategories.get(size - 1).getId());
         }
-        return MySavedCategoriesResponse.from(savedCategories, hasNext, null);
+        return MySavedCategoriesResponse.from(savedCategories, publishableIds, hasNext, null);
     }
 
     @Transactional(readOnly = true)
@@ -56,7 +61,8 @@ public class MeService {
         final boolean hasNext = sharedCategories.size() > size;
 
         if (hasNext) {
-            return MySharedCategoriesResponse.from(sharedCategories.subList(0, size), hasNext, sharedCategories.get(size - 1).getId());
+            return MySharedCategoriesResponse.from(sharedCategories.subList(0, size), hasNext,
+                    sharedCategories.get(size - 1).getId());
         }
         return MySharedCategoriesResponse.from(sharedCategories, hasNext, null);
     }
@@ -66,9 +72,47 @@ public class MeService {
             final Long memberId,
             final List<Long> sharedCategoryIds
     ) {
-        final var forkedIds = savedCategoryRepository.findAllSourceSharedCategoryIdsByOwnerIdAndSourceSharedCategoryIdIn(
-                memberId, sharedCategoryIds);
+        final var forkedIds = savedCategoryRepository
+                .findAllSourceSharedCategoryIdsByOwnerIdAndSourceSharedCategoryIdIn(
+                        memberId, sharedCategoryIds);
         return ForkedSharedCategoryIdsResponse.from(forkedIds);
+    }
+
+    private Set<Long> findPublishableSavedCategoryIds(final List<SavedCategory> savedCategories) {
+        final var sourceSharedCategoryIds = savedCategories.stream()
+                .filter(SavedCategory::hasSource)
+                .map(SavedCategory::getSourceSharedCategoryId)
+                .toList();
+
+        if (sourceSharedCategoryIds.isEmpty()) {
+            return savedCategories.stream()
+                    .map(SavedCategory::getId)
+                    .collect(Collectors.toSet());
+        }
+
+        final var sourceMap = sharedCategoryRepository.findAllByIdIn(sourceSharedCategoryIds).stream()
+                .collect(Collectors.toMap(SharedCategory::getId, sc -> sc));
+
+        return savedCategories.stream()
+                .filter(sc -> hasChangesFromSource(sc, sourceMap))
+                .map(SavedCategory::getId)
+                .collect(Collectors.toSet());
+    }
+
+    private boolean hasChangesFromSource(final SavedCategory savedCategory, final Map<Long, SharedCategory> sourceMap) {
+        if (!savedCategory.hasSource()) {
+            return true;
+        }
+        final var sourceSharedCategory = sourceMap.get(savedCategory.getSourceSharedCategoryId());
+
+        final Set<Long> sourcePlaceIds = sourceSharedCategory.getSharedCategoryPlaces().stream()
+                .map(scp -> scp.getPlace().getId())
+                .collect(Collectors.toSet());
+        final Set<Long> currentPlaceIds = savedCategory.getSavedCategoryPlaces().stream()
+                .map(scp -> scp.getPlace().getId())
+                .collect(Collectors.toSet());
+
+        return !sourcePlaceIds.equals(currentPlaceIds);
     }
 
     private void validatePageSize(final int size) {
@@ -91,7 +135,8 @@ public class MeService {
         return savedCategoryRepository.findAllByOwnerIdAndIdLessThanOrderByIdDesc(ownerId, cursor, limit);
     }
 
-    private List<SharedCategory> findMySharedCategoriesByCursor(final Long authorId, final Long cursor, final int limit) {
+    private List<SharedCategory> findMySharedCategoriesByCursor(final Long authorId, final Long cursor,
+            final int limit) {
         if (cursor == null) {
             return sharedCategoryRepository.findAllByAuthorIdOrderByIdDesc(authorId, limit);
         }

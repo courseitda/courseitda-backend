@@ -8,13 +8,17 @@ import java.util.List;
 public record SavedCategoryReadResponse(
         Long id,
         String name,
+        Long sourceSharedCategoryId,
+        boolean canPublish,
         @JsonProperty("savedCategoryPlaces") List<SavedCategoryPlaceResponse> savedCategoryPlaceResponses
 ) {
 
-    public static SavedCategoryReadResponse from(final SavedCategory savedCategory) {
+    public static SavedCategoryReadResponse from(final SavedCategory savedCategory, final boolean canPublish) {
         return new SavedCategoryReadResponse(
                 savedCategory.getId(),
                 savedCategory.getName(),
+                savedCategory.getSourceSharedCategoryId(),
+                canPublish,
                 savedCategory.getSavedCategoryPlaces().stream()
                         .map(SavedCategoryPlaceResponse::from)
                         .toList()

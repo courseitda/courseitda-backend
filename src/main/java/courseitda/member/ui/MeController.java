@@ -76,7 +76,7 @@ public class MeController {
             @RequestParam(required = false) final Long cursor,
             @RequestParam(defaultValue = "10") final int size
     ) {
-        final var response = meService.readMySavedCategory(memberAuthInfo.id(), cursor, size);
+        final var response = meService.readMySavedCategories(memberAuthInfo.id(), cursor, size);
 
         return ResponseEntity.ok(response);
     }

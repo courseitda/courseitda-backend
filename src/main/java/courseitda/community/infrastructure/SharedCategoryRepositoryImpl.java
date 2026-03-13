@@ -35,6 +35,11 @@ public class SharedCategoryRepositoryImpl implements SharedCategoryRepository {
     }
 
     @Override
+    public List<SharedCategory> findAllByIdIn(final List<Long> ids) {
+        return jpaSharedCategoryRepository.findAllById(ids);
+    }
+
+    @Override
     public List<SharedCategory> findAllByAuthorId(final Long authorId) {
         return jpaSharedCategoryRepository.findAllByAuthorIdAndDeletedAtIsNull(authorId);
     }

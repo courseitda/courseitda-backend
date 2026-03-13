@@ -16,6 +16,8 @@ import courseitda.mystorage.ui.dto.request.SavedCategoryUpdateRequest;
 import courseitda.mystorage.ui.dto.response.SavedCategoryCreateResponse;
 import courseitda.mystorage.ui.dto.response.SavedCategoryReadResponse;
 import courseitda.mystorage.ui.dto.response.SavedCategoryUpdateResponse;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -94,7 +96,27 @@ public class SavedCategoryService {
         final var savedCategory = getSavedCategoryById(savedCategoryId);
         savedCategory.validateOwnership(memberAuthInfo.id());
 
-        return SavedCategoryReadResponse.from(savedCategory);
+        final boolean canPublish = hasChangesFromSource(savedCategory);
+
+        return SavedCategoryReadResponse.from(savedCategory, canPublish);
+    }
+
+    private boolean hasChangesFromSource(final SavedCategory savedCategory) {
+        if (!savedCategory.hasSource()) {
+            return true;
+        }
+        final var sourceSharedCategory = sharedCategoryRepository.findByIdIncludingDeleted(
+                        savedCategory.getSourceSharedCategoryId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.SHARED_CATEGORY_NOT_FOUND));
+
+        final Set<Long> sourcePlaceIds = sourceSharedCategory.getSharedCategoryPlaces().stream()
+                .map(scp -> scp.getPlace().getId())
+                .collect(Collectors.toSet());
+        final Set<Long> currentPlaceIds = savedCategory.getSavedCategoryPlaces().stream()
+                .map(scp -> scp.getPlace().getId())
+                .collect(Collectors.toSet());
+
+        return !sourcePlaceIds.equals(currentPlaceIds);
     }
 
     private SharedCategory getSharedCategoryById(final Long sharedCategoryId) {

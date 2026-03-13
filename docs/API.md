@@ -236,6 +236,8 @@ Content-Type: application/json
       "id": 1,
       "name": "보관 카테고리 이름",
       "placeCount": 3,
+      "sourceSharedCategoryId": 2,
+      "canPublish": true,
       "modifiedAt": "2025-10-31T12:00:00+09:00"
     }
   ],
@@ -826,6 +828,8 @@ Content-Type: application/json
 {
   "id": 1,
   "name": "보관 카테고리 이름",
+  "sourceSharedCategoryId": 2,
+  "canPublish": true,
   "savedCategoryPlaces": [
     {
       "id": 1,

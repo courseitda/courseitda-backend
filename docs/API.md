@@ -786,7 +786,7 @@ HTTP/1.1 204 No Content
 
 ### 8.1 보관 카테고리 생성
 
-새로운 보관 카테고리를 이름만으로 생성합니다. 장소는 생성 후 8.6 장소 동기화 API로 추가합니다.
+새로운 보관 카테고리를 이름만으로 생성합니다. 최초 장소 입력은 생성 후 8.5 장소 추가 API를 사용하고, 이후 전체 목록 수정은 8.6 장소 동기화 API를 사용합니다.
 
 ```http
 POST /api/saved-categories HTTP/1.1
@@ -885,9 +885,9 @@ Authorization: Bearer {accessToken}
 HTTP/1.1 204 No Content
 ```
 
-### 8.5 보관 카테고리 장소 추가
+### 8.5 보관 카테고리 초기 장소 추가
 
-보관 카테고리에 장소 목록을 추가합니다. 카테고리 생성 후 최초 장소 기입 시 사용합니다.
+보관 카테고리 생성 직후 최초로 장소 목록을 입력할 때 사용합니다. 기존 장소를 유지하거나 삭제하는 동기화 목적이 아니라, 새 장소를 추가하는 API입니다.
 
 ```http
 POST /api/saved-categories/{savedCategoryId}/places HTTP/1.1
@@ -931,7 +931,7 @@ Content-Type: application/json
 
 ### 8.6 보관 카테고리 장소 동기화
 
-보관 카테고리의 장소 목록을 동기화합니다. `savedCategoryPlaceId`가 있으면 기존 장소 유지, `null`이면 새 장소로 추가됩니다. 요청에 포함되지 않은 기존 장소는 삭제됩니다.
+이미 장소가 있는 보관 카테고리의 전체 목록을 최종 상태 기준으로 반영할 때 사용합니다. `savedCategoryPlaceId`가 있으면 기존 장소 유지, `null`이면 새 장소로 추가됩니다. 요청에 포함되지 않은 기존 장소는 삭제됩니다.
 
 ```http
 PATCH /api/saved-categories/{savedCategoryId}/places HTTP/1.1

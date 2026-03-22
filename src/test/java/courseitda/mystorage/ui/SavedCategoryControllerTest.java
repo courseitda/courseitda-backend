@@ -7,21 +7,15 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import courseitda.auth.ui.dto.request.LoginRequest;
 import courseitda.auth.ui.dto.response.LoginResponse;
 import courseitda.common.exception.ErrorCode;
-import courseitda.community.ui.dto.request.SharedCategoryCreateRequest;
-import courseitda.community.ui.dto.response.SharedCategoryCreateResponse;
 import courseitda.member.domain.MemberFixture;
 import courseitda.member.ui.dto.request.SignUpRequest;
 import courseitda.mystorage.domain.SavedCategoryFixture;
 import courseitda.mystorage.ui.dto.request.SavedCategoryCreateRequest;
-import courseitda.mystorage.ui.dto.request.SavedCategoryForkRequest;
-import courseitda.mystorage.ui.dto.request.SavedCategoryPlaceCreateRequest;
 import courseitda.mystorage.ui.dto.request.SavedCategoryUpdateRequest;
 import courseitda.mystorage.ui.dto.response.SavedCategoryCreateResponse;
 import courseitda.mystorage.ui.dto.response.SavedCategoryReadResponse;
 import courseitda.mystorage.ui.dto.response.SavedCategoryUpdateResponse;
-import courseitda.place.domain.PlaceFixture;
 import io.restassured.RestAssured;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -87,58 +81,6 @@ class SavedCategoryControllerTest {
                 .statusCode(HttpStatus.CREATED.value())
                 .extract()
                 .as(SavedCategoryCreateResponse.class);
-    }
-
-    private SharedCategoryCreateResponse createSharedCategory(final String accessToken, final Long savedCategoryId) {
-        final SharedCategoryCreateRequest request = new SharedCategoryCreateRequest(savedCategoryId);
-
-        return given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, accessToken)
-                .body(request)
-                .when()
-                .post("/api/shared-categories")
-                .then()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract()
-                .as(SharedCategoryCreateResponse.class);
-    }
-
-    private SavedCategoryCreateResponse forkSharedCategory(final String accessToken, final Long sharedCategoryId) {
-        final SavedCategoryForkRequest request = new SavedCategoryForkRequest(sharedCategoryId);
-
-        return given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, accessToken)
-                .body(request)
-                .when()
-                .post("/api/saved-categories/fork")
-                .then()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract()
-                .as(SavedCategoryCreateResponse.class);
-    }
-
-    private void addPlace(final String accessToken, final Long savedCategoryId) {
-        final SavedCategoryPlaceCreateRequest request = new SavedCategoryPlaceCreateRequest(
-                List.of(new SavedCategoryPlaceCreateRequest.SavedCategoryPlaceRequest(
-                        PlaceFixture.anyName(),
-                        PlaceFixture.anyPlaceUrl(),
-                        PlaceFixture.anyRoadAddressName(),
-                        PlaceFixture.anyAddressName(),
-                        PlaceFixture.anyLatitude(),
-                        PlaceFixture.anyLongitude()
-                ))
-        );
-
-        given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, accessToken)
-                .body(request)
-                .when()
-                .post("/api/saved-categories/" + savedCategoryId + "/places")
-                .then()
-                .statusCode(HttpStatus.CREATED.value());
     }
 
     @Nested
@@ -212,80 +154,6 @@ class SavedCategoryControllerTest {
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.REQUEST_VALIDATION_FAILED.getCode()));
-        }
-    }
-
-    @Nested
-    @DisplayName("보관 카테고리 포크 성공 시나리오")
-    class ForkSharedCategorySuccessScenarios {
-
-        @Test
-        @DisplayName("공유 카테고리 포크에 성공한다")
-        void forkSharedCategory_success() {
-            // given
-            final String accessToken = signUpAndLogin();
-            final SavedCategoryCreateResponse savedCategory = createSavedCategory(accessToken);
-            final SharedCategoryCreateResponse sharedCategory = createSharedCategory(accessToken, savedCategory.id());
-            final SavedCategoryForkRequest request = new SavedCategoryForkRequest(sharedCategory.id());
-
-            // when
-            final SavedCategoryCreateResponse response = given()
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .header(HttpHeaders.AUTHORIZATION, accessToken)
-                    .body(request)
-                    .when()
-                    .post("/api/saved-categories/fork")
-                    .then()
-                    .statusCode(HttpStatus.CREATED.value())
-                    .extract()
-                    .as(SavedCategoryCreateResponse.class);
-
-            // then
-            assertThat(response.id()).isNotNull();
-            assertThat(response.name()).isEqualTo(sharedCategory.name());
-        }
-    }
-
-    @Nested
-    @DisplayName("보관 카테고리 포크 실패 시나리오")
-    class ForkSharedCategoryFailureScenarios {
-
-        @Test
-        @DisplayName("sharedCategoryId가 null인 경우 포크에 실패한다")
-        void forkSharedCategory_fail_nullSharedCategoryId() {
-            // given
-            final String accessToken = signUpAndLogin();
-            final SavedCategoryForkRequest request = new SavedCategoryForkRequest(null);
-
-            // when & then
-            given()
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .header(HttpHeaders.AUTHORIZATION, accessToken)
-                    .body(request)
-                    .when()
-                    .post("/api/saved-categories/fork")
-                    .then()
-                    .statusCode(HttpStatus.BAD_REQUEST.value())
-                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.REQUEST_VALIDATION_FAILED.getCode()));
-        }
-
-        @Test
-        @DisplayName("존재하지 않는 공유 카테고리 포크 시 실패한다")
-        void forkSharedCategory_fail_sharedCategoryNotFound() {
-            // given
-            final String accessToken = signUpAndLogin();
-            final SavedCategoryForkRequest request = new SavedCategoryForkRequest(999999L);
-
-            // when & then
-            given()
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .header(HttpHeaders.AUTHORIZATION, accessToken)
-                    .body(request)
-                    .when()
-                    .post("/api/saved-categories/fork")
-                    .then()
-                    .statusCode(HttpStatus.NOT_FOUND.value())
-                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.SHARED_CATEGORY_NOT_FOUND.getCode()));
         }
     }
 
@@ -481,79 +349,6 @@ class SavedCategoryControllerTest {
             assertThat(response.savedCategoryPlaceResponses()).isEmpty();
         }
 
-        @Test
-        @DisplayName("소스가 없는 보관 카테고리 조회 시 sourceSharedCategoryId는 null이고 canPublish는 true이다")
-        void readSavedCategory_success_noSource() {
-            // given
-            final String accessToken = signUpAndLogin();
-            final SavedCategoryCreateResponse created = createSavedCategory(accessToken);
-
-            // when
-            final SavedCategoryReadResponse response = given()
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .header(HttpHeaders.AUTHORIZATION, accessToken)
-                    .when()
-                    .get("/api/saved-categories/" + created.id())
-                    .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .extract()
-                    .as(SavedCategoryReadResponse.class);
-
-            // then
-            assertThat(response.sourceSharedCategoryId()).isNull();
-            assertThat(response.canPublish()).isTrue();
-        }
-
-        @Test
-        @DisplayName("포크 후 수정하지 않은 보관 카테고리 조회 시 canPublish는 false이다")
-        void readSavedCategory_success_forkedAndNotModified() {
-            // given
-            final String accessToken = signUpAndLogin();
-            final SavedCategoryCreateResponse savedCategory = createSavedCategory(accessToken);
-            final SharedCategoryCreateResponse sharedCategory = createSharedCategory(accessToken, savedCategory.id());
-            final SavedCategoryCreateResponse forked = forkSharedCategory(accessToken, sharedCategory.id());
-
-            // when
-            final SavedCategoryReadResponse response = given()
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .header(HttpHeaders.AUTHORIZATION, accessToken)
-                    .when()
-                    .get("/api/saved-categories/" + forked.id())
-                    .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .extract()
-                    .as(SavedCategoryReadResponse.class);
-
-            // then
-            assertThat(response.sourceSharedCategoryId()).isEqualTo(sharedCategory.id());
-            assertThat(response.canPublish()).isFalse();
-        }
-
-        @Test
-        @DisplayName("포크 후 장소를 추가한 보관 카테고리 조회 시 canPublish는 true이다")
-        void readSavedCategory_success_forkedAndModified() {
-            // given
-            final String accessToken = signUpAndLogin();
-            final SavedCategoryCreateResponse savedCategory = createSavedCategory(accessToken);
-            final SharedCategoryCreateResponse sharedCategory = createSharedCategory(accessToken, savedCategory.id());
-            final SavedCategoryCreateResponse forked = forkSharedCategory(accessToken, sharedCategory.id());
-            addPlace(accessToken, forked.id());
-
-            // when
-            final SavedCategoryReadResponse response = given()
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .header(HttpHeaders.AUTHORIZATION, accessToken)
-                    .when()
-                    .get("/api/saved-categories/" + forked.id())
-                    .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .extract()
-                    .as(SavedCategoryReadResponse.class);
-
-            // then
-            assertThat(response.sourceSharedCategoryId()).isEqualTo(sharedCategory.id());
-            assertThat(response.canPublish()).isTrue();
-        }
     }
 
     @Nested

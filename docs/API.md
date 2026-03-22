@@ -236,8 +236,6 @@ Content-Type: application/json
       "id": 1,
       "name": "보관 카테고리 이름",
       "placeCount": 3,
-      "sourceSharedCategoryId": 2,
-      "canPublish": true,
       "modifiedAt": "2025-10-31T12:00:00+09:00"
     }
   ],
@@ -272,36 +270,11 @@ Content-Type: application/json
       "id": 1,
       "name": "공유 카테고리 이름",
       "createdAt": "2025-10-31T12:00:00+09:00",
-      "placeCount": 3,
-      "forkCount": 10
+      "placeCount": 3
     }
   ],
   "hasNext": false,
   "nextCursor": null
-}
-```
-
-### 3.7 포크 여부 확인
-
-공유 카테고리 응답에 `isForked` 필드가 내장되기 전까지 임시로 사용하는 API입니다. 주어진 공유 카테고리 ID 목록 중, 현재 로그인한 사용자가 포크한 보관 카테고리의 원본(`sourceSharedCategoryId`)에 해당하는 ID만 반환합니다.
-
-```http
-GET /api/me/saved-categories/contains?sharedCategoryIds=1,2,3 HTTP/1.1
-Authorization: Bearer {accessToken}
-```
-
-| 파라미터 | 타입 | 필수 | 설명 |
-|---------|------|------|------|
-| sharedCategoryIds | List&lt;Long&gt; | O | 포크 여부를 확인할 공유 카테고리 ID 목록 |
-
-**성공 응답:**
-
-```http
-HTTP/1.1 200 OK
-Content-Type: application/json
-
-{
-  "forkedSharedCategoryIds": [1, 3]
 }
 ```
 
@@ -828,8 +801,6 @@ Content-Type: application/json
 {
   "id": 1,
   "name": "보관 카테고리 이름",
-  "sourceSharedCategoryId": 2,
-  "canPublish": true,
   "savedCategoryPlaces": [
     {
       "id": 1,
@@ -992,32 +963,6 @@ Content-Type: application/json
 }
 ```
 
-### 8.7 공유 카테고리 포크
-
-공유 카테고리를 포크하여 새로운 보관 카테고리를 생성합니다. 공유 카테고리의 이름과 장소 목록이 그대로 복사됩니다.
-
-```http
-POST /api/saved-categories/fork HTTP/1.1
-Authorization: Bearer {accessToken}
-Content-Type: application/json
-
-{
-  "sharedCategoryId": 1
-}
-```
-
-**성공 응답:**
-
-```http
-HTTP/1.1 201 Created
-Content-Type: application/json
-
-{
-  "id": 1,
-  "name": "공유 카테고리 이름"
-}
-```
-
 ---
 
 ## 9. 공유 카테고리 (Shared Category)
@@ -1073,8 +1018,7 @@ Content-Type: application/json
       "id": 1,
       "name": "공유 카테고리 이름",
       "authorNickname": "닉네임",
-      "placeCount": 3,
-      "forkCount": 10
+      "placeCount": 3
     }
   ],
   "hasNext": true,
@@ -1108,8 +1052,7 @@ Content-Type: application/json
       "id": 1,
       "name": "공유 카테고리 이름",
       "authorNickname": "닉네임",
-      "placeCount": 3,
-      "forkCount": 10
+      "placeCount": 3
     }
   ],
   "hasNext": true,
@@ -1136,7 +1079,6 @@ Content-Type: application/json
   "name": "공유 카테고리 이름",
   "authorNickname": "닉네임",
   "createdAt": "2025-10-31T12:00:00+09:00",
-  "forkCount": 10,
   "sharedCategoryPlaces": [
     {
       "id": 1,
@@ -1170,12 +1112,12 @@ HTTP/1.1 204 No Content
 
 ## API 통계
 
-- **전체 엔드포인트**: 40개
+- **전체 엔드포인트**: 38개
 - **HTTP 메서드별**:
-    - GET: 20개
-    - POST: 9개
+    - GET: 19개
+    - POST: 8개
     - PATCH: 4개
     - DELETE: 6개
     - PUT: 1개
-- **인증 필요**: 33개
+- **인증 필요**: 31개
 - **공개 엔드포인트**: 7개

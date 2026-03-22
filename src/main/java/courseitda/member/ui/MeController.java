@@ -6,14 +6,12 @@ import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.auth.domain.RequiresRole;
 import courseitda.member.application.MeService;
 import courseitda.member.domain.Member;
-import courseitda.member.ui.dto.response.ForkedSharedCategoryIdsResponse;
 import courseitda.member.ui.dto.response.MemberDropdownResponse;
 import courseitda.member.ui.dto.response.MemberNavigatorResponse;
 import courseitda.member.ui.dto.response.MemberProfileResponse;
 import courseitda.member.ui.dto.response.MySavedCategoriesResponse;
 import courseitda.member.ui.dto.response.MySharedCategoriesResponse;
 import courseitda.member.ui.dto.response.MyWorkspacesResponse;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -92,13 +90,4 @@ public class MeController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/saved-categories/contains")
-    public ResponseEntity<ForkedSharedCategoryIdsResponse> readForkedSharedCategoryIds(
-            final MemberAuthInfo memberAuthInfo,
-            @RequestParam final List<Long> sharedCategoryIds
-    ) {
-        final var response = meService.readForkedSharedCategoryIds(memberAuthInfo.id(), sharedCategoryIds);
-
-        return ResponseEntity.ok(response);
-    }
 }

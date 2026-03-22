@@ -42,12 +42,4 @@ public class SavedCategoryRepositoryImpl implements SavedCategoryRepository {
                 PageRequest.of(0, limit));
     }
 
-    @Override
-    public List<Long> findAllSourceSharedCategoryIdsByOwnerIdAndSourceSharedCategoryIdIn(
-            final Long ownerId,
-            final List<Long> sharedCategoryIds
-    ) {
-        return jpaSavedCategoryRepository.findSourceSharedCategoryIdsByOwnerIdAndSourceSharedCategoryIdIn(ownerId,
-                sharedCategoryIds);
-    }
 }

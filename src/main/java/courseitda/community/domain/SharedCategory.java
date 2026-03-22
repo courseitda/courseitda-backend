@@ -45,15 +45,6 @@ public class SharedCategory extends Timestamp {
     @OneToMany(mappedBy = "sharedCategory")
     private List<SharedCategoryPlace> sharedCategoryPlaces;
 
-    @Column(name = "root_shared_category_id")
-    private Long rootSharedCategoryId;
-
-    @Column(name = "parent_shared_category_id")
-    private Long parentSharedCategoryId;
-
-    @Column(name = "fork_count", nullable = false)
-    private int forkCount;
-
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
@@ -61,50 +52,21 @@ public class SharedCategory extends Timestamp {
     public SharedCategory(
             final String name,
             final Member author,
-            final List<SharedCategoryPlace> sharedCategoryPlaces,
-            final Long rootSharedCategoryId,
-            final Long parentSharedCategoryId
+            final List<SharedCategoryPlace> sharedCategoryPlaces
     ) {
         validateName(name);
 
         this.name = name;
         this.author = author;
         this.sharedCategoryPlaces = sharedCategoryPlaces;
-        this.rootSharedCategoryId = rootSharedCategoryId;
-        this.parentSharedCategoryId = parentSharedCategoryId;
     }
 
-    public static SharedCategory createRoot(final String name, final Member author) {
-        return new SharedCategory(name, author, new ArrayList<>(), null, null);
-    }
-
-    public static SharedCategory createChild(
-            final String name,
-            final Member author,
-            final Long rootSharedCategoryId,
-            final Long parentSharedCategoryId
-    ) {
-        return new SharedCategory(name, author, new ArrayList<>(), rootSharedCategoryId, parentSharedCategoryId);
-    }
-
-    public void initializeRoot() {
-        if (this.rootSharedCategoryId == null) {
-            this.rootSharedCategoryId = this.id;
-        }
+    public static SharedCategory createNew(final String name, final Member author) {
+        return new SharedCategory(name, author, new ArrayList<>());
     }
 
     public void softDelete() {
         this.deletedAt = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
-    }
-
-    public void incrementForkCount() {
-        this.forkCount++;
-    }
-
-    public void decrementForkCount() {
-        if (this.forkCount > 0) {
-            this.forkCount--;
-        }
     }
 
     public void validateOwnership(final Long memberId) {

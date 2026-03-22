@@ -12,7 +12,6 @@ public record SharedCategoryReadResponse(
         String name,
         String authorNickname,
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss+09:00") LocalDateTime createdAt,
-        int forkCount,
         @JsonProperty("sharedCategoryPlaces") List<SharedCategoryPlaceResponse> sharedCategoryPlaceResponses
 ) {
 
@@ -22,7 +21,6 @@ public record SharedCategoryReadResponse(
                 sharedCategory.getName(),
                 sharedCategory.getAuthor().getNickname(),
                 sharedCategory.getCreatedAt(),
-                sharedCategory.getForkCount(),
                 sharedCategory.getSharedCategoryPlaces().stream()
                         .map(SharedCategoryPlaceResponse::from)
                         .toList()

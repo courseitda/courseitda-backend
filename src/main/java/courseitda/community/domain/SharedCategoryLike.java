@@ -36,4 +36,8 @@ public class SharedCategoryLike extends Timestamp {
     @ManyToOne
     @JoinColumn(nullable = false)
     private SharedCategory sharedCategory;
+
+    public static SharedCategoryLike createNew(final Member member, final SharedCategory sharedCategory) {
+        return new SharedCategoryLike(null, member, sharedCategory);
+    }
 }

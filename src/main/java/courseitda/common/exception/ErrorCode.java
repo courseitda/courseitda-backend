@@ -421,6 +421,13 @@ public enum ErrorCode {
             HttpStatus.BAD_REQUEST // 400
     ),
 
+    // SharedCategoryLike (9000번대)
+    SHARED_CATEGORY_LIKE_ALREADY_EXISTS(
+            "9001",
+            "이미 찜한 공유 카테고리입니다.",
+            HttpStatus.CONFLICT // 409
+    ),
+
     ;
 
     private final String code;

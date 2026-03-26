@@ -428,6 +428,12 @@ public enum ErrorCode {
             HttpStatus.CONFLICT // 409
     ),
 
+    SHARED_CATEGORY_LIKE_NOT_FOUND(
+            "9002",
+            "찜한 공유 카테고리를 찾을 수 없습니다.",
+            HttpStatus.NOT_FOUND // 404
+    ),
+
     ;
 
     private final String code;

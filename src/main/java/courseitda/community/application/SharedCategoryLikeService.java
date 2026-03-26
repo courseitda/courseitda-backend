@@ -1,5 +1,6 @@
 package courseitda.community.application;
 
+import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.common.exception.BusinessException;
 import courseitda.common.exception.ErrorCode;
 import courseitda.community.domain.SharedCategory;
@@ -37,8 +38,20 @@ public class SharedCategoryLikeService {
         return SharedCategoryLikeCreateResponse.from(persisted);
     }
 
+    @Transactional
+    public void deleteSharedCategoryLike(final Long sharedCategoryId, final MemberAuthInfo memberAuthInfo) {
+        final var sharedCategoryLike = getSharedCategoryLike(memberAuthInfo.id(), sharedCategoryId);
+
+        sharedCategoryLikeRepository.delete(sharedCategoryLike);
+    }
+
     private SharedCategory getSharedCategoryById(final Long sharedCategoryId) {
         return sharedCategoryRepository.findById(sharedCategoryId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.SHARED_CATEGORY_NOT_FOUND));
+    }
+
+    private SharedCategoryLike getSharedCategoryLike(final Long memberId, final Long sharedCategoryId) {
+        return sharedCategoryLikeRepository.findByMemberIdAndSharedCategoryId(memberId, sharedCategoryId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.SHARED_CATEGORY_LIKE_NOT_FOUND));
     }
 }

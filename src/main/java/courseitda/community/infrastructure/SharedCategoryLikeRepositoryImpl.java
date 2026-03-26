@@ -18,6 +18,11 @@ public class SharedCategoryLikeRepositoryImpl implements SharedCategoryLikeRepos
     }
 
     @Override
+    public void delete(final SharedCategoryLike sharedCategoryLike) {
+        jpaSharedCategoryLikeRepository.delete(sharedCategoryLike);
+    }
+
+    @Override
     public Optional<SharedCategoryLike> findByMemberIdAndSharedCategoryId(
             final Long memberId,
             final Long sharedCategoryId

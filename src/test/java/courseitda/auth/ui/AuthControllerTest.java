@@ -33,6 +33,18 @@ class AuthControllerTest {
         RestAssured.port = port;
     }
 
+    private void signUp(final String nickname, final String email, final String password) {
+        final SignUpRequest signUpRequest = new SignUpRequest(nickname, email, password);
+
+        given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(signUpRequest)
+                .when()
+                .post("/api/members")
+                .then()
+                .statusCode(HttpStatus.CREATED.value());
+    }
+
     @Nested
     @DisplayName("로그인 성공 시나리오")
     class LoginSuccessScenarios {
@@ -115,15 +127,4 @@ class AuthControllerTest {
         }
     }
 
-    private void signUp(final String nickname, final String email, final String password) {
-        final SignUpRequest signUpRequest = new SignUpRequest(nickname, email, password);
-
-        given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(signUpRequest)
-                .when()
-                .post("/api/members")
-                .then()
-                .statusCode(HttpStatus.CREATED.value());
-    }
 }

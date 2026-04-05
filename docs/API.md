@@ -270,7 +270,43 @@ Content-Type: application/json
       "id": 1,
       "name": "공유 카테고리 이름",
       "createdAt": "2025-10-31T12:00:00+09:00",
-      "placeCount": 3
+      "placeCount": 3,
+      "likeCount": 12
+    }
+  ],
+  "hasNext": false,
+  "nextCursor": null
+}
+```
+
+### 3.7 내가 찜한 공유 카테고리 목록 조회
+
+현재 로그인한 사용자가 찜한 공유 카테고리 목록을 커서 기반 페이징으로 조회합니다. 커서는 찜(SharedCategoryLike) ID 기준입니다.
+
+```http
+GET /api/me/liked-shared-categories?cursor={cursor}&size={size} HTTP/1.1
+Authorization: Bearer {accessToken}
+```
+
+| 파라미터 | 타입 | 필수 | 기본값 | 설명 |
+|---------|------|------|--------|------|
+| cursor | Long | X | - | 이전 응답의 nextCursor 값 |
+| size | int | X | 10 | 조회 개수 (1~100) |
+
+**성공 응답:**
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "sharedCategories": [
+    {
+      "id": 1,
+      "name": "공유 카테고리 이름",
+      "createdAt": "2025-10-31T12:00:00+09:00",
+      "placeCount": 3,
+      "likeCount": 12
     }
   ],
   "hasNext": false,
@@ -1018,7 +1054,8 @@ Content-Type: application/json
       "id": 1,
       "name": "공유 카테고리 이름",
       "authorNickname": "닉네임",
-      "placeCount": 3
+      "placeCount": 3,
+      "likeCount": 12
     }
   ],
   "hasNext": true,
@@ -1052,7 +1089,8 @@ Content-Type: application/json
       "id": 1,
       "name": "공유 카테고리 이름",
       "authorNickname": "닉네임",
-      "placeCount": 3
+      "placeCount": 3,
+      "likeCount": 12
     }
   ],
   "hasNext": true,
@@ -1079,6 +1117,7 @@ Content-Type: application/json
   "name": "공유 카테고리 이름",
   "authorNickname": "닉네임",
   "createdAt": "2025-10-31T12:00:00+09:00",
+  "likeCount": 12,
   "sharedCategoryPlaces": [
     {
       "id": 1,
@@ -1112,12 +1151,12 @@ HTTP/1.1 204 No Content
 
 ## API 통계
 
-- **전체 엔드포인트**: 38개
+- **전체 엔드포인트**: 39개
 - **HTTP 메서드별**:
-    - GET: 19개
+    - GET: 20개
     - POST: 8개
     - PATCH: 4개
     - DELETE: 6개
     - PUT: 1개
-- **인증 필요**: 31개
+- **인증 필요**: 32개
 - **공개 엔드포인트**: 7개

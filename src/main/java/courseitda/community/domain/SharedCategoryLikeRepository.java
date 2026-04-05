@@ -1,5 +1,6 @@
 package courseitda.community.domain;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface SharedCategoryLikeRepository {
@@ -9,4 +10,8 @@ public interface SharedCategoryLikeRepository {
     void delete(SharedCategoryLike sharedCategoryLike);
 
     Optional<SharedCategoryLike> findByMemberIdAndSharedCategoryId(Long memberId, Long sharedCategoryId);
+
+    List<SharedCategoryLike> findAllByMemberIdOrderByIdDesc(Long memberId, int limit);
+
+    List<SharedCategoryLike> findAllByMemberIdAndIdLessThanOrderByIdDesc(Long memberId, Long cursor, int limit);
 }

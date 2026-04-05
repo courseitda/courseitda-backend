@@ -3,7 +3,10 @@ package courseitda.member.application;
 import courseitda.common.exception.BusinessException;
 import courseitda.common.exception.ErrorCode;
 import courseitda.community.domain.SharedCategory;
+import courseitda.community.domain.SharedCategoryLike;
+import courseitda.community.domain.SharedCategoryLikeRepository;
 import courseitda.community.domain.SharedCategoryRepository;
+import courseitda.member.ui.dto.response.MyLikedSharedCategoriesResponse;
 import courseitda.member.ui.dto.response.MySavedCategoriesResponse;
 import courseitda.member.ui.dto.response.MySharedCategoriesResponse;
 import courseitda.member.ui.dto.response.MyWorkspacesResponse;
@@ -23,6 +26,7 @@ public class MeService {
     private final WorkspaceRepository workspaceRepository;
     private final SavedCategoryRepository savedCategoryRepository;
     private final SharedCategoryRepository sharedCategoryRepository;
+    private final SharedCategoryLikeRepository sharedCategoryLikeRepository;
 
 
     @Transactional(readOnly = true)
@@ -63,6 +67,22 @@ public class MeService {
         return MySharedCategoriesResponse.from(sharedCategories, hasNext, null);
     }
 
+    @Transactional(readOnly = true)
+    public MyLikedSharedCategoriesResponse readMyLikedSharedCategories(
+            final Long memberId,
+            final Long cursor,
+            final int size
+    ) {
+        validatePageSize(size);
+        final var likes = findMyLikedSharedCategoriesByCursor(memberId, cursor, size + 1);
+        final boolean hasNext = likes.size() > size;
+
+        if (hasNext) {
+            return MyLikedSharedCategoriesResponse.from(likes.subList(0, size), hasNext, likes.get(size - 1).getId());
+        }
+        return MyLikedSharedCategoriesResponse.from(likes, hasNext, null);
+    }
+
     private void validatePageSize(final int size) {
         if (size < 1 || size > 100) {
             throw new BusinessException(ErrorCode.INVALID_SHARED_CATEGORY_SIZE);
@@ -89,5 +109,16 @@ public class MeService {
             return sharedCategoryRepository.findAllByAuthorIdOrderByIdDesc(authorId, limit);
         }
         return sharedCategoryRepository.findAllByAuthorIdAndIdLessThanOrderByIdDesc(authorId, cursor, limit);
+    }
+
+    private List<SharedCategoryLike> findMyLikedSharedCategoriesByCursor(
+            final Long memberId,
+            final Long cursor,
+            final int limit
+    ) {
+        if (cursor == null) {
+            return sharedCategoryLikeRepository.findAllByMemberIdOrderByIdDesc(memberId, limit);
+        }
+        return sharedCategoryLikeRepository.findAllByMemberIdAndIdLessThanOrderByIdDesc(memberId, cursor, limit);
     }
 }

@@ -45,6 +45,9 @@ public class SharedCategory extends Timestamp {
     @OneToMany(mappedBy = "sharedCategory")
     private List<SharedCategoryPlace> sharedCategoryPlaces;
 
+    @OneToMany(mappedBy = "sharedCategory")
+    private List<SharedCategoryLike> sharedCategoryLikes = new ArrayList<>();
+
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 

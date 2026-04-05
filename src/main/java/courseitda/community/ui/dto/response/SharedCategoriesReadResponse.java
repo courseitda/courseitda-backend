@@ -26,7 +26,8 @@ public record SharedCategoriesReadResponse(
             Long id,
             String name,
             String authorNickname,
-            int placeCount
+            int placeCount,
+            int likeCount
     ) {
 
         public static SharedCategoryResponse from(final SharedCategory sharedCategory) {
@@ -34,7 +35,8 @@ public record SharedCategoriesReadResponse(
                     sharedCategory.getId(),
                     sharedCategory.getName(),
                     sharedCategory.getAuthor().getNickname(),
-                    sharedCategory.getSharedCategoryPlaces().size()
+                    sharedCategory.getSharedCategoryPlaces().size(),
+                    sharedCategory.getSharedCategoryLikes().size()
             );
         }
     }

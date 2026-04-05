@@ -2,23 +2,26 @@ package courseitda.member.ui.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import courseitda.community.domain.SharedCategory;
+import courseitda.community.domain.SharedCategoryLike;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record MySharedCategoriesResponse(
+public record MyLikedSharedCategoriesResponse(
         @JsonProperty("sharedCategories") List<SharedCategoryResponse> sharedCategoryResponses,
         boolean hasNext,
         Long nextCursor
 ) {
 
-    public static MySharedCategoriesResponse from(final List<SharedCategory> sharedCategories, final boolean hasNext,
-            final Long nextCursor) {
-        final List<SharedCategoryResponse> sharedCategoryResponses = sharedCategories.stream()
+    public static MyLikedSharedCategoriesResponse from(
+            final List<SharedCategoryLike> likes,
+            final boolean hasNext,
+            final Long nextCursor
+    ) {
+        final List<SharedCategoryResponse> sharedCategoryResponses = likes.stream()
                 .map(SharedCategoryResponse::from)
                 .toList();
 
-        return new MySharedCategoriesResponse(sharedCategoryResponses, hasNext, nextCursor);
+        return new MyLikedSharedCategoriesResponse(sharedCategoryResponses, hasNext, nextCursor);
     }
 
     public record SharedCategoryResponse(
@@ -29,7 +32,9 @@ public record MySharedCategoriesResponse(
             int likeCount
     ) {
 
-        public static SharedCategoryResponse from(final SharedCategory sharedCategory) {
+        public static SharedCategoryResponse from(final SharedCategoryLike like) {
+            final var sharedCategory = like.getSharedCategory();
+
             return new SharedCategoryResponse(
                     sharedCategory.getId(),
                     sharedCategory.getName(),

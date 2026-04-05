@@ -9,6 +9,7 @@ import courseitda.member.domain.Member;
 import courseitda.member.ui.dto.response.MemberDropdownResponse;
 import courseitda.member.ui.dto.response.MemberNavigatorResponse;
 import courseitda.member.ui.dto.response.MemberProfileResponse;
+import courseitda.member.ui.dto.response.MyLikedSharedCategoriesResponse;
 import courseitda.member.ui.dto.response.MySavedCategoriesResponse;
 import courseitda.member.ui.dto.response.MySharedCategoriesResponse;
 import courseitda.member.ui.dto.response.MyWorkspacesResponse;
@@ -86,6 +87,17 @@ public class MeController {
             @RequestParam(defaultValue = "10") final int size
     ) {
         final var response = meService.readMySharedCategories(memberAuthInfo.id(), cursor, size);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/liked-shared-categories")
+    public ResponseEntity<MyLikedSharedCategoriesResponse> readMyLikedSharedCategories(
+            final MemberAuthInfo memberAuthInfo,
+            @RequestParam(required = false) final Long cursor,
+            @RequestParam(defaultValue = "10") final int size
+    ) {
+        final var response = meService.readMyLikedSharedCategories(memberAuthInfo.id(), cursor, size);
 
         return ResponseEntity.ok(response);
     }

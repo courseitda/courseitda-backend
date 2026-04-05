@@ -6,6 +6,7 @@ import courseitda.community.domain.SharedCategory;
 import courseitda.community.domain.SharedCategoryLike;
 import courseitda.community.domain.SharedCategoryLikeRepository;
 import courseitda.community.domain.SharedCategoryRepository;
+import courseitda.member.ui.dto.response.LikedSharedCategoryIdsResponse;
 import courseitda.member.ui.dto.response.MyLikedSharedCategoriesResponse;
 import courseitda.member.ui.dto.response.MySavedCategoriesResponse;
 import courseitda.member.ui.dto.response.MySharedCategoriesResponse;
@@ -65,6 +66,17 @@ public class MeService {
                     sharedCategories.get(size - 1).getId());
         }
         return MySharedCategoriesResponse.from(sharedCategories, hasNext, null);
+    }
+
+    @Transactional(readOnly = true)
+    public LikedSharedCategoryIdsResponse readLikedSharedCategoryIds(
+            final Long memberId,
+            final List<Long> sharedCategoryIds
+    ) {
+        final var likedIds = sharedCategoryLikeRepository
+                .findAllSharedCategoryIdsByMemberIdAndSharedCategoryIdIn(memberId, sharedCategoryIds);
+
+        return LikedSharedCategoryIdsResponse.from(likedIds);
     }
 
     @Transactional(readOnly = true)

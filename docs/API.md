@@ -316,6 +316,32 @@ Content-Type: application/json
 
 ---
 
+### 3.8 내가 찜한 공유 카테고리 ID 조회
+
+주어진 공유 카테고리 ID 목록 중 현재 로그인한 사용자가 찜한 항목의 ID 목록을 반환합니다.
+
+```http
+GET /api/me/liked-shared-categories/contains?sharedCategoryIds=1,2,3 HTTP/1.1
+Authorization: Bearer {accessToken}
+```
+
+| 파라미터 | 타입 | 필수 | 설명 |
+|---------|------|------|------|
+| sharedCategoryIds | List\<Long\> | O | 찜 여부를 확인할 공유 카테고리 ID 목록 |
+
+**성공 응답:**
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "likedSharedCategoryIds": [1, 3]
+}
+```
+
+---
+
 ## 4. 장소 검색 (Place Search)
 
 ### 4.1 장소 검색

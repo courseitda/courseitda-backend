@@ -6,6 +6,7 @@ import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.auth.domain.RequiresRole;
 import courseitda.member.application.MeService;
 import courseitda.member.domain.Member;
+import courseitda.member.ui.dto.response.LikedSharedCategoryIdsResponse;
 import courseitda.member.ui.dto.response.MemberDropdownResponse;
 import courseitda.member.ui.dto.response.MemberNavigatorResponse;
 import courseitda.member.ui.dto.response.MemberProfileResponse;
@@ -13,6 +14,7 @@ import courseitda.member.ui.dto.response.MyLikedSharedCategoriesResponse;
 import courseitda.member.ui.dto.response.MySavedCategoriesResponse;
 import courseitda.member.ui.dto.response.MySharedCategoriesResponse;
 import courseitda.member.ui.dto.response.MyWorkspacesResponse;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -98,6 +100,16 @@ public class MeController {
             @RequestParam(defaultValue = "10") final int size
     ) {
         final var response = meService.readMyLikedSharedCategories(memberAuthInfo.id(), cursor, size);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/liked-shared-categories/contains")
+    public ResponseEntity<LikedSharedCategoryIdsResponse> readLikedSharedCategoryIds(
+            final MemberAuthInfo memberAuthInfo,
+            @RequestParam final List<Long> sharedCategoryIds
+    ) {
+        final var response = meService.readLikedSharedCategoryIds(memberAuthInfo.id(), sharedCategoryIds);
 
         return ResponseEntity.ok(response);
     }

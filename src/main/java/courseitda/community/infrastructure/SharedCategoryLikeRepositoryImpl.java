@@ -25,6 +25,15 @@ public class SharedCategoryLikeRepositoryImpl implements SharedCategoryLikeRepos
     }
 
     @Override
+    public List<Long> findAllSharedCategoryIdsByMemberIdAndSharedCategoryIdIn(
+            final Long memberId,
+            final List<Long> sharedCategoryIds
+    ) {
+        return jpaSharedCategoryLikeRepository.findAllSharedCategoryIdsByMemberIdAndSharedCategoryIdIn(memberId,
+                sharedCategoryIds);
+    }
+
+    @Override
     public Optional<SharedCategoryLike> findByMemberIdAndSharedCategoryId(
             final Long memberId,
             final Long sharedCategoryId

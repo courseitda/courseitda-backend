@@ -11,6 +11,8 @@ public interface SharedCategoryLikeRepository {
 
     Optional<SharedCategoryLike> findByMemberIdAndSharedCategoryId(Long memberId, Long sharedCategoryId);
 
+    List<Long> findAllSharedCategoryIdsByMemberIdAndSharedCategoryIdIn(Long memberId, List<Long> sharedCategoryIds);
+
     List<SharedCategoryLike> findAllByMemberIdOrderByIdDesc(Long memberId, int limit);
 
     List<SharedCategoryLike> findAllByMemberIdAndIdLessThanOrderByIdDesc(Long memberId, Long cursor, int limit);

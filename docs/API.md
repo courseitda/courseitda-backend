@@ -1149,14 +1149,53 @@ HTTP/1.1 204 No Content
 
 ---
 
+## 10. 공유 카테고리 찜 (Shared Category Like)
+
+### 10.1 공유 카테고리 찜 생성
+
+공유 카테고리를 찜합니다.
+
+```http
+POST /api/shared-categories/{sharedCategoryId}/likes HTTP/1.1
+Authorization: Bearer {accessToken}
+```
+
+**성공 응답:**
+
+```http
+HTTP/1.1 201 Created
+Content-Type: application/json
+
+{
+  "id": 1
+}
+```
+
+### 10.2 공유 카테고리 찜 삭제
+
+공유 카테고리 찜을 취소합니다.
+
+```http
+DELETE /api/shared-categories/{sharedCategoryId}/likes HTTP/1.1
+Authorization: Bearer {accessToken}
+```
+
+**성공 응답:**
+
+```http
+HTTP/1.1 204 No Content
+```
+
+---
+
 ## API 통계
 
-- **전체 엔드포인트**: 39개
+- **전체 엔드포인트**: 41개
 - **HTTP 메서드별**:
     - GET: 20개
-    - POST: 8개
+    - POST: 9개
     - PATCH: 4개
-    - DELETE: 6개
+    - DELETE: 7개
     - PUT: 1개
-- **인증 필요**: 32개
+- **인증 필요**: 34개
 - **공개 엔드포인트**: 7개

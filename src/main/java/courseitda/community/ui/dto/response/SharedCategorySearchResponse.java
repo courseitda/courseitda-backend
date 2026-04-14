@@ -1,7 +1,9 @@
 package courseitda.community.ui.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import courseitda.community.domain.SharedCategory;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public record SharedCategorySearchResponse(
@@ -28,6 +30,7 @@ public record SharedCategorySearchResponse(
             Long id,
             String name,
             String authorNickname,
+            @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss+09:00") LocalDateTime createdAt,
             int placeCount,
             int likeCount
     ) {
@@ -37,6 +40,7 @@ public record SharedCategorySearchResponse(
                     sharedCategory.getId(),
                     sharedCategory.getName(),
                     sharedCategory.getAuthor().getNickname(),
+                    sharedCategory.getCreatedAt(),
                     sharedCategory.getSharedCategoryPlaces().size(),
                     sharedCategory.getSharedCategoryLikes().size()
             );

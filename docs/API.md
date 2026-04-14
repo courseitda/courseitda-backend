@@ -1080,6 +1080,7 @@ Content-Type: application/json
       "id": 1,
       "name": "공유 카테고리 이름",
       "authorNickname": "닉네임",
+      "createdAt": "2025-10-31T12:00:00+09:00",
       "placeCount": 3,
       "likeCount": 12
     }
@@ -1115,6 +1116,7 @@ Content-Type: application/json
       "id": 1,
       "name": "공유 카테고리 이름",
       "authorNickname": "닉네임",
+      "createdAt": "2025-10-31T12:00:00+09:00",
       "placeCount": 3,
       "likeCount": 12
     }
@@ -1216,10 +1218,10 @@ HTTP/1.1 204 No Content
 
 ## API 통계
 
-- **전체 엔드포인트**: 41개
+- **전체 엔드포인트**: 42개
 - **HTTP 메서드별**:
     - GET: 20개
-    - POST: 9개
+    - POST: 10개
     - PATCH: 4개
     - DELETE: 7개
     - PUT: 1개

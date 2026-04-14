@@ -18,8 +18,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @Table(
-        name = "shared_category_likes",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"member_id", "shared_category_id"})
+        name = "shared_category_likes", uniqueConstraints = @UniqueConstraint(columnNames = {"member_id",
+                "shared_category_id"})
 )
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)

@@ -29,7 +29,6 @@ public class MeService {
     private final SharedCategoryRepository sharedCategoryRepository;
     private final SharedCategoryLikeRepository sharedCategoryLikeRepository;
 
-
     @Transactional(readOnly = true)
     public MyWorkspacesResponse readMyWorkspaces(final Long memberId, final Long cursor, final int size) {
         validatePageSize(size);

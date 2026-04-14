@@ -13,7 +13,8 @@ public interface JpaSharedCategoryLikeRepository extends JpaRepository<SharedCat
     Optional<SharedCategoryLike> findByMemberIdAndSharedCategoryId(Long memberId, Long sharedCategoryId);
 
     @Query("SELECT scl.sharedCategory.id FROM SharedCategoryLike scl WHERE scl.member.id = :memberId AND scl.sharedCategory.id IN :sharedCategoryIds")
-    List<Long> findAllSharedCategoryIdsByMemberIdAndSharedCategoryIdIn(@Param("memberId") Long memberId, @Param("sharedCategoryIds") List<Long> sharedCategoryIds);
+    List<Long> findAllSharedCategoryIdsByMemberIdAndSharedCategoryIdIn(@Param("memberId") Long memberId,
+            @Param("sharedCategoryIds") List<Long> sharedCategoryIds);
 
     List<SharedCategoryLike> findAllByMemberIdOrderByIdDesc(Long memberId, Pageable pageable);
 

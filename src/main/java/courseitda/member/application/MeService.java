@@ -72,6 +72,10 @@ public class MeService {
             final Long memberId,
             final List<Long> sharedCategoryIds
     ) {
+        if (sharedCategoryIds.isEmpty()) {
+            return LikedSharedCategoryIdsResponse.from(List.of());
+        }
+
         final var likedIds = sharedCategoryLikeRepository
                 .findAllSharedCategoryIdsByMemberIdAndSharedCategoryIdIn(memberId, sharedCategoryIds);
 

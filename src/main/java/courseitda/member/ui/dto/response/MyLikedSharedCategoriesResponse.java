@@ -29,7 +29,8 @@ public record MyLikedSharedCategoriesResponse(
             String name,
             @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss+09:00") LocalDateTime createdAt,
             int placeCount,
-            int likeCount
+            int likeCount,
+            boolean isDeleted
     ) {
 
         public static SharedCategoryResponse from(final SharedCategoryLike like) {
@@ -40,7 +41,8 @@ public record MyLikedSharedCategoriesResponse(
                     sharedCategory.getName(),
                     sharedCategory.getCreatedAt(),
                     sharedCategory.getSharedCategoryPlaces().size(),
-                    sharedCategory.getSharedCategoryLikes().size()
+                    sharedCategory.getSharedCategoryLikes().size(),
+                    sharedCategory.getDeletedAt() != null
             );
         }
     }

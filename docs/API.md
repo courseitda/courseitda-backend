@@ -1217,14 +1217,48 @@ HTTP/1.1 204 No Content
 
 ---
 
+## 11. 추천 카테고리 (Recommended Category)
+
+### 11.1 추천 카테고리 목록 조회
+
+관리자가 피처링한 추천 카테고리 목록을 최신순으로 조회합니다. 각 추천 카테고리는 공유 카테고리를 참조합니다.
+
+```http
+GET /api/recommended-categories HTTP/1.1
+```
+
+**성공 응답:**
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "recommendedCategories": [
+    {
+      "id": 1,
+      "imageUrl": "https://courseitda-bucket.s3.ap-northeast-2.amazonaws.com/recommended/hongdae.jpg",
+      "sharedCategoryId": 10,
+      "name": "홍대 맛집 코스",
+      "authorNickname": "닉네임",
+      "createdAt": "2025-10-31T12:00:00+09:00",
+      "placeCount": 5,
+      "likeCount": 23
+    }
+  ]
+}
+```
+
+---
+
 ## API 통계
 
-- **전체 엔드포인트**: 42개
+- **전체 엔드포인트**: 43개
 - **HTTP 메서드별**:
-    - GET: 20개
+    - GET: 21개
     - POST: 10개
     - PATCH: 4개
     - DELETE: 7개
     - PUT: 1개
 - **인증 필요**: 34개
-- **공개 엔드포인트**: 7개
+- **공개 엔드포인트**: 8개

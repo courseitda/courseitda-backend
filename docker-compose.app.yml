@@ -9,6 +9,8 @@ services:
     volumes:
       # 로컬 로그 디렉토리 마운트 (Promtail과 공유)
       - ./logs:/app/logs
+      # 시드 데이터 (서브모듈 경로 공유)
+      - ./courseitda-backend-config/dev/data.sql:/data.sql:ro
     environment:
       MYSQL_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
       MYSQL_USERNAME: ${MYSQL_USERNAME}
@@ -19,6 +21,9 @@ services:
       NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET}
       SPRING_PROFILES_ACTIVE: local
       LOG_PATH: /app/logs  # logback이 사용할 로그 디렉토리 지정
+      SPRING_SQL_INIT_MODE: always
+      SPRING_SQL_INIT_DATA_LOCATIONS: file:/data.sql
+      SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION: true
     networks:
       - courseitda-network
     restart: unless-stopped

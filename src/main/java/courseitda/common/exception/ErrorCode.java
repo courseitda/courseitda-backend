@@ -34,6 +34,12 @@ public enum ErrorCode {
             HttpStatus.BAD_REQUEST // 400
     ),
 
+    INVALID_PAGE_SIZE(
+            "0002",
+            "조회 개수는 1에서 100 사이여야 합니다.",
+            HttpStatus.BAD_REQUEST // 400
+    ),
+
     // 1000 Series: Authentication and Authorization Errors
     MISSING_AUTH_HEADER(
             "1001",
@@ -407,12 +413,6 @@ public enum ErrorCode {
             "8004",
             "해당 공유 카테고리의 수정 권한이 없습니다.",
             HttpStatus.FORBIDDEN // 403
-    ),
-
-    INVALID_SHARED_CATEGORY_SIZE(
-            "8005",
-            "조회 개수는 1에서 100 사이여야 합니다.",
-            HttpStatus.BAD_REQUEST // 400
     ),
 
     BLANK_SHARED_CATEGORY_SEARCH_KEYWORD(

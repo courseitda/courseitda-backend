@@ -100,7 +100,7 @@ public class MeService {
 
     private void validatePageSize(final int size) {
         if (size < 1 || size > 100) {
-            throw new BusinessException(ErrorCode.INVALID_SHARED_CATEGORY_SIZE);
+            throw new BusinessException(ErrorCode.INVALID_PAGE_SIZE);
         }
     }
 

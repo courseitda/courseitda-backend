@@ -3,6 +3,7 @@ package courseitda.community.application;
 import courseitda.auth.domain.MemberAuthInfo;
 import courseitda.common.exception.BusinessException;
 import courseitda.common.exception.ErrorCode;
+import org.springframework.dao.DataIntegrityViolationException;
 import courseitda.community.domain.SharedCategory;
 import courseitda.community.domain.SharedCategoryLike;
 import courseitda.community.domain.SharedCategoryLikeRepository;
@@ -32,10 +33,13 @@ public class SharedCategoryLikeService {
             throw new BusinessException(ErrorCode.SHARED_CATEGORY_LIKE_ALREADY_EXISTS);
         }
 
-        final var sharedCategoryLike = SharedCategoryLike.createNew(member, sharedCategory);
-        final var persisted = sharedCategoryLikeRepository.save(sharedCategoryLike);
-
-        return SharedCategoryLikeCreateResponse.from(persisted);
+        try {
+            final var sharedCategoryLike = SharedCategoryLike.createNew(member, sharedCategory);
+            final var persisted = sharedCategoryLikeRepository.saveAndFlush(sharedCategoryLike);
+            return SharedCategoryLikeCreateResponse.from(persisted);
+        } catch (DataIntegrityViolationException e) {
+            throw new BusinessException(ErrorCode.SHARED_CATEGORY_LIKE_ALREADY_EXISTS);
+        }
     }
 
     @Transactional

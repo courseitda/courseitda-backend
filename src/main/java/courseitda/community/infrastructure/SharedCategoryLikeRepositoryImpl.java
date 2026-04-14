@@ -20,6 +20,11 @@ public class SharedCategoryLikeRepositoryImpl implements SharedCategoryLikeRepos
     }
 
     @Override
+    public SharedCategoryLike saveAndFlush(final SharedCategoryLike sharedCategoryLike) {
+        return jpaSharedCategoryLikeRepository.saveAndFlush(sharedCategoryLike);
+    }
+
+    @Override
     public void delete(final SharedCategoryLike sharedCategoryLike) {
         jpaSharedCategoryLikeRepository.delete(sharedCategoryLike);
     }

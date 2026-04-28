@@ -1260,5 +1260,5 @@ Content-Type: application/json
     - PATCH: 4개
     - DELETE: 7개
     - PUT: 1개
-- **인증 필요**: 34개
+- **인증 필요**: 35개
 - **공개 엔드포인트**: 8개

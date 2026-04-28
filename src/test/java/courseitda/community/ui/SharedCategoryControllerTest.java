@@ -268,7 +268,7 @@ class SharedCategoryControllerTest {
                     .get("/api/shared-categories")
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
-                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.INVALID_SHARED_CATEGORY_SIZE.getCode()));
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.INVALID_PAGE_SIZE.getCode()));
         }
 
         @Test
@@ -282,7 +282,7 @@ class SharedCategoryControllerTest {
                     .get("/api/shared-categories")
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
-                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.INVALID_SHARED_CATEGORY_SIZE.getCode()));
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.INVALID_PAGE_SIZE.getCode()));
         }
     }
 
@@ -366,7 +366,7 @@ class SharedCategoryControllerTest {
                     .get("/api/shared-categories/search")
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
-                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.INVALID_SHARED_CATEGORY_SIZE.getCode()));
+                    .body("code", org.hamcrest.Matchers.equalTo(ErrorCode.INVALID_PAGE_SIZE.getCode()));
         }
     }
 

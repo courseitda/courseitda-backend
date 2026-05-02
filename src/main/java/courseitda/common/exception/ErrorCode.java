@@ -34,6 +34,12 @@ public enum ErrorCode {
             HttpStatus.BAD_REQUEST // 400
     ),
 
+    INVALID_PAGE_SIZE(
+            "0002",
+            "조회 개수는 1에서 100 사이여야 합니다.",
+            HttpStatus.BAD_REQUEST // 400
+    ),
+
     // 1000 Series: Authentication and Authorization Errors
     MISSING_AUTH_HEADER(
             "1001",
@@ -409,16 +415,23 @@ public enum ErrorCode {
             HttpStatus.FORBIDDEN // 403
     ),
 
-    INVALID_SHARED_CATEGORY_SIZE(
-            "8005",
-            "조회 개수는 1에서 100 사이여야 합니다.",
-            HttpStatus.BAD_REQUEST // 400
-    ),
-
     BLANK_SHARED_CATEGORY_SEARCH_KEYWORD(
             "8006",
             "검색어를 입력해 주세요.",
             HttpStatus.BAD_REQUEST // 400
+    ),
+
+    // SharedCategoryLike (9000번대)
+    SHARED_CATEGORY_LIKE_ALREADY_EXISTS(
+            "9001",
+            "이미 찜한 공유 카테고리입니다.",
+            HttpStatus.CONFLICT // 409
+    ),
+
+    SHARED_CATEGORY_LIKE_NOT_FOUND(
+            "9002",
+            "찜한 공유 카테고리를 찾을 수 없습니다.",
+            HttpStatus.NOT_FOUND // 404
     ),
 
     ;

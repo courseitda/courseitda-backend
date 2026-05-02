@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
 import courseitda.auth.ui.dto.request.LoginRequest;
 import courseitda.auth.ui.dto.response.LoginResponse;
@@ -15,7 +16,6 @@ import courseitda.placesearch.domain.PlaceSearcher;
 import courseitda.placesearch.domain.SearchedPlace;
 import courseitda.placesearch.ui.dto.response.SearchedPlacesResponse;
 import io.restassured.RestAssured;
-import jakarta.transaction.Transactional;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +23,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -32,7 +31,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-@Transactional
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class PlaceSearchControllerTest {
@@ -46,6 +44,34 @@ class PlaceSearchControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+    }
+
+    private String signUpAndLogin() {
+        final String email = MemberFixture.anyEmail();
+        final String password = MemberFixture.anyPassword();
+        final String nickname = MemberFixture.anyNickname();
+        final SignUpRequest signUpRequest = new SignUpRequest(nickname, email, password);
+
+        given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(signUpRequest)
+                .when()
+                .post("/api/members")
+                .then()
+                .statusCode(HttpStatus.CREATED.value());
+
+        final LoginRequest loginRequest = new LoginRequest(email, password);
+        final LoginResponse loginResponse = given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(loginRequest)
+                .when()
+                .post("/api/auth/login")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .as(LoginResponse.class);
+
+        return loginResponse.tokenType() + " " + loginResponse.accessToken();
     }
 
     @Nested
@@ -137,31 +163,4 @@ class PlaceSearchControllerTest {
         }
     }
 
-    private String signUpAndLogin() {
-        final String nickname = MemberFixture.anyNickname();
-        final String email = MemberFixture.anyEmail();
-        final String password = MemberFixture.anyPassword();
-        final SignUpRequest signUpRequest = new SignUpRequest(nickname, email, password);
-
-        given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(signUpRequest)
-                .when()
-                .post("/api/members")
-                .then()
-                .statusCode(HttpStatus.CREATED.value());
-
-        final LoginRequest loginRequest = new LoginRequest(email, password);
-        final LoginResponse loginResponse = given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(loginRequest)
-                .when()
-                .post("/api/auth/login")
-                .then()
-                .statusCode(HttpStatus.OK.value())
-                .extract()
-                .as(LoginResponse.class);
-
-        return loginResponse.tokenType() + " " + loginResponse.accessToken();
-    }
 }

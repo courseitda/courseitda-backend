@@ -236,8 +236,6 @@ Content-Type: application/json
       "id": 1,
       "name": "보관 카테고리 이름",
       "placeCount": 3,
-      "sourceSharedCategoryId": 2,
-      "canPublish": true,
       "modifiedAt": "2025-10-31T12:00:00+09:00"
     }
   ],
@@ -273,7 +271,7 @@ Content-Type: application/json
       "name": "공유 카테고리 이름",
       "createdAt": "2025-10-31T12:00:00+09:00",
       "placeCount": 3,
-      "forkCount": 10
+      "likeCount": 12
     }
   ],
   "hasNext": false,
@@ -281,18 +279,19 @@ Content-Type: application/json
 }
 ```
 
-### 3.7 포크 여부 확인
+### 3.7 내가 찜한 공유 카테고리 목록 조회
 
-공유 카테고리 응답에 `isForked` 필드가 내장되기 전까지 임시로 사용하는 API입니다. 주어진 공유 카테고리 ID 목록 중, 현재 로그인한 사용자가 포크한 보관 카테고리의 원본(`sourceSharedCategoryId`)에 해당하는 ID만 반환합니다.
+현재 로그인한 사용자가 찜한 공유 카테고리 목록을 커서 기반 페이징으로 조회합니다. 커서는 찜(SharedCategoryLike) ID 기준입니다.
 
 ```http
-GET /api/me/saved-categories/contains?sharedCategoryIds=1,2,3 HTTP/1.1
+GET /api/me/liked-shared-categories?cursor={cursor}&size={size} HTTP/1.1
 Authorization: Bearer {accessToken}
 ```
 
-| 파라미터 | 타입 | 필수 | 설명 |
-|---------|------|------|------|
-| sharedCategoryIds | List&lt;Long&gt; | O | 포크 여부를 확인할 공유 카테고리 ID 목록 |
+| 파라미터 | 타입 | 필수 | 기본값 | 설명 |
+|---------|------|------|--------|------|
+| cursor | Long | X | - | 이전 응답의 nextCursor 값 |
+| size | int | X | 10 | 조회 개수 (1~100) |
 
 **성공 응답:**
 
@@ -301,7 +300,44 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 {
-  "forkedSharedCategoryIds": [1, 3]
+  "sharedCategories": [
+    {
+      "id": 1,
+      "name": "공유 카테고리 이름",
+      "createdAt": "2025-10-31T12:00:00+09:00",
+      "placeCount": 3,
+      "likeCount": 12,
+      "isDeleted": false
+    }
+  ],
+  "hasNext": false,
+  "nextCursor": null
+}
+```
+
+---
+
+### 3.8 내가 찜한 공유 카테고리 ID 조회
+
+주어진 공유 카테고리 ID 목록 중 현재 로그인한 사용자가 찜한 항목의 ID 목록을 반환합니다.
+
+```http
+GET /api/me/liked-shared-categories/contains?sharedCategoryIds=1,2,3 HTTP/1.1
+Authorization: Bearer {accessToken}
+```
+
+| 파라미터 | 타입 | 필수 | 설명 |
+|---------|------|------|------|
+| sharedCategoryIds | List\<Long\> | O | 찜 여부를 확인할 공유 카테고리 ID 목록 |
+
+**성공 응답:**
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "likedSharedCategoryIds": [1, 3]
 }
 ```
 
@@ -828,8 +864,6 @@ Content-Type: application/json
 {
   "id": 1,
   "name": "보관 카테고리 이름",
-  "sourceSharedCategoryId": 2,
-  "canPublish": true,
   "savedCategoryPlaces": [
     {
       "id": 1,
@@ -992,32 +1026,6 @@ Content-Type: application/json
 }
 ```
 
-### 8.7 공유 카테고리 포크
-
-공유 카테고리를 포크하여 새로운 보관 카테고리를 생성합니다. 공유 카테고리의 이름과 장소 목록이 그대로 복사됩니다.
-
-```http
-POST /api/saved-categories/fork HTTP/1.1
-Authorization: Bearer {accessToken}
-Content-Type: application/json
-
-{
-  "sharedCategoryId": 1
-}
-```
-
-**성공 응답:**
-
-```http
-HTTP/1.1 201 Created
-Content-Type: application/json
-
-{
-  "id": 1,
-  "name": "공유 카테고리 이름"
-}
-```
-
 ---
 
 ## 9. 공유 카테고리 (Shared Category)
@@ -1073,8 +1081,9 @@ Content-Type: application/json
       "id": 1,
       "name": "공유 카테고리 이름",
       "authorNickname": "닉네임",
+      "createdAt": "2025-10-31T12:00:00+09:00",
       "placeCount": 3,
-      "forkCount": 10
+      "likeCount": 12
     }
   ],
   "hasNext": true,
@@ -1108,8 +1117,9 @@ Content-Type: application/json
       "id": 1,
       "name": "공유 카테고리 이름",
       "authorNickname": "닉네임",
+      "createdAt": "2025-10-31T12:00:00+09:00",
       "placeCount": 3,
-      "forkCount": 10
+      "likeCount": 12
     }
   ],
   "hasNext": true,
@@ -1136,7 +1146,7 @@ Content-Type: application/json
   "name": "공유 카테고리 이름",
   "authorNickname": "닉네임",
   "createdAt": "2025-10-31T12:00:00+09:00",
-  "forkCount": 10,
+  "likeCount": 12,
   "sharedCategoryPlaces": [
     {
       "id": 1,
@@ -1168,14 +1178,87 @@ HTTP/1.1 204 No Content
 
 ---
 
+## 10. 공유 카테고리 찜 (Shared Category Like)
+
+### 10.1 공유 카테고리 찜 생성
+
+공유 카테고리를 찜합니다.
+
+```http
+POST /api/shared-categories/{sharedCategoryId}/likes HTTP/1.1
+Authorization: Bearer {accessToken}
+```
+
+**성공 응답:**
+
+```http
+HTTP/1.1 201 Created
+Content-Type: application/json
+
+{
+  "id": 1
+}
+```
+
+### 10.2 공유 카테고리 찜 삭제
+
+공유 카테고리 찜을 취소합니다.
+
+```http
+DELETE /api/shared-categories/{sharedCategoryId}/likes HTTP/1.1
+Authorization: Bearer {accessToken}
+```
+
+**성공 응답:**
+
+```http
+HTTP/1.1 204 No Content
+```
+
+---
+
+## 11. 추천 카테고리 (Recommended Category)
+
+### 11.1 추천 카테고리 목록 조회
+
+관리자가 피처링한 추천 카테고리 목록을 최신순으로 조회합니다. 각 추천 카테고리는 공유 카테고리를 참조합니다.
+
+```http
+GET /api/recommended-categories HTTP/1.1
+```
+
+**성공 응답:**
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "recommendedCategories": [
+    {
+      "id": 1,
+      "imageUrl": "https://courseitda-bucket.s3.ap-northeast-2.amazonaws.com/recommended/hongdae.jpg",
+      "sharedCategoryId": 10,
+      "name": "홍대 맛집 코스",
+      "authorNickname": "닉네임",
+      "createdAt": "2025-10-31T12:00:00+09:00",
+      "placeCount": 5,
+      "likeCount": 23
+    }
+  ]
+}
+```
+
+---
+
 ## API 통계
 
-- **전체 엔드포인트**: 40개
+- **전체 엔드포인트**: 43개
 - **HTTP 메서드별**:
-    - GET: 20개
-    - POST: 9개
+    - GET: 21개
+    - POST: 10개
     - PATCH: 4개
-    - DELETE: 6개
+    - DELETE: 7개
     - PUT: 1개
-- **인증 필요**: 33개
-- **공개 엔드포인트**: 7개
+- **인증 필요**: 35개
+- **공개 엔드포인트**: 8개

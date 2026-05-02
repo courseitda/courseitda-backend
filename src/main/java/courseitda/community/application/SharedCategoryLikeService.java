@@ -1,0 +1,61 @@
+package courseitda.community.application;
+
+import courseitda.auth.domain.MemberAuthInfo;
+import courseitda.common.exception.BusinessException;
+import courseitda.common.exception.ErrorCode;
+import org.springframework.dao.DataIntegrityViolationException;
+import courseitda.community.domain.SharedCategory;
+import courseitda.community.domain.SharedCategoryLike;
+import courseitda.community.domain.SharedCategoryLikeRepository;
+import courseitda.community.domain.SharedCategoryRepository;
+import courseitda.community.ui.dto.response.SharedCategoryLikeCreateResponse;
+import courseitda.member.domain.Member;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+public class SharedCategoryLikeService {
+
+    private final SharedCategoryLikeRepository sharedCategoryLikeRepository;
+    private final SharedCategoryRepository sharedCategoryRepository;
+
+    @Transactional
+    public SharedCategoryLikeCreateResponse createSharedCategoryLike(
+            final Long sharedCategoryId,
+            final Member member
+    ) {
+        final var sharedCategory = getSharedCategoryById(sharedCategoryId);
+
+        if (sharedCategoryLikeRepository.findByMemberIdAndSharedCategoryId(member.getId(), sharedCategoryId)
+                .isPresent()) {
+            throw new BusinessException(ErrorCode.SHARED_CATEGORY_LIKE_ALREADY_EXISTS);
+        }
+
+        try {
+            final var sharedCategoryLike = SharedCategoryLike.createNew(member, sharedCategory);
+            final var persisted = sharedCategoryLikeRepository.saveAndFlush(sharedCategoryLike);
+            return SharedCategoryLikeCreateResponse.from(persisted);
+        } catch (DataIntegrityViolationException e) {
+            throw new BusinessException(ErrorCode.SHARED_CATEGORY_LIKE_ALREADY_EXISTS);
+        }
+    }
+
+    @Transactional
+    public void deleteSharedCategoryLike(final Long sharedCategoryId, final MemberAuthInfo memberAuthInfo) {
+        final var sharedCategoryLike = getSharedCategoryLike(memberAuthInfo.id(), sharedCategoryId);
+
+        sharedCategoryLikeRepository.delete(sharedCategoryLike);
+    }
+
+    private SharedCategory getSharedCategoryById(final Long sharedCategoryId) {
+        return sharedCategoryRepository.findById(sharedCategoryId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.SHARED_CATEGORY_NOT_FOUND));
+    }
+
+    private SharedCategoryLike getSharedCategoryLike(final Long memberId, final Long sharedCategoryId) {
+        return sharedCategoryLikeRepository.findByMemberIdAndSharedCategoryId(memberId, sharedCategoryId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.SHARED_CATEGORY_LIKE_NOT_FOUND));
+    }
+}

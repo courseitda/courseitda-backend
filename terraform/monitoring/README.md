@@ -54,8 +54,9 @@ terraform apply
 ## 주요 리소스
 
 - EC2 인스턴스: Ubuntu 24.04 ARM64 (t4g.small), 기존 앱 서버와 동일 사양
-- Security Group: SSH(22) / Grafana(3001) / Prometheus(9090) / Loki(3100) 전체 허용 (앱 서버 SG와 동일한 정책)
+- Security Group: SSH(22) / HTTP(80) / HTTPS(443) / Grafana(3001) / Prometheus(9090) / Loki(3100) 전체 허용 (앱 서버 SG와 동일한 정책)
 - Elastic IP: 기존 앱 서버(`terraform/backend/modules/application`)와 동일한 방식으로 **Terraform이 신규 발급** (`aws_eip` 리소스로 새로 생성 후 인스턴스에 연결)
+- nginx: 메인 앱 서버와 동일하게 `user_data.tpl`에서 패키지만 설치 (`apt-get install -y nginx`). 리버스 프록시 설정, HTTPS 인증서 발급은 메인 앱 서버와 마찬가지로 Terraform/Git 범위 밖에서 수동으로 진행
 
 기존 backend 리소스 재사용(모두 조회 전용, backend 파일 미수정):
 
@@ -82,4 +83,5 @@ terraform apply
 
 - IMDSv2가 활성화되어 SSRF 공격으로부터 보호됩니다
 - EBS 볼륨은 암호화되어 있습니다
-- SSH/Grafana/Prometheus/Loki 포트가 `0.0.0.0/0`에 열려 있습니다 (기존 앱 서버 SG와 동일한 학습용 정책이며, 필요 시 특정 IP로 제한 권장)
+- SSH/HTTP/HTTPS/Grafana/Prometheus/Loki 포트가 `0.0.0.0/0`에 열려 있습니다 (기존 앱 서버 SG와 동일한 학습용 정책이며, 필요 시 특정 IP로 제한 권장)
+- nginx 리버스 프록시 설정과 HTTPS 인증서 발급(certbot 등)은 메인 앱 서버와 동일하게 이 리포에 포함하지 않았습니다. 도메인이 정해지면 서버에 직접 접속해 수동으로 진행해주세요.

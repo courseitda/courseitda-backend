@@ -16,6 +16,9 @@ echo \
 apt-get update -y
 apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
+# Nginx 설치
+apt-get install -y nginx
+
 # Swapfile 생성 (메모리 부족 문제 해결용, Grafana+Loki+Prometheus 동시 구동 대비)
 fallocate -l 4GiB /swapfile
 chmod 600 /swapfile

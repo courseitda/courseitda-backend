@@ -34,7 +34,7 @@
         <!-- 로그 파일 로테이션: 하루 단위로 자동 분할 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${DEV_LOG_DIR}/request-%d{yyyy-MM-dd}.log.gz</fileNamePattern>
-            <maxHistory>7</maxHistory>
+            <maxHistory>3</maxHistory>
         </rollingPolicy>
     </appender>
 
@@ -69,7 +69,7 @@
         <!-- 로그 파일 로테이션: 하루 단위로 자동 분할 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${DEV_LOG_DIR}/response-%d{yyyy-MM-dd}.log.gz</fileNamePattern>
-            <maxHistory>7</maxHistory>
+            <maxHistory>3</maxHistory>
         </rollingPolicy>
     </appender>
 
@@ -149,7 +149,7 @@
         <!-- 로그 파일 로테이션: 하루 단위로 자동 분할 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${DEV_LOG_DIR}/app-%d{yyyy-MM-dd}.log.gz</fileNamePattern>
-            <maxHistory>7</maxHistory>
+            <maxHistory>3</maxHistory>
         </rollingPolicy>
     </appender>
 

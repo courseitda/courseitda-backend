@@ -16,3 +16,8 @@ output "eip_public_ip" {
   description = "Public IP (Elastic IP) associated with the monitoring instance"
   value       = aws_eip.monitoring_eip.public_ip
 }
+
+output "loki_logs_bucket_name" {
+  description = "S3 bucket name used as Loki's persistent storage backend"
+  value       = aws_s3_bucket.loki_logs.bucket
+}

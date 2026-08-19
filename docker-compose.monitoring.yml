@@ -15,7 +15,7 @@ services:
     # loki, prometheus와 같은 파일에 있지만, 실행 순서는 수동으로 관리
 
   loki:
-    image: grafana/loki:latest
+    image: grafana/loki:3.6.13  # 버전 고정 (schema v13/tsdb 설정과의 호환성 보장을 위해 latest 대신 고정, 실서버와 동일 버전)
     container_name: courseitda-loki
     ports:
       - "3100:3100"

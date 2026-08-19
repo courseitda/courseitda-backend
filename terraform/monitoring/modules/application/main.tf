@@ -33,6 +33,82 @@ data "aws_ami" "monitoring_ami" {
   }
 }
 
+# Loki 로그(청크/인덱스)를 저장할 S3 버킷 (영속 스토리지 백엔드)
+resource "aws_s3_bucket" "loki_logs" {
+  bucket = "${var.project_name}-${var.environment}-loki-logs"
+
+  tags = merge(var.base_tags, {
+    Name = "${var.project_name}-${var.environment}-loki-logs"
+  })
+}
+
+resource "aws_s3_bucket_public_access_block" "loki_logs_public_access_block" {
+  bucket = aws_s3_bucket.loki_logs.id
+
+  block_public_acls       = true
+  ignore_public_acls      = true
+  block_public_policy     = true
+  restrict_public_buckets = true
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "loki_logs_encryption" {
+  bucket = aws_s3_bucket.loki_logs.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+# 주의: 버킷에 수명주기(lifecycle expiration) 규칙을 걸지 않음.
+# 보존 기간(30일)은 Loki compactor(retention_enabled)가 인덱스와 청크를 함께 정리하는 방식으로 관리해야 함.
+# S3 lifecycle로 청크만 따로 지우면 인덱스와 어긋나서 조회 오류가 날 수 있음.
+
+# 모니터링 EC2가 access key 없이 위 S3 버킷에 접근할 수 있도록 하는 IAM Role
+resource "aws_iam_role" "monitoring_instance_role" {
+  name = "${var.project_name}-${var.environment}-monitoring-instance-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect    = "Allow"
+        Principal = { Service = "ec2.amazonaws.com" }
+        Action    = "sts:AssumeRole"
+      }
+    ]
+  })
+
+  tags = var.base_tags
+}
+
+# 최소 권한: 이 모니터링 서버가 만든 Loki 버킷 하나에만 접근 허용
+resource "aws_iam_role_policy" "loki_s3_access" {
+  name = "${var.project_name}-${var.environment}-loki-s3-access"
+  role = aws_iam_role.monitoring_instance_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["s3:ListBucket"]
+        Resource = [aws_s3_bucket.loki_logs.arn]
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"]
+        Resource = ["${aws_s3_bucket.loki_logs.arn}/*"]
+      }
+    ]
+  })
+}
+
+resource "aws_iam_instance_profile" "monitoring_instance_profile" {
+  name = "${var.project_name}-${var.environment}-monitoring-instance-profile"
+  role = aws_iam_role.monitoring_instance_role.name
+}
+
 # 모니터링 EC2 보안 그룹
 resource "aws_security_group" "monitoring_sg" {
   name   = "${var.project_name}-${var.environment}-monitoring-sg"
@@ -106,7 +182,8 @@ resource "aws_instance" "monitoring_instance" {
   subnet_id              = data.aws_subnet.existing_public_a.id
   vpc_security_group_ids = [aws_security_group.monitoring_sg.id]
 
-  key_name = data.aws_key_pair.existing.key_name
+  key_name             = data.aws_key_pair.existing.key_name
+  iam_instance_profile = aws_iam_instance_profile.monitoring_instance_profile.name
 
   root_block_device {
     volume_type           = var.volume_type
@@ -116,9 +193,12 @@ resource "aws_instance" "monitoring_instance" {
   }
 
   # IMDSv2 설정 (SSRF 공격 방어)
+  # http_put_response_hop_limit = 2: 기본값(1)이면 Docker 컨테이너(브리지 네트워크가 홉을 하나 더 소모)에서
+  # 메타데이터 서버에 접근이 막혀 Loki 컨테이너가 이 IAM Role 자격증명을 못 받아옴
   metadata_options {
-    http_endpoint = "enabled"
-    http_tokens   = "required"
+    http_endpoint               = "enabled"
+    http_tokens                 = "required"
+    http_put_response_hop_limit = 2
   }
 
   # 초기 부팅 시점에 user_data 스크립트 실행 (Docker 설치 + swap 구성)
